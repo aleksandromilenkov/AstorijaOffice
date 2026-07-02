@@ -16,6 +16,26 @@ import CloseIcon from '@mui/icons-material/Close'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { useTranslations } from '../translations'
 
+// Rounded flag image — used in place of emoji flags for cross-device consistency
+function FlagImg({ src, alt, size = 20 }) {
+  return (
+    <Box
+      component="img"
+      src={src}
+      alt={alt}
+      sx={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        objectFit: 'cover',
+        display: 'inline-block',
+        flexShrink: 0,
+        boxShadow: '0 0 0 1px rgba(0,0,0,0.08)',
+      }}
+    />
+  )
+}
+
 export default function Header({navOpen, setNavOpen, sticky = false}){
   const { t, language, setLanguage, languages } = useTranslations()
   const [anchorEl, setAnchorEl] = useState(null)
@@ -65,7 +85,9 @@ export default function Header({navOpen, setNavOpen, sticky = false}){
               onClick={handleLanguageClick}
               sx={{ textTransform: 'none', borderRadius: 2 }}
             >
-              <Box component="span" sx={{ mr: 1 }}>{currentLanguage.flag}</Box>
+              <Box component="span" sx={{ mr: 1, display: 'inline-flex', alignItems: 'center' }}>
+                <FlagImg src={currentLanguage.flagImg} alt={currentLanguage.label} size={20} />
+              </Box>
               {t.header.language}
             </Button>
           </Box>
@@ -76,7 +98,9 @@ export default function Header({navOpen, setNavOpen, sticky = false}){
               onClick={handleLanguageClick}
               sx={{ textTransform: 'none', minWidth: 0, px: 1.5, py: 0.75, borderRadius: 2, fontSize: '0.825rem', backgroundColor: 'rgba(255,255,255,0.08)', color: 'text.primary' }}
             >
-              <Box component="span" sx={{ mr: 0.75 }}>{currentLanguage.flag}</Box>
+              <Box component="span" sx={{ mr: 0.75, display: 'inline-flex', alignItems: 'center' }}>
+                <FlagImg src={currentLanguage.flagImg} alt={currentLanguage.label} size={20} />
+              </Box>
               <ArrowDropDownIcon sx={{ fontSize: 20, ml: 0.25 }} />
             </Button>
             <IconButton edge="end" color="inherit" aria-label="menu" onClick={toggleNav} sx={{ p: 1.25, bgcolor: 'rgba(255,255,255,0.08)' }}>
@@ -95,7 +119,9 @@ export default function Header({navOpen, setNavOpen, sticky = false}){
       >
         {languages.map((lang) => (
           <MenuItem key={lang.code} selected={lang.code === language} onClick={() => handleLanguageSelect(lang.code)}>
-            <Box component="span" sx={{ mr: 1 }}>{lang.flag}</Box>
+            <Box component="span" sx={{ mr: 1, display: 'inline-flex', alignItems: 'center' }}>
+              <FlagImg src={lang.flagImg} alt={lang.label} size={18} />
+            </Box>
             <Typography>{t.header.languageNames[lang.code]}</Typography>
           </MenuItem>
         ))}

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
 
 export const LANGUAGE_OPTIONS = [
-  { code: 'mk', label: 'Македонски', flag: '🇲🇰' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'mk', label: 'Македонски', flag: '🇲🇰', flagImg: '/img/flags/macedonia_flag.png' },
+  { code: 'en', label: 'English', flag: '🇬🇧', flagImg: '/img/flags/great_britain_flag.jpg' },
 ]
 
 export const DEFAULT_LANGUAGE = 'mk'

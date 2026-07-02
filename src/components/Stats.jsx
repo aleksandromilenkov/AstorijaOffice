@@ -48,13 +48,13 @@ function StatCard({ stat, animate, index }) {
   return (
     <Box
       sx={{
-        flex: 1,
+        flex: { xs: 'initial', sm: 1 },
         minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        py: { xs: 3, md: 4 },
-        px: { xs: 1, md: 2 },
+        py: { xs: 4, md: 4 },
+        px: { xs: 0.5, sm: 1, md: 2 },
         position: 'relative',
         // Divider between cards (not before first)
         '&:not(:first-of-type)::before': {
@@ -66,18 +66,22 @@ function StatCard({ stat, animate, index }) {
           width: '1px',
           background: 'rgba(134,46,156,0.15)',
         },
+        // On small screens: hide divider for the first card in each row (1st & 3rd)
+        '&:nth-of-type(3)::before': {
+          display: { xs: 'none', sm: 'block' },
+        },
       }}
     >
       {/* Number */}
       <Typography
         sx={{
-          fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.4rem' },
+          fontSize: { xs: '1.5rem', sm: '2.8rem', md: '3.4rem' },
           fontWeight: 700,
           lineHeight: 1,
           letterSpacing: '-0.03em',
           color: 'primary.main',
           fontVariantNumeric: 'tabular-nums',
-          mb: 0.75,
+          mb: { xs: 2, md: 1 },
           transition: 'none',
         }}
       >
@@ -150,16 +154,9 @@ export default function Stats() {
         {/* Stats row */}
         <Box
           sx={{
-            display: 'flex',
+            display: { xs: 'grid', sm: 'flex' },
+            gridTemplateColumns: { xs: '1fr 1fr', sm: 'none' },
             flexWrap: { xs: 'wrap', sm: 'nowrap' },
-            // On mobile: 2-column grid
-            '& > *': {
-              flexBasis: { xs: '50%', sm: 'auto' },
-              // Remove left divider on 2nd item in mobile (starts new row pair)
-              '&:nth-of-type(3)::before': {
-                display: { xs: 'none', sm: 'block' },
-              },
-            },
           }}
         >
           {STATS.map((stat, i) => (

@@ -191,6 +191,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
         px: { xs: 7, md: 10 }, // room for side arrows
         position: 'relative',
         zIndex: 2,
+        minHeight: 0, // allow flex child to shrink below content size
       }}>
         <Box style={slideStyle} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
           <Box
@@ -198,8 +199,10 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
             src={`${BASE}${img.file}`}
             alt={img.label}
             sx={{
-              maxHeight: '100%',
-              maxWidth: '100%',
+              maxHeight: { xs: '100%', sm: '75vh', md: '70vh' },
+              maxWidth: { xs: '100%', sm: '90%', md: '1100px' },
+              width: 'auto',
+              height: 'auto',
               objectFit: 'contain',
               display: 'block',
               borderRadius: 1,
@@ -260,14 +263,14 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
             color: 'rgba(255,255,255,0.85)',
             lineHeight: 1,
           }}>
-            {img.label}
+            {/* {img.label} */}
           </Typography>
         </Box>
 
         <Typography sx={{
-          fontSize: { xs: '0.7rem', md: '0.78rem' },
+          fontSize: { xs: '0.7rem', md: '1rem' },
           letterSpacing: '0.15em',
-          color: 'rgba(255,255,255,0.3)',
+          color: 'rgba(255, 246, 246, 0.65)',
           fontVariantNumeric: 'tabular-nums',
           flexShrink: 0,
           ml: 1,

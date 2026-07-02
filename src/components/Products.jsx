@@ -7,21 +7,23 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Gallery from './Gallery'
+import { useTranslations } from '../translations'
 
 const SHIRTS = Array.from({ length: 12 }, (_, i) => `/img/products/shirt${i + 1}.jpg`)
 
 export default function Products() {
   const [galleryStart, setGalleryStart] = useState(null)
+  const { t } = useTranslations()
 
   return (
     <>
       <Box component="section" id="products" sx={{ py: 8, bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">
           <Typography variant="h4" align="center" sx={{ mb: 1, fontWeight: 700 }}>
-            Our Printed Products
+            {t.products.title}
           </Typography>
           <Typography align="center" color="text.secondary" sx={{ mb: 5, fontSize: '0.95rem' }}>
-            Click any design to explore in full screen
+            {t.products.description}
           </Typography>
 
           {/* Thumbnail grid */}

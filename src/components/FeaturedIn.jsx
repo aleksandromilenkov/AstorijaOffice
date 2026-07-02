@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
+import { useTranslations } from '../translations'
 
 const LOGOS = ['bim.png','lion.png','moda.png','dime.png','sitkarski.png']
 const BASE  = '/img/featured-in-images/'
@@ -21,6 +22,7 @@ const KEYFRAMES = `
 `
 
 export default function FeaturedIn() {
+  const { t } = useTranslations()
   return (
     <Box
       component="section"
@@ -42,7 +44,7 @@ export default function FeaturedIn() {
             fontWeight: 700,
           }}
         >
-          trusted by
+          {t.featured.trustedBy}
         </Typography>
       </Box>
 

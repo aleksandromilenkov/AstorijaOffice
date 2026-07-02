@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from '../translations'
 
 function useReveal(delay = 0) {
   const [visible, setVisible] = useState(false)
@@ -85,6 +86,7 @@ function InfoRow({ icon, children, href }) {
 }
 
 export default function About() {
+  const { t } = useTranslations()
   return (
     <Box
       component="section"
@@ -113,19 +115,19 @@ export default function About() {
             textTransform: 'uppercase', color: 'primary.main',
             fontWeight: 700, mb: 1.5, display: 'block',
           }}>
-            our story
+            {t.about.overline}
           </Typography>
           <Typography sx={{
             fontSize: { xs: '2rem', md: '2.8rem' },
             fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1,
           }}>
-            About{' '}
+            {t.about.title.split(' ')[0]}{' '}
             <Box component="span" sx={{
               background: 'linear-gradient(90deg, #862e9c, #c77dff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              Astorija
+              {t.about.title.split(' ').slice(1).join(' ')}
             </Box>
           </Typography>
         </RevealBox>
@@ -172,21 +174,12 @@ export default function About() {
                 color: 'text.secondary',
                 mb: 3,
               }}>
-                Astorija has been a trusted name on the Macedonian market for more than{' '}
-                <Box component="span" sx={{ color: 'primary.main', fontWeight: 700 }}>25 years</Box>.
-                From a small copy shop to a full-service print and design studio, we've grown
-                alongside the businesses and schools we serve — printing everything from
-                a single document to a million branded products.
+                {t.about.story}
               </Typography>
 
               {/* Timeline strip */}
               <Box sx={{ display: 'flex', gap: 0, mt: 2 }}>
-                {[
-                  { year: '1998', label: 'Founded' },
-                  { year: '2010', label: 'Expanded' },
-                  { year: '2018', label: 'Rebranded' },
-                  { year: 'Now',  label: '1M+ prints' },
-                ].map((item, i, arr) => (
+                {t.about.timeline.map((item, i, arr) => (
                   <Box key={item.year} sx={{ flex: 1, position: 'relative' }}>
                     {/* connector line */}
                     {i < arr.length - 1 && (

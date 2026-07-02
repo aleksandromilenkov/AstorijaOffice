@@ -2,56 +2,37 @@ import React, { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from '../translations'
 
-const STEPS = [
-  {
-    num: '01',
-    title: 'Send Your Design',
-    desc: 'Share your idea, logo, or file — any format works. Not sure what you need? We will guide you.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    ),
-  },
-  {
-    num: '02',
-    title: 'We Prepare a Mockup',
-    desc: 'Our team creates a preview so you see exactly how the final product will look before we print.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 8v4l3 3"/>
-        <path d="M5 3l14 0M5 21l14 0"/>
-      </svg>
-    ),
-  },
-  {
-    num: '03',
-    title: 'Production',
-    desc: 'Once you approve the mockup, we go to print. Fast turnaround, consistent quality, every time.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="6 9 6 2 18 2 18 9"/>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-        <rect x="6" y="14" width="12" height="8"/>
-      </svg>
-    ),
-  },
-  {
-    num: '04',
-    title: 'Delivery',
-    desc: 'Your order is packaged and ready. Pick it up in store or have it delivered straight to your door.',
-    icon: (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="1" y="3" width="15" height="13" rx="1"/>
-        <path d="M16 8h4l3 5v3h-7V8z"/>
-        <circle cx="5.5" cy="18.5" r="2.5"/>
-        <circle cx="18.5" cy="18.5" r="2.5"/>
-      </svg>
-    ),
-  },
+const ICONS = [
+  (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="22" y1="2" x2="11" y2="13"/>
+      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+  ),
+  (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 8v4l3 3"/>
+      <path d="M5 3l14 0M5 21l14 0"/>
+    </svg>
+  ),
+  (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 6 2 18 2 18 9"/>
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+      <rect x="6" y="14" width="12" height="8"/>
+    </svg>
+  ),
+  (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/>
+      <path d="M16 8h4l3 5v3h-7V8z"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/>
+      <circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+  ),
 ]
 
 function Step({ step, index, total }) {
@@ -198,6 +179,7 @@ function Step({ step, index, total }) {
 }
 
 export default function Process() {
+  const { t } = useTranslations()
   return (
     <Box
       component="section"
@@ -226,26 +208,26 @@ export default function Process() {
             textTransform: 'uppercase', color: 'primary.main',
             fontWeight: 700, mb: 1.5, display: 'block',
           }}>
-            how it works
+            {t.process.overline}
           </Typography>
           <Typography sx={{
             fontSize: { xs: '2rem', md: '2.8rem' },
             fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1,
           }}>
-            From idea to{' '}
+            {t.process.titlePrefix}{' '}
             <Box component="span" sx={{
               background: 'linear-gradient(90deg, #862e9c, #c77dff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              your hands
+              {t.process.titleAccent}
             </Box>
           </Typography>
           <Typography sx={{
             mt: 1.5, fontSize: '0.9rem',
             color: 'text.secondary', maxWidth: 420, mx: 'auto',
           }}>
-            Four simple steps — we handle everything in between.
+            {t.process.description}
           </Typography>
         </Box>
 
@@ -256,8 +238,8 @@ export default function Process() {
           gap: { xs: 0, md: 2 },
           alignItems: { xs: 'stretch', md: 'flex-start' },
         }}>
-          {STEPS.map((step, i) => (
-            <Step key={step.num} step={step} index={i} total={STEPS.length} />
+          {t.process.steps.map((step, i) => (
+            <Step key={step.num} step={{ ...step, icon: ICONS[i] }} index={i} total={t.process.steps.length} />
           ))}
         </Box>
 

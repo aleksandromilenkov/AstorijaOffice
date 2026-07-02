@@ -2,6 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from '../translations'
 
 const MAIL_ICON = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -69,6 +70,7 @@ function FooterCol({ title, children }) {
 }
 
 export default function Footer() {
+  const { t } = useTranslations()
   return (
     <Box
       component="footer"
@@ -130,7 +132,7 @@ export default function Footer() {
               textAlign: { xs: 'center', md: 'left' },
               lineHeight: 1.6,
             }}>
-              Printing your vision since 1998.
+              {t.footer.quote}
             </Typography>
           </Box>
 
@@ -169,13 +171,13 @@ export default function Footer() {
           gap: { xs: 4, md: 6 },
           borderBottom: '1px solid rgba(255,255,255,0.1)',
         }}>
-          <FooterCol title="Contact">
+          <FooterCol title={t.footer.contact}>
             <FooterLink href="tel:+38970210128"  icon={PHONE_ICON}>070-210-128</FooterLink>
             <FooterLink href="tel:+38932444466"  icon={PHONE_ICON}>032-444-466</FooterLink>
             <FooterLink href="mailto:astorijanova@yahoo.com" icon={MAIL_ICON}>astorijanova@yahoo.com</FooterLink>
           </FooterCol>
 
-          <FooterCol title="Working Hours">
+          <FooterCol title={t.footer.hours}>
             <FooterLink icon={CLOCK_ICON}>Mon – Fri &nbsp; 08:00 – 15:00</FooterLink>
             <FooterLink icon={CLOCK_ICON}>Saturday &nbsp;&nbsp; 08:00 – 14:00</FooterLink>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
@@ -195,7 +197,7 @@ export default function Footer() {
             </Box>
           </FooterCol>
 
-          <FooterCol title="Location">
+          <FooterCol title={t.footer.location}>
             <FooterLink icon={PIN_ICON}>Leninova 24</FooterLink>
             <FooterLink icon={PIN_ICON}>Square Ilinden No.34</FooterLink>
             <FooterLink icon={PIN_ICON}>2220 Sveti Nikole, Macedonia</FooterLink>
@@ -212,7 +214,7 @@ export default function Footer() {
           gap: 1.5,
         }}>
           <Typography sx={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>
-            © {new Date().getFullYear()} Astorija. All rights reserved.
+            {t.footer.copyright} {new Date().getFullYear()} Astorija. {t.footer.reserved}
           </Typography>
 
           {/* Purple dot divider decoration */}
@@ -228,7 +230,7 @@ export default function Footer() {
           </Box>
 
           <Typography sx={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>
-            Sveti Nikole, Macedonia
+            {t.footer.dooel}
           </Typography>
         </Box>
 

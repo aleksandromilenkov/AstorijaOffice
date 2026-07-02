@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTranslations } from '../translations'
 
 const ITEMS = [
   { label: 'Shirts',    icon: '👕' },
@@ -49,6 +50,7 @@ const KEYFRAMES = `
 export default function WeDesignEverything() {
   const [visible, setVisible] = useState(false)
   const ref = useRef(null)
+  const { t } = useTranslations()
 
   useEffect(() => {
     const el = ref.current
@@ -133,7 +135,7 @@ export default function WeDesignEverything() {
               textTransform: 'uppercase', color: '#862e9c',
               fontWeight: 700, mb: 2,
             }}>
-              what we print
+              {t.weDesign.overline}
             </Typography>
           </Box>
 
@@ -151,7 +153,7 @@ export default function WeDesignEverything() {
               color: '#fff',
               mb: 0.5,
             }}>
-              We design
+              {t.weDesign.title1}
             </Typography>
           </Box>
 
@@ -178,7 +180,7 @@ export default function WeDesignEverything() {
                 to:   { backgroundPosition: '200% center' },
               },
             }}>
-              everything.
+              {t.weDesign.title2}
             </Typography>
           </Box>
 
@@ -190,9 +192,9 @@ export default function WeDesignEverything() {
             justifyContent: 'center',
             maxWidth: 560,
           }}>
-            {ITEMS.map((item, i) => (
+            {t.weDesign.items.map((label, i) => (
               <Box
-                key={item.label}
+                key={label}
                 sx={{
                   px: 2.2, py: 0.85,
                   borderRadius: 99,
@@ -215,9 +217,8 @@ export default function WeDesignEverything() {
                     transform: 'translateY(-3px)',
                     boxShadow: '0 6px 22px rgba(134,46,156,0.35)',
                   },
-                }}
-              >
-                {item.icon} {item.label}
+                }}>
+                {ITEMS[i]?.icon || ''} {label}
               </Box>
             ))}
           </Box>
@@ -234,7 +235,7 @@ export default function WeDesignEverything() {
               color: 'rgba(255,255,255,0.3)',
               letterSpacing: '0.06em',
             }}>
-              If you can imagine it — we can print it.
+              {t.weDesign.bottom}
             </Typography>
           </Box>
 

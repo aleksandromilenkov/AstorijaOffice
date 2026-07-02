@@ -4,8 +4,10 @@ import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import { useTranslations } from '../translations'
 
 export default function Hero() {
+  const { t } = useTranslations()
   return (
     <Box
       component="section"
@@ -69,7 +71,7 @@ export default function Hero() {
             borderRadius: '100px', px: 1.75, py: 0.7,
             backdropFilter: 'blur(8px)',
           }}>
-            ✦ Professional printing
+            {t.hero.badge}
           </Box>
 
           {/* Headline */}
@@ -84,13 +86,13 @@ export default function Hero() {
               mb: 2.5,
             }}
           >
-            Print Your Brand{' '}
+            {t.hero.titlePrefix}{' '}
             <Box component="span" sx={{
               background: 'linear-gradient(90deg, #862e9c, #c77dff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              on Anything
+              {t.hero.titleAccent}
             </Box>
           </Typography>
 
@@ -102,7 +104,7 @@ export default function Hero() {
             mb: 4.5,
             maxWidth: 460,
           }}>
-            Professional printing for businesses, events, clubs, schools, and organizations — from a single copy to a million branded products.
+            {t.hero.sub}
           </Typography>
 
           {/* CTAs */}
@@ -122,7 +124,7 @@ export default function Hero() {
                 transition: 'all 0.25s',
               }}
             >
-              Print Now
+              {t.hero.primaryCta}
             </Button>
             <Button
               variant="outlined"
@@ -141,7 +143,7 @@ export default function Hero() {
                 transition: 'all 0.25s',
               }}
             >
-              How it works ↓
+              {t.hero.secondaryCta}
             </Button>
           </Box>
 
@@ -173,7 +175,7 @@ export default function Hero() {
             </Box>
             <Box>
               <Typography sx={{ fontSize: '0.85rem', color: '#fff', fontWeight: 700, lineHeight: 1.3 }}>
-                1,000+ happy customers
+                {t.hero.socialProof}
               </Typography>
               <Box sx={{ display: 'flex', gap: 0.3, mt: 0.3 }}>
                 {[...Array(5)].map((_, i) => (

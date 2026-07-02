@@ -9,6 +9,7 @@ import Grid from '@mui/material/Grid'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
+import { useTranslations } from '../translations'
 
 const SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID
 const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
@@ -82,13 +83,15 @@ export default function Contact() {
     emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
       .then(() => {
         setLoading(false)
-        setSnackbar({ open: true, message: 'Message sent! We will get back to you soon.', severity: 'success' })
+        setSnackbar({ open: true, message: t.contact.snackbar.success, severity: 'success' })
         formRef.current.reset()
       }, (err) => {
         setLoading(false)
-        setSnackbar({ open: true, message: `Failed to send: ${err.text || 'Please try again.'}`, severity: 'error' })
+        setSnackbar({ open: true, message: `${t.contact.snackbar.error} ${err.text || ''}`.trim(), severity: 'error' })
       })
   }
+
+  const { t } = useTranslations()
 
   return (
     <Box
@@ -131,25 +134,17 @@ export default function Contact() {
             textTransform: 'uppercase', color: 'primary.main',
             fontWeight: 700, mb: 1.5, display: 'block',
           }}>
-            get in touch
+            {t.contact.overline}
           </Typography>
           <Typography sx={{
             fontSize: { xs: '2rem', md: '2.8rem' },
             fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1,
             color: '#fff',
           }}>
-            Let's start something{' '}
-            <Box component="span" sx={{
-              background: 'linear-gradient(90deg, #862e9c, #c77dff)',
-              WebkitBackgroundClip: 'text',
-              textDecoration: "uppercase",
-              WebkitTextFillColor: 'transparent',
-            }}>
-              BIG.
-            </Box>
+            {t.contact.title}
           </Typography>
           <Typography sx={{ mt: 1.5, fontSize: '0.9rem', color: 'rgba(255,255,255,0.45)', maxWidth: 400, mx: 'auto' }}>
-            Send us a message and we'll get back to you within a few hours.
+            {t.contact.subtitle}
           </Typography>
         </Box>
 
@@ -215,17 +210,17 @@ export default function Contact() {
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <TextField label="Your Name"  name="from_name" required fullWidth variant="outlined" sx={FIELD_SX} />
+                  <TextField label={t.contact.fields.name}  name="from_name" required fullWidth variant="outlined" sx={FIELD_SX} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField label="Your Email" name="reply_to"  required fullWidth variant="outlined" type="email" sx={FIELD_SX} />
+                  <TextField label={t.contact.fields.email} name="reply_to"  required fullWidth variant="outlined" type="email" sx={FIELD_SX} />
                 </Grid>
               </Grid>
 
-              <TextField label="Subject" name="subject" required fullWidth variant="outlined" sx={FIELD_SX} />
+              <TextField label={t.contact.fields.subject} name="subject" required fullWidth variant="outlined" sx={FIELD_SX} />
 
               <TextField
-                label="Your Message" name="message" required fullWidth
+                label={t.contact.fields.message} name="message" required fullWidth
                 multiline rows={5} variant="outlined" sx={FIELD_SX}
               />
 
@@ -248,7 +243,7 @@ export default function Contact() {
                   },
                 }}
               >
-                {loading ? <CircularProgress size={22} color="inherit" /> : 'Send Message'}
+                {loading ? <CircularProgress size={22} color="inherit" /> : t.contact.submit}
               </Button>
             </Box>
           </Grid>

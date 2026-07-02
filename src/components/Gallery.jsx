@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import { useTranslations } from '../translations'
 
 const IMAGES = Array.from({ length: 12 }, (_, i) => ({
   file: `shirt${i + 1}.jpg`,
@@ -26,6 +27,7 @@ function ArrowRight() {
 }
 
 export default function Gallery({ onClose, initialIndex = 0 }) {
+  const { t } = useTranslations()
   const [current, setCurrent] = useState(initialIndex)
   const [direction, setDir]   = useState(1)
   const [animating, setAnim]  = useState(false)
@@ -98,6 +100,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
   }
 
   const img = IMAGES[current]
+  const altText = `${t.products.altPrefix} ${String(current + 1).padStart(2, '0')}`
 
   const slideStyle = {
     transform: animating ? `translateX(${direction * -55}px)` : 'translateX(0)',
@@ -152,7 +155,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
           fontSize: '0.65rem', letterSpacing: '0.2em',
           textTransform: 'uppercase', color: '#862e9c', fontWeight: 700,
         }}>
-          Printed Products
+          {t.products.galleryTitle}
         </Typography>
 
         {onClose && (

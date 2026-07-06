@@ -137,7 +137,7 @@ export const translations = {
       contactLabel: 'Контакт',
     },
     footer: {
-      quote: 'Печатиме вашата визија од 1998.',
+      quote: 'Ја печатиме вашата визија од 1998.',
       contact: 'Контакт',
       hours: 'Работно време',
       location: 'Локација',

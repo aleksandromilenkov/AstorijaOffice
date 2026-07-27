@@ -10,6 +10,7 @@
 
 export const navLinks = [
   { label: 'Дома', href: '/' },
+  { label: 'Продавница', href: '/prodavnica' },
   { label: 'За нас', href: '/about' },
   { label: 'Контакт', href: '/contact', variant: 'contained' },
 ]

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AppBar from '@mui/material/AppBar'
@@ -15,7 +15,11 @@ import ListItemButton from '@mui/material/ListItemButton'
 import Typography from '@mui/material/Typography'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import Badge from '@mui/material/Badge'
+import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
+import HeaderSearch from '@/components/HeaderSearch'
 
 /**
  * Decide if a nav link points to an in-page hash on the home page, a
@@ -29,9 +33,9 @@ function isInternalPage(href) {
 
 export default function Header() {
   const [navOpen, setNavOpen] = useState(false)
-  const [sticky, setSticky] = useState(false)
   const pathname = usePathname()
   const isHome = pathname === '/'
+  const { count } = useCart()
 
   const closeNav = () => setNavOpen(false)
 
@@ -66,28 +70,9 @@ export default function Header() {
     return () => document.removeEventListener('click', onDocClick)
   }, [isHome])
 
-  // Toggle the "scrolled past hero" effect — only on the home page where
-  // the hero exists. On other pages we treat the header as always scrolled.
-  useEffect(() => {
-    if (!isHome) {
-      setSticky(true)
-      return
-    }
-    const hero = document.querySelector('#hero')
-    if (!hero) {
-      setSticky(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const ent = entries[0]
-        setSticky(!ent.isIntersecting)
-      },
-      { root: null, threshold: 0, rootMargin: '-80px' }
-    )
-    observer.observe(hero)
-    return () => observer.disconnect()
-  }, [isHome])
+  // On non-home routes the header is always "stuck". On the home page
+  // we toggle once the hero scrolls out of view via IntersectionObserver.
+  const sticky = useStickyHeader(isHome)
 
   return (
     <>
@@ -115,7 +100,8 @@ export default function Header() {
             <img src="/img/Screenshot_1.png" alt="Astorija logo" style={{ height: 56 }} />
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2, flex: 1, ml: 3 }}>
+            <HeaderSearch />
             {navLinks.map((item) => (
               <Button
                 key={item.label}
@@ -136,6 +122,22 @@ export default function Header() {
 
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
             <IconButton
+              component={Link}
+              href="/kosnicka"
+              aria-label="Отвори кошничка"
+              color="primary"
+              sx={{ p: 1.25 }}
+            >
+              <Badge
+                badgeContent={count}
+                color="secondary"
+                overlap="circular"
+                max={99}
+              >
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+            <IconButton
               edge="end"
               color="inherit"
               aria-label="menu"
@@ -152,16 +154,18 @@ export default function Header() {
         anchor="right"
         open={navOpen}
         onClose={closeNav}
-        PaperProps={{
-          sx: {
-            width: 300,
-            bgcolor: 'background.paper',
-            borderRadius: '24px 0 0 24px',
-            px: 0,
-            py: 0,
-            boxShadow: '0 24px 68px rgba(15, 15, 15, 0.22)',
-            backgroundImage:
-              'linear-gradient(180deg, rgba(250,250,250,0.96) 0%, rgba(255,255,255,0.98) 100%)',
+        slotProps={{
+          paper: {
+            sx: {
+              width: 300,
+              bgcolor: 'background.paper',
+              borderRadius: '24px 0 0 24px',
+              px: 0,
+              py: 0,
+              boxShadow: '0 24px 68px rgba(15, 15, 15, 0.22)',
+              backgroundImage:
+                'linear-gradient(180deg, rgba(250,250,250,0.96) 0%, rgba(255,255,255,0.98) 100%)',
+            },
           },
         }}
       >
@@ -218,4 +222,37 @@ export default function Header() {
       </Drawer>
     </>
   )
+}
+
+/**
+ * Header "stuck" state for the sticky background/shadow effect.
+ *
+ * Returns `true` when the user has scrolled past the hero on the home
+ * page. On non-home routes the header is always considered stuck, so
+ * we return `true` immediately without ever touching DOM.
+ *
+ * The IntersectionObserver callback is the only place we call
+ * setState — it's an external subscription, so this is the lint-clean
+ * way to model "DOM event → React state".
+ */
+function useStickyHeader(isHome) {
+  const [sticky, setSticky] = useState(!isHome)
+
+  useEffect(() => {
+    if (!isHome) return undefined
+    const hero = document.querySelector('#hero')
+    if (!hero) return undefined
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const ent = entries[0]
+        setSticky(!ent.isIntersecting)
+      },
+      { root: null, threshold: 0, rootMargin: '-80px' }
+    )
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [isHome])
+
+  return sticky
 }

@@ -3,6 +3,7 @@ import './globals.css'
 import ThemeRegistry from '@/components/ThemeRegistry'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import CartShell from '@/components/store/CartShell'
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -21,9 +22,11 @@ export default function RootLayout({ children }) {
     <html lang="mk" className={inter.variable}>
       <body>
         <ThemeRegistry>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <CartShell>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </CartShell>
         </ThemeRegistry>
       </body>
     </html>

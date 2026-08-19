@@ -18,15 +18,9 @@ import { contact } from '@/content'
 // project and the Next.js `NEXT_PUBLIC_EMAILJS_*` convention; the
 // Vite names take precedence so the existing setup continues to work
 // without changes.
-const SERVICE_ID =
-  process.env.VITE_EMAILJS_SERVICE_ID ??
-  process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
-const TEMPLATE_ID =
-  process.env.VITE_EMAILJS_TEMPLATE_ID ??
-  process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
-const PUBLIC_KEY =
-  process.env.VITE_EMAILJS_PUBLIC_KEY ??
-  process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
+const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
 
 const MAIL_ICON = (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

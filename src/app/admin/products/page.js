@@ -18,7 +18,9 @@ import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import { createClient } from '@/lib/supabase/client'
+import { uploadImageToCloudinary } from '@/lib/cloudinary'
 import AdminNav from '@/components/admin/AdminNav'
 
 function slugify(value = '') {
@@ -49,11 +51,23 @@ export default function AdminProductsPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
 
   useEffect(() => {
     loadCategories()
     loadProducts()
   }, [])
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
+    }
+  }, [imagePreview])
 
   async function loadCategories() {
     const { data, error } = await supabase
@@ -124,6 +138,9 @@ export default function AdminProductsPage() {
     setDescription('')
     setPrice('')
     setImageUrl('')
+    setImagePreview('')
+    setImageFile(null)
+    setUploadProgress('')
     setInStock(true)
     setCategoryId(categories?.[0]?.id ?? '')
     setError('')
@@ -147,6 +164,27 @@ export default function AdminProductsPage() {
     }
 
     setLoading(true)
+    let uploadedUrl = imageUrl
+
+    if (imageFile) {
+      try {
+        setUploadingImage(true)
+        setUploadProgress('Се прикачува слика на Cloudinary...')
+        const uploadResult = await uploadImageToCloudinary(imageFile, { folder: 'astorija/products' })
+        uploadedUrl = uploadResult.url
+        setImageUrl(uploadedUrl)
+        setUploadProgress('Сликата е успешно прикачена.')
+      } catch (uploadError) {
+        setLoading(false)
+        setUploadingImage(false)
+        setUploadProgress('')
+        setError(uploadError.message ?? 'Прикачувањето на сликата не успеа.')
+        return
+      } finally {
+        setUploadingImage(false)
+      }
+    }
+
     let result
 
     if (editingId) {
@@ -158,7 +196,7 @@ export default function AdminProductsPage() {
           description,
           category_id: categoryId,
           price: parsedPrice,
-          image_url: imageUrl,
+          image_url: uploadedUrl,
           in_stock: inStock,
         })
         .eq('id', editingId)
@@ -170,7 +208,7 @@ export default function AdminProductsPage() {
           description,
           category_id: categoryId,
           price: parsedPrice,
-          image_url: imageUrl,
+          image_url: uploadedUrl,
           in_stock: inStock,
         },
       ])
@@ -195,6 +233,9 @@ export default function AdminProductsPage() {
     setDescription(product.description ?? '')
     setPrice(String(product.price ?? ''))
     setImageUrl(product.image_url ?? '')
+    setImagePreview('')
+    setImageFile(null)
+    setUploadProgress('')
     setCategoryId(product.category_id ?? '')
     setInStock(product.in_stock ?? true)
     setMessage('')
@@ -288,12 +329,58 @@ export default function AdminProductsPage() {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Url за слика"
-            value={imageUrl}
-            onChange={(event) => setImageUrl(event.target.value)}
-            helperText="Пример: /img/products/vizitki.svg"
-          />
+          <Box sx={{ display: 'grid', gap: 1 }}>
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<CloudUploadIcon />}
+              disabled={uploadingImage}
+            >
+              {imageFile ? `Избрана: ${imageFile.name}` : 'Прикачи слика на Cloudinary'}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (imagePreview) {
+                    URL.revokeObjectURL(imagePreview)
+                  }
+                  setImageFile(file ?? null)
+                  setImagePreview(file ? URL.createObjectURL(file) : '')
+                  if (file) {
+                    setUploadProgress('')
+                  }
+                }}
+              />
+            </Button>
+            {(imagePreview || imageUrl) ? (
+              <Box
+                sx={{
+                  mt: 1,
+                  width: '100%',
+                  maxWidth: 260,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  overflow: 'hidden',
+                  backgroundColor: 'background.paper',
+                }}
+              >
+                <Box
+                  component="img"
+                  src={imagePreview || imageUrl}
+                  alt="Преглед на слика"
+                  sx={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </Box>
+            ) : null}
+            {uploadProgress ? (
+              <Typography variant="body2" color="text.secondary">
+                {uploadProgress}
+              </Typography>
+            ) : null}
+          </Box>
 
           <FormControlLabel
             control={
@@ -309,8 +396,18 @@ export default function AdminProductsPage() {
           {message ? <Alert severity="success">{message}</Alert> : null}
 
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Button type="submit" variant="contained" disabled={loading || categories.length === 0}>
-              {loading ? 'Се зачува...' : editingId ? 'Ажурирај продукт' : 'Креирај продукт'}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading || uploadingImage || categories.length === 0}
+            >
+              {uploadingImage
+                ? 'Се прикачува слика...'
+                : loading
+                ? 'Се зачува...'
+                : editingId
+                ? 'Ажурирај продукт'
+                : 'Креирај продукт'}
             </Button>
             {editingId ? (
               <Button type="button" variant="outlined" color="inherit" onClick={resetForm}>

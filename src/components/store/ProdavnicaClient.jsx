@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -17,7 +17,8 @@ import SearchIcon from '@mui/icons-material/Search'
 import TuneIcon from '@mui/icons-material/Tune'
 import CloseIcon from '@mui/icons-material/Close'
 import { mockProducts } from '@/data/mockProducts'
-import { categories, sortOptions } from '@/data/categories'
+import { sortOptions } from '@/data/categories'
+import { createClient } from '@/lib/supabase/client'
 import ProductCard from './ProductCard'
 
 /**
@@ -27,6 +28,10 @@ import ProductCard from './ProductCard'
  * `useSearchParams` — this is what lets the Header's search bar drive
  * the same filter state without prop drilling.
  *
+ * Categories and products are loaded from Supabase on mount. Mock data
+ * is merged as a fallback so the storefront still renders even before
+ * the database has any rows.
+ *
  * Filtering is local and instant; the URL only updates on submit or
  * category click, so typing in the page-level search bar doesn't fight
  * with the router. Header submissions replace the URL and re-mount the
@@ -35,6 +40,7 @@ import ProductCard from './ProductCard'
 export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const supabase = createClient()
 
   // URL is the source of truth for the initial filter state. Subsequent
   // user edits live in local state so typing doesn't fight with the
@@ -45,10 +51,87 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
   const [category, setCategory] = useState(initialCat)
   const [sort, setSort] = useState('newest')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [dbProducts, setDbProducts] = useState([])
+  const [dbCategories, setDbCategories] = useState([])
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadStore() {
+      try {
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          supabase
+            .from('products')
+            .select('id,title,slug,description,image_url,price,category_id,in_stock,created_at')
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('categories')
+            .select('id,name,slug')
+            .order('created_at', { ascending: false }),
+        ])
+
+        if (cancelled) return
+
+        if (productsResponse.error) {
+          setLoadError(productsResponse.error.message)
+        } else {
+          setDbProducts(productsResponse.data ?? [])
+        }
+
+        if (categoriesResponse.error) {
+          setLoadError((prev) => prev || categoriesResponse.error.message)
+        } else {
+          setDbCategories(categoriesResponse.data ?? [])
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          setLoadError(fetchError.message ?? 'Не може да се вчитаат производите.')
+        }
+      }
+    }
+
+    loadStore()
+    return () => {
+      cancelled = true
+    }
+  }, [supabase])
+
+  const categoryKeyById = useMemo(() => {
+    const map = new Map()
+    dbCategories.forEach((cat) => {
+      if (cat?.id) map.set(cat.id, cat.slug)
+    })
+    return map
+  }, [dbCategories])
+
+  const storeCategories = useMemo(() => {
+    const dynamic = dbCategories
+      .filter((cat) => cat && cat.slug && cat.name)
+      .map((cat) => ({ key: cat.slug, label: cat.name, id: cat.id }))
+    return [{ key: 'all', label: 'Сите' }, ...dynamic]
+  }, [dbCategories])
+
+  const mergedProducts = useMemo(() => {
+    const mapped = dbProducts.map((product) => ({
+      id: product.id,
+      name: product.title,
+      slug: product.slug,
+      description: product.description ?? '',
+      price: product.price,
+      imageUrl: product.image_url,
+      inStock: product.in_stock ?? true,
+      category: categoryKeyById.get(product.category_id) ?? 'all',
+      createdAt: product.created_at,
+      isMock: false,
+    }))
+    const mock = mockProducts.map((product) => ({ ...product, isMock: true }))
+    return [...mapped, ...mock]
+  }, [dbProducts, categoryKeyById])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    let list = mockProducts
+    let list = mergedProducts
     if (category && category !== 'all') {
       list = list.filter((p) => p.category === category)
     }
@@ -56,16 +139,16 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)
+          (p.description ?? '').toLowerCase().includes(q) ||
+          (p.category ?? '').toLowerCase().includes(q)
       )
     }
     const sorted = list.slice()
     if (sort === 'price-asc') sorted.sort((a, b) => a.price - b.price)
     else if (sort === 'price-desc') sorted.sort((a, b) => b.price - a.price)
-    // 'newest' keeps the original order — no timestamp yet.
+    // 'newest' keeps the original order — Supabase rows are already newest-first.
     return sorted
-  }, [search, category, sort])
+  }, [mergedProducts, search, category, sort])
 
   const pushUrl = (nextQ, nextCat) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -88,7 +171,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
     setFiltersOpen(false)
   }
 
-  const activeCat = categories.find((c) => c.key === category) || categories[0]
+  const activeCat = storeCategories.find((c) => c.key === category) || storeCategories[0]
 
   const sidebar = (
     <Box>
@@ -99,7 +182,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
         Категории
       </Typography>
       <Stack spacing={0.5} sx={{ mt: 1.5 }}>
-        {categories.map((c) => {
+        {storeCategories.map((c) => {
           const selected = c.key === category
           return (
             <Button
@@ -129,6 +212,22 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
 
   return (
     <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 3, md: 6 } }}>
+      {loadError ? (
+        <Box
+          sx={{
+            mb: 3,
+            p: 2,
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'warning.light',
+            bgcolor: 'warning.50',
+          }}
+        >
+          <Typography variant="body2" color="warning.dark">
+            Не може да се вчитаат производите од базата: {loadError}
+          </Typography>
+        </Box>
+      ) : null}
       {/* Page header */}
       <Stack spacing={1} sx={{ mb: { xs: 3, md: 4 } }}>
         <Typography variant="overline" sx={{ fontWeight: 800, letterSpacing: '0.18em', color: 'primary.main' }}>

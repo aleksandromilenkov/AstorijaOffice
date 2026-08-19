@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Chip from '@mui/material/Chip'
@@ -49,7 +51,9 @@ export default function ProductCard({ product }) {
         },
       }}
     >
-      <Box
+      <CardActionArea
+        component={Link}
+        href={product.slug ? `/prodavnica/${product.slug}` : '#'}
         sx={{
           position: 'relative',
           aspectRatio: '4 / 3',
@@ -98,10 +102,21 @@ export default function ProductCard({ product }) {
             }}
           />
         )}
-      </Box>
-
+      </CardActionArea>
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1.25 }}>
-        <Typography variant="h6" component="h3" sx={{ fontSize: '1.05rem', fontWeight: 700, lineHeight: 1.3 }}>
+        <Typography
+          variant="h6"
+          component={Link}
+          href={product.slug ? `/prodavnica/${product.slug}` : '#'}
+          sx={{
+            fontSize: '1.05rem',
+            fontWeight: 700,
+            lineHeight: 1.3,
+            color: 'inherit',
+            textDecoration: 'none',
+            '&:hover': { color: 'primary.main' },
+          }}
+        >
           {product.name}
         </Typography>
 

@@ -12,12 +12,16 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
+import Paper from '@mui/material/Paper'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
+import { placeOrder } from '@/app/checkout/actions'
 
 export default function CartBody() {
   const { items, count, subtotal, updateQty, removeItem, clear } = useCart()
@@ -28,7 +32,8 @@ export default function CartBody() {
   const [city, setCity] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
-  const [orderPlaced, setOrderPlaced] = useState(false)
+  const [orderResult, setOrderResult] = useState(null)
+  const [notifyWarning, setNotifyWarning] = useState(null)
 
   const shipping = 0
   const total = subtotal + shipping
@@ -43,32 +48,125 @@ export default function CartBody() {
 
     setSubmitting(true)
     try {
-      // await placeOrder({
-      //   items: items.map((it) => ({ id: it.id, qty: it.qty })),
-      //   shipping: { name, phone, address, city },
-      // })
-      alert("Uspesno")
+      const result = await placeOrder({
+        customer: { name, phone, city, address },
+        items: items.map((it) => ({
+          id: it.id,
+          name: it.name,
+          slug: it.slug,
+          price: it.price,
+          qty: it.qty,
+        })),
+        subtotal,
+        shipping,
+        total,
+      })
+
+      if (!result?.ok) {
+        setError(result?.error ?? 'Нарачката не успеа. Обидете се повторно.')
+        return
+      }
+
       clear()
-      setOrderPlaced(true)
+      setOrderResult({ orderId: result.orderId, total })
+      setNotifyWarning(result?.notifyError ?? null)
     } catch (err) {
-      setError('Нарачката не успеа. Обидете се повторно.')
+      setError(err?.message ?? 'Нарачката не успеа. Обидете се повторно.')
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (orderPlaced) {
+  if (orderResult) {
+    const shortId =
+      typeof orderResult.orderId === 'string'
+        ? orderResult.orderId.slice(0, 8).toUpperCase()
+        : ''
     return (
-      <Box sx={{ textAlign: 'center', py: { xs: 6, md: 10 } }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
-          Ви благодариме! Нарачката е примена.
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Ќе ве контактираме за да ја потврдиме доставата.
-        </Typography>
-        <Button component={Link} href="/prodavnica" variant="contained" size="large" sx={{ textTransform: 'none', fontWeight: 800, borderRadius: 2 }}>
-          Назад во Продавница
-        </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: { xs: 4, md: 8 } }}>
+        <Paper
+          elevation={0}
+          sx={{
+            maxWidth: 560,
+            width: '100%',
+            textAlign: 'center',
+            p: { xs: 3, md: 5 },
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 4,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Box
+            sx={{
+              mx: 'auto',
+              mb: 2,
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: 'rgba(134,46,156,0.10)',
+              color: 'primary.main',
+            }}
+          >
+            <CheckCircleIcon sx={{ fontSize: 44 }} />
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
+            Нарачката е потврдена
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Ви благодариме! Вашата нарачка е примена и ќе ја обработиме во
+            најкраток можен рок. Наскоро ќе ве контактираме за потврда на
+            доставата.
+          {notifyWarning ? (
+            <Alert severity="warning" sx={{ mb: 3, textAlign: 'left' }}>
+              Нарачката е зачувана, но известувањето по е-пошта не можеше да
+              се испрати: {notifyWarning}
+            </Alert>
+          ) : null}
+          </Typography>
+          {shortId ? (
+            <Box
+              sx={{
+                mx: 'auto',
+                mb: 3,
+                px: 2,
+                py: 1,
+                display: 'inline-block',
+                borderRadius: 999,
+                bgcolor: 'rgba(134,46,156,0.08)',
+                color: 'primary.main',
+                fontWeight: 700,
+                fontSize: 14,
+                letterSpacing: '0.06em',
+              }}
+            >
+              Број на нарачка: #{shortId}
+            </Box>
+          ) : null}
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'center' }}>
+            <Button
+              component={Link}
+              href="/prodavnica"
+              variant="contained"
+              size="large"
+              sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+            >
+              Продолжи со купување
+            </Button>
+            <Button
+              component={Link}
+              href="/"
+              variant="outlined"
+              size="large"
+              sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+            >
+              Назад на почетна
+            </Button>
+          </Stack>
+        </Paper>
       </Box>
     )
   }
@@ -159,9 +257,7 @@ export default function CartBody() {
           <TextField label="Град" size="small" fullWidth value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" />
           <TextField label="Адреса за достава" size="small" fullWidth multiline minRows={2} value={address} onChange={(e) => setAddress(e.target.value)} autoComplete="street-address" />
 
-          {error && (
-            <Typography variant="body2" color="error">{error}</Typography>
-          )}
+          {error ? <Alert severity="error">{error}</Alert> : null}
 
           <Chip icon={<LocalShippingIcon />} label="Плаќање при достава (Cargo Express)" variant="outlined" sx={{ alignSelf: 'flex-start', fontWeight: 600 }} />
 

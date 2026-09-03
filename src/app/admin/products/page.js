@@ -125,10 +125,13 @@ export default function AdminProductsPage() {
     return matchesCategory && candidate.includes(normalizedTerm)
   })
 
+  // Update title without overwriting the slug. Users can now edit the slug
+  // field manually; we keep the helper available for manual entry via the
+  // slug text field's own onChange handler.
   function handleTitleChange(event) {
     const nextTitle = event.target.value
     setTitle(nextTitle)
-    setSlug(slugify(nextTitle))
+    // Removed automatic slug generation to allow custom slugs (including dashes).
   }
 
   function resetForm() {
@@ -152,7 +155,10 @@ export default function AdminProductsPage() {
     setMessage('')
     setError('')
 
-    if (!title.trim() || !slug.trim() || !price.trim() || !categoryId) {
+      // Normalise the slug only at submit time so the user can edit it freely.
+      const normalizedSlug = slugify(slug)
+
+      if (!title.trim() || !normalizedSlug.trim() || !price.trim() || !categoryId) {
       setError('Пополнете ги сите задолжителни полиња.')
       return
     }
@@ -190,9 +196,9 @@ export default function AdminProductsPage() {
     if (editingId) {
       result = await supabase
         .from('products')
-        .update({
-          title,
-          slug,
+          .update({
+            title,
+            slug: normalizedSlug,
           description,
           category_id: categoryId,
           price: parsedPrice,
@@ -204,7 +210,7 @@ export default function AdminProductsPage() {
       result = await supabase.from('products').insert([
         {
           title,
-          slug,
+            slug: normalizedSlug,
           description,
           category_id: categoryId,
           price: parsedPrice,
@@ -248,6 +254,24 @@ export default function AdminProductsPage() {
     }
 
     setLoading(true)
+    // First try to delete the image from Cloudinary via a server‑side API route.
+    // This avoids exposing the API secret in the client bundle.
+    if (product.image_url) {
+      try {
+        const resp = await fetch('/api/cloudinary/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: product.image_url }),
+        })
+        if (!resp.ok) {
+          const err = await resp.json()
+          console.warn('Cloudinary delete failed:', err)
+        }
+      } catch (imgErr) {
+        console.warn('Failed to call Cloudinary delete API:', imgErr)
+      }
+    }
+
     const { error } = await supabase
       .from('products')
       .delete()
@@ -290,7 +314,9 @@ export default function AdminProductsPage() {
           <TextField
             label="Slug"
             value={slug}
-            onChange={(event) => setSlug(slugify(event.target.value))}
+            // Accept raw input so the user can type dashes freely. We will
+            // normalise the slug on submit.
+            onChange={(event) => setSlug(event.target.value)}
             helperText="Испратете url-friendly slug за производот"
             required
           />
@@ -308,7 +334,7 @@ export default function AdminProductsPage() {
             value={price}
             onChange={(event) => setPrice(event.target.value)}
             type="number"
-            InputProps={{ inputProps: { min: 0 } }}
+            slotProps={{ htmlInput: { min: 0 } }}
             required
           />
 

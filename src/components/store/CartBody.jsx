@@ -259,7 +259,7 @@ export default function CartBody() {
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 
-          <Chip icon={<LocalShippingIcon />} label="Плаќање при достава (Cargo Express)" variant="outlined" sx={{ alignSelf: 'flex-start', fontWeight: 600 }} />
+          <Chip icon={<LocalShippingIcon />} label="Плаќање при достава" variant="outlined" sx={{ alignSelf: 'flex-start', fontWeight: 600 }} />
 
           <Button
             variant="contained"

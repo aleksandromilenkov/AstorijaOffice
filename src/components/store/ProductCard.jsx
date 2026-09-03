@@ -6,7 +6,8 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
+// CardMedia is no longer needed because we use ProductImageZoom for the image.
+// import CardMedia from '@mui/material/CardMedia'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
@@ -41,53 +42,49 @@ export default function ProductCard({ product }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: 3,
-        border: '1px solid rgba(0,0,0,0.08)',
-        overflow: 'hidden',
-        transition: 'transform 160ms ease, box-shadow 160ms ease',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 12px 32px rgba(15,15,15,0.10)',
-        },
       }}
     >
-      <CardActionArea
-        component={Link}
-        href={product.slug ? `/prodavnica/${product.slug}` : '#'}
-        sx={{
-          position: 'relative',
-          aspectRatio: '4 / 3',
-          bgcolor: 'grey.100',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <CardMedia
-          component="img"
-          image={product.imageUrl}
-          alt={product.name}
+        <CardActionArea
+          component={Link}
+          href={product.slug ? `/prodavnica/${encodeURIComponent(product.slug)}` : '#'}
           sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
+            display: 'flex',
+            flexDirection: 'column',
           }}
-          // The mock SVG files aren't required for the UI to work —
-            // the gradient fallback is always painted behind the image.
-          onError={(e) => {
-            e.currentTarget.style.display = 'none'
-          }}
-        />
-        {/* Placeholder gradient painted behind the image. */}
-        <Box
-          aria-hidden
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(135deg, rgba(134,46,156,0.10), rgba(174,62,201,0.10))',
-          }}
-        />
+        >
+        {/* Product image */}
+        {product.imageUrl ? (
+          <Box
+            component="img"
+            src={product.imageUrl}
+            alt={product.name}
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        ) : (
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#f0f0f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#999',
+              fontSize: '0.8rem',
+            }}
+          >
+            No Image
+          </Box>
+        )}
+        {/* Out‑of‑stock chip stays on top of the image */}
         {!product.inStock && (
           <Chip
             label="Нема на залиха"
@@ -107,7 +104,7 @@ export default function ProductCard({ product }) {
         <Typography
           variant="h6"
           component={Link}
-          href={product.slug ? `/prodavnica/${product.slug}` : '#'}
+          href={product.slug ? `/prodavnica/${encodeURIComponent(product.slug)}` : '#'}
           sx={{
             fontSize: '1.05rem',
             fontWeight: 700,
@@ -123,6 +120,8 @@ export default function ProductCard({ product }) {
         <Typography
           variant="body2"
           color="text.secondary"
+          component={Link}
+          href={product.slug ? `/prodavnica/${encodeURIComponent(product.slug)}` : '#'}
           sx={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -202,5 +201,5 @@ export default function ProductCard({ product }) {
         </Stack>
       </CardContent>
     </Card>
-  )
+  );
 }

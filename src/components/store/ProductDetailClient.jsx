@@ -18,6 +18,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
+import ProductImageZoom from './ProductImageZoom'
 
 /**
  * Public product detail page (`/prodavnica/[slug]`).
@@ -119,21 +120,7 @@ export default function ProductDetailClient({ product, loadError }) {
                 'linear-gradient(135deg, rgba(134,46,156,0.10), rgba(174,62,201,0.10))',
             }}
           />
-          <Box
-            component="img"
-            src={imageUrl}
-            alt={product.title}
-            sx={{
-              position: 'relative',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
-            onError={(event) => {
-              event.currentTarget.style.display = 'none'
-            }}
-          />
+          <ProductImageZoom imageUrl={imageUrl} alt={product.title} />
           {!inStock ? (
             <Chip
               label="Нема на залиха"

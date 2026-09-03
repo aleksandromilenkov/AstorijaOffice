@@ -58,3 +58,44 @@ export async function uploadImageToCloudinary(file, { folder } = {}) {
     resourceType: data.resource_type,
   }
 }
+
+/**
+ * Delete an image from Cloudinary using its full URL.
+ * The function extracts the public ID from the URL and calls the Cloudinary
+ * Admin API. It requires server‑side environment variables:
+ *   CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, and NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME.
+ */
+export async function deleteImageFromCloudinary(imageUrl) {
+  if (!imageUrl) return
+
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.CLOUDINARY_API_KEY
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
+  if (!cloudName || !apiKey || !apiSecret) {
+    console.warn('Cloudinary delete not configured – missing environment variables')
+    return
+  }
+
+  // Extract public ID: part after '/upload/' and before file extension
+  const uploadSegment = '/upload/'
+  const idx = imageUrl.indexOf(uploadSegment)
+  if (idx === -1) {
+    console.warn('Unable to parse Cloudinary public ID from URL')
+    return
+  }
+  const path = imageUrl.substring(idx + uploadSegment.length)
+  const publicId = path.replace(/\.[^/.]+$/, '') // strip extension
+
+  const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload/${publicId}`
+  const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')
+  const response = await fetch(endpoint, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  })
+  if (!response.ok) {
+    const text = await response.text()
+    console.error('Failed to delete Cloudinary image', response.status, text)
+  }
+}

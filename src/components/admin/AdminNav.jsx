@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 const adminLinks = [
   { label: 'Категории', href: '/admin/categories' },
   { label: 'Продукти', href: '/admin/products' },
+  { label: 'Нарачки', href: '/admin/orders' },
 ]
 
 export default function AdminNav({ active }) {

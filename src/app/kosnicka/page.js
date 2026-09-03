@@ -3,7 +3,7 @@ import CartPage from '@/components/store/CartPage'
 export const metadata = {
   title: 'Кошничка — Асторија',
   description:
-    'Преглед на вашата кошничка. Плаќање при достава преку Cargo Express низ цела Македонија.',
+    'Преглед на вашата кошничка. Плаќање при достава низ цела Македонија.',
 }
 
 /**

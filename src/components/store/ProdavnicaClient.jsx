@@ -237,7 +237,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
           Продавница
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-          Изберете од нашите најпопуларни производи за печатење. Испорака низ цела Македонија преку Cargo Express.
+          Изберете од нашите најпопуларни производи за печатење. Испорака низ цела Македонија
         </Typography>
       </Stack>
 

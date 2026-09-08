@@ -30,8 +30,8 @@ export async function placeOrder(payload) {
   const customer = payload?.customer ?? {}
   const items = Array.isArray(payload?.items) ? payload.items : []
 
-  if (!customer.name || !customer.phone || !customer.city || !customer.address) {
-    return { ok: false, error: 'Пополнете ги сите полиња за достава.' }
+  if (!customer.name || !customer.phone || !customer.city) {
+    return { ok: false, error: 'Пополнете ги сите задолжителни полиња за достава.' }
   }
 
   if (items.length === 0) {

@@ -167,7 +167,7 @@ export default function ProductDetailClient({ product, loadError }) {
             </Typography>
           )}
 
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+          <Stack useFlexGap direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
             <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
               <IconButton
                 onClick={dec}

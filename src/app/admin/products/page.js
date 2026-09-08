@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -48,6 +48,8 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState('')
   const [filterCategoryId, setFilterCategoryId] = useState('')
   const [editingId, setEditingId] = useState(null)
+  // Ref to the form container so we can scroll to it when editing a product
+  const formRef = useRef(null)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -56,10 +58,11 @@ export default function AdminProductsPage() {
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
 
+  // Load initial data once – disable exhaustive‑deps lint for this effect
   useEffect(() => {
     loadCategories()
     loadProducts()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     return () => {
@@ -246,6 +249,10 @@ export default function AdminProductsPage() {
     setInStock(product.in_stock ?? true)
     setMessage('')
     setError('')
+    // After state is set, scroll the form into view
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   async function handleDelete(product) {
@@ -294,7 +301,7 @@ export default function AdminProductsPage() {
     <Box sx={{ maxWidth: 980, mx: 'auto', px: 3, py: 4 }}>
       <AdminNav active="/admin/products" />
 
-      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 2 }} ref={formRef}>
         {editingId ? 'Уреди продукт' : 'Создај продукт'}
       </Typography>
 

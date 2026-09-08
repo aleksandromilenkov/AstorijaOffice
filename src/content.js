@@ -9,10 +9,10 @@
  */
 
 export const navLinks = [
-  { label: 'Дома', href: '/' },
-  { label: 'Продавница', href: '/prodavnica' },
-  { label: 'За нас', href: '/about' },
-  { label: 'Контакт', href: '/contact', variant: 'contained' },
+  { label: 'Дома', href: '/', icon: 'Home' },
+  { label: 'Продавница', href: '/prodavnica', icon: 'Storefront' },
+  { label: 'За нас', href: '/about', icon: 'Info' },
+  { label: 'Контакт', href: '/contact', variant: 'contained', icon: 'Email' },
 ]
 
 export const hero = {

@@ -147,15 +147,7 @@ export default function ProductImageZoom({ imageUrl, alt }) {
       {/* Fullscreen modal */}
       <Dialog 
         open={open} 
-        onClose={handleClose} 
-        PaperProps={{ 
-          sx: { 
-            backgroundColor: 'rgba(0,0,0,0.9)',
-            backgroundImage: 'none',
-            boxShadow: 'none',
-            border: 'none'
-          } 
-        }}
+        onClose={handleClose}
         sx={{
           '& .MuiDialog-container': {
             alignItems: 'center',
@@ -166,7 +158,10 @@ export default function ProductImageZoom({ imageUrl, alt }) {
             maxWidth: 'max-content',
             maxHeight: 'max-content',
             overflow: 'visible',
-            backgroundColor: 'transparent',
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            backgroundImage: 'none',
+            boxShadow: 'none',
+            border: 'none',
           }
         }}
       >

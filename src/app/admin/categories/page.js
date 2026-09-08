@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -35,6 +35,7 @@ export default function AdminCategoriesPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const formRef = useRef(null);
 
   useEffect(() => {
     loadCategories()
@@ -107,6 +108,9 @@ export default function AdminCategoriesPage() {
     setSlug(category.slug)
     setMessage('')
     setError('')
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   async function handleDelete(category) {
@@ -137,7 +141,7 @@ export default function AdminCategoriesPage() {
     <Box sx={{ maxWidth: 980, mx: 'auto', px: 3, py: 4 }}>
       <AdminNav active="/admin/categories" />
 
-      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 2 }} ref={formRef}>
         Управување со категории
       </Typography>
 

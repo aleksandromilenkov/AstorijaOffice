@@ -158,9 +158,9 @@ export default function Footer() {
                 mb: 0.75,
               }}
             >
-              "Quality means doing it right
+              &quot;Quality means doing it right
               <br />
-              when no one is looking."
+              when no one is looking.&quot;
             </Typography>
             <Typography
               sx={{
@@ -188,6 +188,7 @@ export default function Footer() {
         >
           <FooterCol title={footer.contact}>
             <FooterLink href="tel:+38970210128" icon={PHONE_ICON}>070-210-128</FooterLink>
+            <FooterLink href="tel:+38975260480" icon={PHONE_ICON}>075-260-480</FooterLink>
             <FooterLink href="tel:+38932444466" icon={PHONE_ICON}>032-444-466</FooterLink>
             <FooterLink href="mailto:astorijanova@yahoo.com" icon={MAIL_ICON}>
               astorijanova@yahoo.com
@@ -195,8 +196,7 @@ export default function Footer() {
           </FooterCol>
 
           <FooterCol title={footer.hours}>
-            <FooterLink icon={CLOCK_ICON}>Mon – Fri &nbsp; 08:00 – 15:00</FooterLink>
-            <FooterLink icon={CLOCK_ICON}>Saturday &nbsp;&nbsp; 08:00 – 14:00</FooterLink>
+            <FooterLink icon={CLOCK_ICON}>Пон – Саб &nbsp; 08:00&ndash;15:00 & 19:00&ndash;22:00</FooterLink>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
               <Box sx={{ opacity: 0.3, flexShrink: 0 }}>{CLOCK_ICON}</Box>
               <Typography

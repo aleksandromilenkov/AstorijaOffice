@@ -16,6 +16,10 @@ import Typography from '@mui/material/Typography'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import HomeIcon from '@mui/icons-material/Home'
+import StorefrontIcon from '@mui/icons-material/Storefront'
+import InfoIcon from '@mui/icons-material/Info'
+import EmailIcon from '@mui/icons-material/Email'
 import Badge from '@mui/material/Badge'
 import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
@@ -102,22 +106,33 @@ export default function Header() {
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2, flex: 1, ml: 3 }}>
             <HeaderSearch />
-            {navLinks.map((item) => (
-              <Button
-                key={item.label}
-                component={isInternalPage(item.href) ? Link : 'a'}
-                href={item.href}
-                variant={item.variant || 'text'}
-                color="primary"
-                sx={{
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                {item.label}
-              </Button>
-            ))}
+            {navLinks.map((item) => {
+              // Map icon strings from content.js to actual MUI components
+              const IconComponent = {
+                Home: HomeIcon,
+                Storefront: StorefrontIcon,
+                Info: InfoIcon,
+                Email: EmailIcon,
+              }[item.icon] || null
+
+              return (
+                <Button
+                  key={item.label}
+                  component={isInternalPage(item.href) ? Link : 'a'}
+                  href={item.href}
+                  variant={item.variant || 'text'}
+                  color="primary"
+                  startIcon={IconComponent ? <IconComponent /> : null}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {item.label}
+                </Button>
+              )
+            })}
           </Box>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
@@ -205,6 +220,16 @@ export default function Header() {
                     '&:hover': { bgcolor: 'rgba(134,46,156,0.08)' },
                   }}
                 >
+                  {/* Render icon manually since ListItemButton doesn't have startIcon */}
+                  {(() => {
+                    const IconComponent = {
+                      Home: HomeIcon,
+                      Storefront: StorefrontIcon,
+                      Info: InfoIcon,
+                      Email: EmailIcon,
+                    }[item.icon]
+                    return IconComponent ? <IconComponent sx={{ mr: 1.5, color: 'primary.main' }} /> : null
+                  })()}
                   <Typography
                     sx={{
                       fontWeight: 700,

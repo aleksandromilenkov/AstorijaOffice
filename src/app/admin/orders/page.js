@@ -29,7 +29,7 @@ const STATUS_COLORS = {
 const STATUS_LABELS = {
   pending: 'чекање',
   shipped: 'испорачано',
-  cancelled: 'отказано',
+  cancelled: 'откажано',
 }
 
 export default function AdminOrdersPage() {

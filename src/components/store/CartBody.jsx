@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Chip from '@mui/material/Chip'
+import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
@@ -27,9 +28,36 @@ export default function CartBody() {
   const { items, count, subtotal, updateQty, removeItem, clear } = useCart()
 
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState('07')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
+  const municipalities = [
+    'Аеродром', 'Арачиново', 'Берово', 'Битола', 'Богданци', 'Боговиње', 'Босилово', 'Брвеница', 'Бутел',
+    'Валандово', 'Василево', 'Вевчани', 'Велес', 'Виница', 'Врапчиште', 'Гази Баба', 'Гевгелија',
+    'Ѓорче Петров', 'Гостивар', 'Градско', 'Дебар', 'Дебарца', 'Делчево', 'Демир Капија',
+    'Демир Хисар', 'Дојран', 'Долнени', 'Желино', 'Зелениково', 'Зрновци', 'Илинден',
+    'Јегуновце', 'Кавадарци', 'Карбинци', 'Карпош', 'Кисела Вода', 'Кичево', 'Конче', 'Кочани',
+    'Кратово', 'Крива Паланка', 'Кривогаштани', 'Крушево', 'Куманово', 'Липково', 'Лозово',
+    'Маврово и Ростуша', 'Македонска Каменица', 'Македонски Брод', 'Могила', 'Неготино', 'Новаци',
+    'Ново Село', 'Охрид', 'Петровец', 'Пехчево', 'Пласница', 'Прилеп', 'Пробиштип', 'Радовиш',
+    'Ранковце', 'Ресен', 'Росоман', 'Сарај', 'Свети Николе', 'Сопиште', 'Старо Нагоричане',
+    'Струга', 'Струмица', 'Студеничани', 'Теарце', 'Тетово', 'Центар', 'Центар Жупа', 'Чаир',
+    'Чашка', 'Чешиново-Облешево', 'Чучер-Сандево', 'Штип', 'Шуто Оризари'
+  ]
+
+  const cyrillicToLatin = {
+    'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Ѓ': 'Gj', 'Е': 'E', 'Ж': 'Z', 'З': 'Z', 'Ѕ': 'Dz',
+    'И': 'I', 'Ј': 'J', 'К': 'K', 'Л': 'L', 'Љ': 'Lj', 'М': 'M', 'Н': 'N', 'Њ': 'Nj', 'О': 'O', 'П': 'P',
+    'Р': 'R', 'С': 'S', 'Т': 'T', 'Ќ': 'Kj', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Џ': 'Dz', 'Ш': 'S',
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'ѓ': 'gj', 'е': 'e', 'ж': 'z', 'з': 'z', 'ѕ': 'dz',
+    'и': 'i', 'ј': 'j', 'к': 'k', 'л': 'l', 'љ': 'lj', 'м': 'm', 'н': 'n', 'њ': 'nj', 'о': 'o', 'п': 'p',
+    'р': 'r', 'с': 's', 'т': 't', 'ќ': 'kj', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'џ': 'dz', 'ш': 's',
+    ' ': ' ', '-': '-'
+  }
+
+  const transliterate = (text) => {
+    return text.split('').map(char => cyrillicToLatin[char] || char).join('').toLowerCase()
+  }
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [orderResult, setOrderResult] = useState(null)
@@ -41,8 +69,21 @@ export default function CartBody() {
   async function handleCheckout() {
     setError(null)
 
-    if (!name.trim() || !phone.trim() || !address.trim() || !city.trim()) {
-      setError('Пополнете ги сите полиња за достава.')
+    if (!name.trim() || !phone.trim() || !city.trim()) {
+      setError('Пополнете ги сите задолжителни полиња (име, телефон и град).')
+      return
+    }
+
+    // Validate Macedonian phone number: starts with 07, total 9 digits (ignoring dashes)
+    const digitsOnly = phone.replace(/\D/g, '')
+    if (!/^07\d{7}$/.test(digitsOnly)) {
+      setError('Внесете валиден македонски телефонски број (пр. 075-XXX-XXX).')
+      return
+    }
+
+    // Validate City is one of the allowed municipalities
+    if (!municipalities.includes(city)) {
+      setError('Ве молиме изберете валиден град/општина од листата.')
       return
     }
 
@@ -171,20 +212,22 @@ export default function CartBody() {
     )
   }
 
-  if (items.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: { xs: 6, md: 10 } }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
-          Вашата кошничка е празна.
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Додајте производи од Продавницата за да продолжите.
-        </Typography>
-        <Button component={Link} href="/prodavnica" variant="contained" color="primary" size="large" sx={{ textTransform: 'none', fontWeight: 800, borderRadius: 2 }}>
-          Кон Продавница
-        </Button>
-      </Box>
-    )
+  function handlePhoneChange(e) {
+    let val = e.target.value
+    // Only allow digits, and must start with '07'
+    if (!val.startsWith('07')) {
+      val = '07'
+    }
+    // Remove all non-digits
+    const digits = val.replace(/\D/g, '').slice(0, 9)
+    
+    // Format as 0XX-XXX-XXX
+    let formatted = ''
+    for (let i = 0; i < digits.length; i++) {
+      if (i === 3 || i === 6) formatted += '-'
+      formatted += digits[i]
+    }
+    setPhone(formatted)
   }
 
   return (
@@ -252,10 +295,49 @@ export default function CartBody() {
         <Divider sx={{ my: 2 }} />
 
         <Stack spacing={1.5}>
-          <TextField label="Име и презиме" size="small" fullWidth value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
-          <TextField label="Телефон" size="small" fullWidth value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" />
-          <TextField label="Град" size="small" fullWidth value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" />
-          <TextField label="Адреса за достава" size="small" fullWidth multiline minRows={2} value={address} onChange={(e) => setAddress(e.target.value)} autoComplete="street-address" />
+          <TextField 
+            label="Име и презиме *" 
+            size="small" 
+            fullWidth 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            autoComplete="name" 
+            error={!!error && !name.trim()}
+          />
+          <TextField 
+            label="Телефон *" 
+            size="small" 
+            fullWidth 
+            value={phone} 
+            onChange={handlePhoneChange} 
+            autoComplete="tel" 
+            placeholder="07X-XXX-XXX"
+            error={!!error && (!/^07\d{7}$/.test(phone.replace(/\D/g, '')))}
+          />
+          <Autocomplete
+            options={municipalities}
+            value={city}
+            onChange={(event, newValue) => setCity(newValue || '')}
+            filterOptions={(options, state) => {
+              const search = state.inputValue.toLowerCase()
+              return options.filter(option => 
+                option.toLowerCase().includes(search) || 
+                transliterate(option).includes(search)
+              )
+            }}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="Град / Општина *" 
+                size="small" 
+                required 
+                autoComplete="address-level2" 
+                error={!!error && !city.trim()}
+              />
+            )}
+            fullWidth
+          />
+          <TextField label="Адреса за достава (опционално)" size="small" fullWidth multiline minRows={2} value={address} onChange={(e) => setAddress(e.target.value)} autoComplete="street-address" />
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 

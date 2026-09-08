@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import Stack from '@mui/material/Stack'
 import { about } from '@/content'
 
 function useReveal() {
@@ -344,10 +345,19 @@ export default function About() {
                 <InfoRow icon={MAIL_ICON} href="mailto:astorijanova@yahoo.com">
                   astorijanova@yahoo.com
                 </InfoRow>
-                <InfoRow icon={PHONE_ICON} href="tel:+38970210128">
-                  070-210-128
-                </InfoRow>
-                <InfoRow icon={CLOCK_ICON}>Mon &ndash; Fri &nbsp;08:00 &ndash; 18:00</InfoRow>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                  <Box sx={{ color: '#862e9c', mt: '2px', flexShrink: 0 }}>{PHONE_ICON}</Box>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: 'center' }}>
+                    <Box component="a" href="tel:+38970210128" sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
+                      070-210-128
+                    </Box>
+                    <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.88rem', display: { xs: 'none', sm: 'block' } }}>|</Box>
+                    <Box component="a" href="tel:+38975260480" sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
+                      075-260-480
+                    </Box>
+                  </Stack>
+                </Box>
+                <InfoRow icon={CLOCK_ICON}>Пон &ndash; Пет &nbsp;08:00&ndash;15:00 & 19:00&ndash;22:00</InfoRow>
               </Box>
             </RevealBox>
           </Box>

@@ -59,9 +59,10 @@ export default function ProductCard({ product }) {
           alt={product.name}
           sx={{
             width: '100%',
-            height: '100%',
+            aspectRatio: '1 / 1',
             objectFit: 'cover',
             display: 'block',
+            bgcolor: 'grey.100',
           }}
         />
         {/* Out‑of‑stock chip stays on top of the image */}
@@ -100,8 +101,6 @@ export default function ProductCard({ product }) {
         <Typography
           variant="body2"
           color="text.secondary"
-          component={Link}
-          href={product.slug ? `/prodavnica/${encodeURIComponent(product.slug)}` : '#'}
           sx={{
             display: '-webkit-box',
             WebkitLineClamp: 2,

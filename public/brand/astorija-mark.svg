@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Асторија">
-  <path d="M4 60 L17.5 60 L38.75 4 L25.25 4 Z" fill="#e8365d"/>
-  <path d="M46.5 60 L60 60 L38.75 4 L25.25 4 Z" fill="#862e9c"/>
-  <path d="M25.25 4 L25.25 4 L38.75 4 L32 21.79 Z" fill="#7a0a39"/>
-  <path d="M27.6 43.5 a4.4 4.4 0 1 0 8.8 0 a4.4 4.4 0 1 0 -8.8 0 Z" fill="#1d1026"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Асторија">
+  <circle cx="40" cy="40" r="40" fill="#d71f2b"/>
+  <path d="M40 11.5 L46.96 32.92 L69.48 32.92 L51.26 46.16 L58.22 67.58 L40 54.34 L21.78 67.58 L28.74 46.16 L10.52 32.92 L33.04 32.92 Z" fill="#ffffff"/>
 </svg>

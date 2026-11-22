@@ -1,9 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import LogoutIcon from '@mui/icons-material/Logout'
+import { createClient } from '@/lib/supabase/client'
 
 const adminLinks = [
   { label: 'Категории', href: '/admin/categories' },
@@ -12,6 +16,16 @@ const adminLinks = [
 ]
 
 export default function AdminNav({ active }) {
+  const router = useRouter()
+  const [signingOut, setSigningOut] = useState(false)
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    await createClient().auth.signOut()
+    router.replace('/admin/login')
+    router.refresh()
+  }
+
   return (
     <Box
       sx={{
@@ -35,6 +49,15 @@ export default function AdminNav({ active }) {
           {item.label}
         </Button>
       ))}
+      <Button
+        onClick={handleSignOut}
+        disabled={signingOut}
+        color="inherit"
+        startIcon={<LogoutIcon />}
+        sx={{ textTransform: 'none', ml: 'auto' }}
+      >
+        {signingOut ? 'Се одјавувам...' : 'Одјави се'}
+      </Button>
     </Box>
   )
 }

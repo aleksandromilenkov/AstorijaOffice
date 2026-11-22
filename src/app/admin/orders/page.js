@@ -19,6 +19,7 @@ import Alert from '@mui/material/Alert'
 import AdminNav from '@/components/admin/AdminNav'
 import { formatPrice } from '@/lib/formatPrice'
 import { createClient } from '@/lib/supabase/client'
+import { getOrderLines } from '@/lib/orderLines'
 
 const STATUS_COLORS = {
   pending: 'warning',
@@ -50,7 +51,7 @@ export default function AdminOrdersPage() {
       const { data, error: fetchError } = await supabase
         .from('orders')
         .select(
-          'id,created_at,status,shipping_name,shipping_phone,shipping_city,total_amount,notes',
+          'id,created_at,status,shipping_name,shipping_phone,shipping_city,shipping_address,total_amount,notes,order_items(product_name,quantity)',
         )
         .order('created_at', { ascending: false })
         .limit(200)
@@ -79,7 +80,7 @@ export default function AdminOrdersPage() {
         return false
       }
       if (!term) return true
-      const lineItems = parseLineItems(order.notes)
+      const lineItems = getOrderLines(order)
       const haystack = [
         order.id,
         order.shipping_name,
@@ -175,7 +176,7 @@ export default function AdminOrdersPage() {
               </TableRow>
             ) : (
               filtered.map((order) => {
-                const itemCount = parseLineItems(order.notes).reduce(
+                const itemCount = getOrderLines(order).reduce(
                   (sum, it) => sum + (Number(it.quantity) || 0),
                   0,
                 )
@@ -238,14 +239,4 @@ export default function AdminOrdersPage() {
       </TableContainer>
     </Box>
   )
-}
-
-function parseLineItems(notes) {
-  if (!notes) return []
-  try {
-    const parsed = JSON.parse(notes)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
 }

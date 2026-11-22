@@ -18,6 +18,7 @@ import AdminNav from '@/components/admin/AdminNav'
 import { formatPrice } from '@/lib/formatPrice'
 import { updateOrderStatus } from '@/app/admin/orders/actions'
 import { useState } from 'react'
+import { getOrderLines } from '@/lib/orderLines'
 
 const STATUS_COLORS = {
   pending: 'warning',
@@ -29,16 +30,6 @@ const STATUS_LABELS = {
   pending: 'чекање',
   shipped: 'испорачано',
   cancelled: 'откажано',
-}
-
-function parseLineItems(notes) {
-  if (!notes) return []
-  try {
-    const parsed = JSON.parse(notes)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
 }
 
 export default function AdminOrderDetailClient({ order, loadError }) {
@@ -56,7 +47,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
     )
   }
 
-  const lineItems = parseLineItems(order.notes)
+  const lineItems = getOrderLines(order)
   const shortId = (order.id ?? '').slice(0, 8).toUpperCase()
   const statusColor = STATUS_COLORS[status] ?? 'default'
 

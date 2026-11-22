@@ -2,29 +2,45 @@
 
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { municipalities } from '@/data/municipalities'
 
 const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send'
 
+// Error codes raised by the `place_order` database function
+// (supabase/migrations/20261122150000_place_order_rpc.sql) → customer message.
+const ORDER_ERRORS = {
+  invalid_name: 'Внесете име и презиме (2–100 знаци).',
+  invalid_phone: 'Внесете валиден македонски телефонски број (пр. 075-XXX-XXX).',
+  invalid_city: 'Ве молиме изберете валиден град/општина од листата.',
+  invalid_address: 'Адресата е предолга (најмногу 300 знаци).',
+  empty_cart: 'Вашата кошничка е празна.',
+  too_many_items: 'Премногу различни производи во една нарачка (најмногу 50).',
+  invalid_quantity: 'Невалидна количина (1–1000 по производ).',
+  unknown_product:
+    'Некој производ во кошничката повеќе не е достапен. Отстранете го и обидете се повторно.',
+}
+
+function orderErrorMessage(dbMessage = '') {
+  if (dbMessage.startsWith('out_of_stock:')) {
+    const title = dbMessage.slice('out_of_stock:'.length)
+    return `„${title}“ моментално нема на залиха. Отстранете го од кошничката.`
+  }
+  return ORDER_ERRORS[dbMessage] ?? null
+}
+
 /**
- * Persist a customer order along with its line items.
+ * Place a customer order (Server Action).
  *
- * This is a Next.js Server Action — it runs on the server with the
- * Supabase cookie-bound client, so the RLS policies on `orders` and
- * `order_items` govern access.
+ * Payload:
+ *   { customer: { name, phone, city, address }, items: [{ id, qty }] }
  *
- * Expected payload shape:
- *   {
- *     customer: { name, phone, city, address },
- *     items: [
- *       { id, name, slug?, price, qty }
- *     ],
- *     subtotal: number,
- *     shipping: number,
- *     total: number
- *   }
+ * All the real work happens in the `place_order` Postgres function: it
+ * validates the input, reads prices from `products` (browser prices are
+ * never trusted), computes the total and writes `orders` + `order_items`
+ * in one transaction. It runs with the table owner's rights, so it works
+ * for logged-out customers even though they cannot read `orders`.
  *
- * Returns `{ ok: true, orderId }` on success or `{ ok: false, error }`
- * with a friendly message so the client can show it inline (no popups).
+ * Returns `{ ok: true, orderId, total, notifyError }` or `{ ok: false, error }`.
  */
 export async function placeOrder(payload) {
   const customer = payload?.customer ?? {}
@@ -33,92 +49,44 @@ export async function placeOrder(payload) {
   if (!customer.name || !customer.phone || !customer.city) {
     return { ok: false, error: 'Пополнете ги сите задолжителни полиња за достава.' }
   }
-
+  if (!municipalities.includes(customer.city)) {
+    return { ok: false, error: ORDER_ERRORS.invalid_city }
+  }
   if (items.length === 0) {
-    return { ok: false, error: 'Вашата кошничка е празна.' }
+    return { ok: false, error: ORDER_ERRORS.empty_cart }
   }
 
-  const subtotal = Number(payload?.subtotal ?? 0)
-  const shipping = Number(payload?.shipping ?? 0)
-  const total = Number(payload?.total ?? subtotal + shipping)
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('place_order', {
+    p_name: String(customer.name),
+    p_phone: String(customer.phone),
+    p_city: String(customer.city),
+    p_address: String(customer.address ?? ''),
+    p_items: items.map((it) => ({ product_id: it?.id, quantity: it?.qty })),
+  })
 
-  let supabase
-  try {
-    supabase = await createClient()
-  } catch (clientError) {
+  if (error || !data?.order_id) {
+    const friendly = orderErrorMessage(error?.message)
+    if (!friendly) console.error('place_order failed:', error)
     return {
       ok: false,
-      error:
-        clientError?.message ??
-        'Не може да се воспостави конекција со базата. Обидете се повторно.',
+      error: friendly ?? 'Нарачката не може да се зачува. Обидете се повторно.',
     }
   }
 
-  const { data: orderRow, error: orderError } = await supabase
-    .from('orders')
-    .insert([
-      {
-        shipping_name: customer.name,
-        shipping_phone: customer.phone,
-        shipping_city: customer.city,
-        shipping_address: customer.address,
-        total_amount: Math.round(total),
-        status: 'pending',
-      },
-    ])
-    .select('id')
-    .single()
-
-  if (orderError || !orderRow) {
-    return {
-      ok: false,
-      error: orderError?.message ?? 'Нарачката не може да се зачува.',
-    }
-  }
-
-  const lineItems = items.map((it) => ({
-    order_id: orderRow.id,
-    product_id: typeof it.id === 'string' ? it.id : null,
-    product_name: it.name,
-    product_slug: it.slug ?? null,
-    unit_price: Math.round(Number(it.price) || 0),
-    quantity: Math.max(1, Number(it.qty) || 1),
-    line_total: Math.round(Number(it.price) || 0) * Math.max(1, Number(it.qty) || 1),
-  }))
-
-  // Reuse the same orders table — there's no separate `order_items` table
-  // in this schema. We store the line items as a JSON column on the
-  // order itself so the checkout flow is self-contained.
-  const { error: itemsError } = await supabase
-    .from('orders')
-    .update({ notes: JSON.stringify(lineItems) })
-    .eq('id', orderRow.id)
-
-  if (itemsError) {
-    return {
-      ok: false,
-      error:
-        itemsError.message ??
-        'Нарачката е зачувана, но ставките не можеа да се додадат. Контактирајте нè.',
-    }
-  }
-
-  // Fire the owner notification directly via EmailJS. We do this inline
-  // (with proper error logging) instead of bouncing through a same-origin
-  // route handler so the Server Action doesn't need to know its own URL.
-  // If email fails, the order itself is still saved — we surface a soft
-  // `notifyError` to the client so it can show a non-blocking hint.
+  // Owner notification. If email fails the order is still saved; we return
+  // a soft `notifyError` so the client can show a non-blocking hint.
   let notifyError = null
   try {
     const sendResult = await sendOrderEmail({
       order: {
-        id: orderRow.id,
+        id: data.order_id,
         shipping_name: customer.name,
         shipping_phone: customer.phone,
         shipping_city: customer.city,
         shipping_address: customer.address,
-        total_amount: Math.round(total),
-        lines: lineItems,
+        total_amount: data.total_amount,
+        lines: data.lines,
         notes: '',
       },
     })
@@ -131,7 +99,7 @@ export async function placeOrder(payload) {
     console.error('Order notification email threw:', emailError)
   }
 
-  return { ok: true, orderId: orderRow.id, notifyError }
+  return { ok: true, orderId: data.order_id, total: data.total_amount, notifyError }
 }
 
 async function sendOrderEmail({ order }) {

@@ -16,7 +16,6 @@ import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
 import TuneIcon from '@mui/icons-material/Tune'
 import CloseIcon from '@mui/icons-material/Close'
-import { mockProducts } from '@/data/mockProducts'
 import { sortOptions } from '@/data/categories'
 import { createClient } from '@/lib/supabase/client'
 import ProductCard from './ProductCard'
@@ -28,16 +27,29 @@ import ProductCard from './ProductCard'
  * `useSearchParams` — this is what lets the Header's search bar drive
  * the same filter state without prop drilling.
  *
- * Categories and products are loaded from Supabase on mount. Mock data
- * is merged as a fallback so the storefront still renders even before
- * the database has any rows.
+ * Categories and products are loaded from Supabase on mount.
  *
  * Filtering is local and instant; the URL only updates on submit or
  * category click, so typing in the page-level search bar doesn't fight
  * with the router. Header submissions replace the URL and re-mount the
  * inputs via the `key` derived from the search params.
  */
-export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) {
+const cyrillicToLatin = {
+    'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Ѓ': 'Gj', 'Е': 'E', 'Ж': 'Z', 'З': 'Z', 'Ѕ': 'Dz',
+    'И': 'I', 'Ј': 'J', 'К': 'K', 'Л': 'L', 'Љ': 'Lj', 'М': 'M', 'Н': 'N', 'Њ': 'Nj', 'О': 'O', 'П': 'P',
+    'Р': 'R', 'С': 'S', 'Т': 'T', 'Ќ': 'Kj', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Џ': 'Dz', 'Ш': 'S',
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'ѓ': 'gj', 'е': 'e', 'ж': 'z', 'з': 'z', 'ѕ': 'dz',
+    'и': 'i', 'ј': 'j', 'к': 'k', 'л': 'l', 'љ': 'lj', 'м': 'm', 'н': 'n', 'њ': 'nj', 'о': 'o', 'п': 'p',
+    'р': 'r', 'с': 's', 'т': 't', 'ќ': 'kj', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'џ': 'dz', 'ш': 's',
+    ' ': ' ', '-': '-'
+  }
+
+  const transliterate = (text) => {
+    if (!text) return ''
+    return text.split('').map(char => cyrillicToLatin[char] || char).join('').toLowerCase()
+  }
+
+  export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -113,7 +125,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
   }, [dbCategories])
 
   const mergedProducts = useMemo(() => {
-    const mapped = dbProducts.map((product) => ({
+    return dbProducts.map((product) => ({
       id: product.id,
       name: product.title,
       slug: product.slug,
@@ -123,10 +135,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       inStock: product.in_stock ?? true,
       category: categoryKeyById.get(product.category_id) ?? 'all',
       createdAt: product.created_at,
-      isMock: false,
     }))
-    const mock = mockProducts.map((product) => ({ ...product, isMock: true }))
-    return [...mapped, ...mock]
   }, [dbProducts, categoryKeyById])
 
   const filtered = useMemo(() => {
@@ -139,8 +148,11 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
+          transliterate(p.name).includes(q) ||
           (p.description ?? '').toLowerCase().includes(q) ||
-          (p.category ?? '').toLowerCase().includes(q)
+          transliterate(p.description ?? '').includes(q) ||
+          (p.category ?? '').toLowerCase().includes(q) ||
+          transliterate(p.category ?? '').includes(q)
       )
     }
     const sorted = list.slice()

@@ -23,6 +23,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
 import { placeOrder } from '@/app/checkout/actions'
+import { municipalities } from '@/data/municipalities'
 
 export default function CartBody() {
   const { items, count, subtotal, updateQty, removeItem, clear } = useCart()
@@ -31,19 +32,6 @@ export default function CartBody() {
   const [phone, setPhone] = useState('07')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
-  const municipalities = [
-    'Аеродром', 'Арачиново', 'Берово', 'Битола', 'Богданци', 'Боговиње', 'Босилово', 'Брвеница', 'Бутел',
-    'Валандово', 'Василево', 'Вевчани', 'Велес', 'Виница', 'Врапчиште', 'Гази Баба', 'Гевгелија',
-    'Ѓорче Петров', 'Гостивар', 'Градско', 'Дебар', 'Дебарца', 'Делчево', 'Демир Капија',
-    'Демир Хисар', 'Дојран', 'Долнени', 'Желино', 'Зелениково', 'Зрновци', 'Илинден',
-    'Јегуновце', 'Кавадарци', 'Карбинци', 'Карпош', 'Кисела Вода', 'Кичево', 'Конче', 'Кочани',
-    'Кратово', 'Крива Паланка', 'Кривогаштани', 'Крушево', 'Куманово', 'Липково', 'Лозово',
-    'Маврово и Ростуша', 'Македонска Каменица', 'Македонски Брод', 'Могила', 'Неготино', 'Новаци',
-    'Ново Село', 'Охрид', 'Петровец', 'Пехчево', 'Пласница', 'Прилеп', 'Пробиштип', 'Радовиш',
-    'Ранковце', 'Ресен', 'Росоман', 'Сарај', 'Свети Николе', 'Сопиште', 'Старо Нагоричане',
-    'Струга', 'Струмица', 'Студеничани', 'Теарце', 'Тетово', 'Центар', 'Центар Жупа', 'Чаир',
-    'Чашка', 'Чешиново-Облешево', 'Чучер-Сандево', 'Штип', 'Шуто Оризари'
-  ]
 
   const cyrillicToLatin = {
     'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Ѓ': 'Gj', 'Е': 'E', 'Ж': 'Z', 'З': 'Z', 'Ѕ': 'Dz',
@@ -91,16 +79,9 @@ export default function CartBody() {
     try {
       const result = await placeOrder({
         customer: { name, phone, city, address },
-        items: items.map((it) => ({
-          id: it.id,
-          name: it.name,
-          slug: it.slug,
-          price: it.price,
-          qty: it.qty,
-        })),
-        subtotal,
-        shipping,
-        total,
+        // Only ids and quantities — prices and the total are taken from the
+        // database by the server.
+        items: items.map((it) => ({ id: it.id, qty: it.qty })),
       })
 
       if (!result?.ok) {
@@ -109,7 +90,7 @@ export default function CartBody() {
       }
 
       clear()
-      setOrderResult({ orderId: result.orderId, total })
+      setOrderResult({ orderId: result.orderId, total: result.total })
       setNotifyWarning(result?.notifyError ?? null)
     } catch (err) {
       setError(err?.message ?? 'Нарачката не успеа. Обидете се повторно.')

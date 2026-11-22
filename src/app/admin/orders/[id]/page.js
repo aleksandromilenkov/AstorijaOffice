@@ -6,7 +6,7 @@ async function fetchOrder(id) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('orders')
-    .select('*')
+    .select('*, order_items(product_id, product_name, quantity, unit_price, line_total, products(slug))')
     .eq('id', id)
     .maybeSingle()
 

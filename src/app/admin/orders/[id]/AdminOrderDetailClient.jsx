@@ -15,22 +15,12 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import CircularProgress from '@mui/material/CircularProgress'
 import AdminNav from '@/components/admin/AdminNav'
+import { STATUS_KEYS, statusColor, statusLabel } from '@/lib/orderStatus'
 import { formatPrice } from '@/lib/formatPrice'
 import { updateOrderStatus } from '@/app/admin/orders/actions'
 import { useState } from 'react'
 import { getOrderLines } from '@/lib/orderLines'
 
-const STATUS_COLORS = {
-  pending: 'warning',
-  shipped: 'success',
-  cancelled: 'default',
-}
-
-const STATUS_LABELS = {
-  pending: 'чекање',
-  shipped: 'испорачано',
-  cancelled: 'откажано',
-}
 
 export default function AdminOrderDetailClient({ order, loadError }) {
   const [status, setStatus] = useState(order.status)
@@ -52,7 +42,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
     (a, b) => new Date(b.created_at) - new Date(a.created_at),
   )
   const shortId = (order.id ?? '').slice(0, 8).toUpperCase()
-  const statusColor = STATUS_COLORS[status] ?? 'default'
+  const currentColor = statusColor(status)
 
   async function handleUpdateStatus() {
     setUpdating(true)
@@ -122,15 +112,15 @@ export default function AdminOrderDetailClient({ order, loadError }) {
             onChange={(e) => setStatus(e.target.value)}
             sx={{ minWidth: 160 }}
           >
-            {Object.keys(STATUS_COLORS).map((s) => (
+            {STATUS_KEYS.map((s) => (
               <MenuItem key={s} value={s}>
-                {STATUS_LABELS[s]}
+                {statusLabel(s)}
               </MenuItem>
             ))}
           </TextField>
           <Chip
-            label={STATUS_LABELS[status] ?? status}
-            color={statusColor}
+            label={statusLabel(status)}
+            color={currentColor}
             sx={{ fontWeight: 700 }}
           />
         </Stack>
@@ -283,8 +273,8 @@ export default function AdminOrderDetailClient({ order, loadError }) {
                 >
                   <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                     <Chip
-                      label={STATUS_LABELS[entry.status] ?? entry.status}
-                      color={STATUS_COLORS[entry.status] ?? 'default'}
+                      label={statusLabel(entry.status)}
+                      color={statusColor(entry.status)}
                       size="small"
                     />
                     <Typography variant="caption" color="text.secondary">

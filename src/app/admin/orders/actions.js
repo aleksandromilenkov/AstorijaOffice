@@ -2,8 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { STATUS_KEYS } from '@/lib/orderStatus'
 
-const STATUSES = ['pending', 'shipped', 'cancelled']
 
 /**
  * Change an order's status and/or add a note. Every save is recorded in
@@ -11,7 +11,7 @@ const STATUSES = ['pending', 'shipped', 'cancelled']
  * who changed what and when.
  */
 export async function updateOrderStatus(orderId, newStatus, note = '') {
-  if (!STATUSES.includes(newStatus)) {
+  if (!STATUS_KEYS.includes(newStatus)) {
     throw new Error('Невалиден статус.')
   }
   const trimmedNote = String(note ?? '').trim()

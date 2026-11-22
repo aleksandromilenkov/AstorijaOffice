@@ -21,6 +21,7 @@ import StorefrontIcon from '@mui/icons-material/Storefront'
 import InfoIcon from '@mui/icons-material/Info'
 import EmailIcon from '@mui/icons-material/Email'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import Badge from '@mui/material/Badge'
 import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
@@ -107,7 +108,7 @@ export default function Header() {
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2, flex: 1, ml: 3 }}>
             <HeaderSearch />
-            {navLinks.map((item) => {
+            {navLinks.filter((item) => !item.drawerOnly).map((item) => {
               // Map icon strings from content.js to actual MUI components
               const IconComponent = {
                 Home: HomeIcon,
@@ -235,6 +236,7 @@ export default function Header() {
                       Info: InfoIcon,
                       Email: EmailIcon,
                       LocalOffer: LocalOfferIcon,
+                      LocalShipping: LocalShippingOutlinedIcon,
                     }[item.icon]
                     return IconComponent ? <IconComponent sx={{ mr: 1.5, color: item.accent ? 'sale.main' : 'primary.main' }} /> : null
                   })()}

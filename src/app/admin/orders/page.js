@@ -17,21 +17,11 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import AdminNav from '@/components/admin/AdminNav'
+import { STATUS_KEYS, statusColor, statusLabel } from '@/lib/orderStatus'
 import { formatPrice } from '@/lib/formatPrice'
 import { createClient } from '@/lib/supabase/client'
 import { getOrderLines } from '@/lib/orderLines'
 
-const STATUS_COLORS = {
-  pending: 'warning',
-  shipped: 'success',
-  cancelled: 'default',
-}
-
-const STATUS_LABELS = {
-  pending: 'чекање',
-  shipped: 'испорачано',
-  cancelled: 'откажано',
-}
 
 export default function AdminOrdersPage() {
   const supabase = createClient()
@@ -96,9 +86,11 @@ export default function AdminOrdersPage() {
     })
   }, [orders, search, statusFilter])
 
-  const uniqueStatuses = useMemo(() => {
-    const set = new Set(orders.map((o) => o.status).filter(Boolean))
-    return Array.from(set)
+  // Every status, in workflow order, with how many orders are in it.
+  const statusCounts = useMemo(() => {
+    const counts = {}
+    for (const o of orders) counts[o.status] = (counts[o.status] ?? 0) + 1
+    return counts
   }, [orders])
 
   return (
@@ -131,9 +123,9 @@ export default function AdminOrdersPage() {
             slotProps={{ select: { native: true } }}
           >
             <option value="all">Сите</option>
-            {uniqueStatuses.map((status) => (
+            {STATUS_KEYS.map((status) => (
               <option key={status} value={status}>
-                {STATUS_LABELS[status] ?? status}
+                {statusLabel(status)} ({statusCounts[status] ?? 0})
               </option>
             ))}
           </TextField>
@@ -214,8 +206,8 @@ export default function AdminOrdersPage() {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={STATUS_LABELS[order.status] ?? order.status}
-                        color={STATUS_COLORS[order.status] ?? 'default'}
+                        label={statusLabel(order.status)}
+                        color={statusColor(order.status)}
                         size="small"
                         sx={{ fontWeight: 600 }}
                       />

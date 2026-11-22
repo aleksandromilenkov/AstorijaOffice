@@ -151,24 +151,31 @@ export default function CartBody() {
               Број на нарачка: #{shortId}
             </Box>
           ) : null}
+          {shortId ? (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: -1.5, mb: 3 }}>
+              Зачувајте го бројот — со него и вашиот телефон можете да ја следите нарачката.
+            </Typography>
+          ) : null}
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'center' }}>
+            {shortId ? (
+              <Button
+                component={Link}
+                href={`/sledenje?kod=${shortId}`}
+                variant="contained"
+                size="large"
+                sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+              >
+                Следи ја нарачката
+              </Button>
+            ) : null}
             <Button
               component={Link}
               href="/prodavnica"
-              variant="contained"
+              variant={shortId ? 'outlined' : 'contained'}
               size="large"
               sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
             >
               Продолжи со купување
-            </Button>
-            <Button
-              component={Link}
-              href="/"
-              variant="outlined"
-              size="large"
-              sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
-            >
-              Назад на почетна
             </Button>
           </Stack>
         </Paper>

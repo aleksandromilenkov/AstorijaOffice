@@ -10,6 +10,7 @@ import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import { useCart } from '@/store/CartContext'
 
 /**
@@ -80,6 +81,18 @@ export default function HeaderSearch() {
           <SearchIcon fontSize="small" />
         </IconButton>
       </Box>
+
+      <Tooltip title="Следи нарачка">
+        <IconButton
+          component={Link}
+          href="/sledenje"
+          aria-label="Следи нарачка"
+          sx={{ ml: 1 }}
+          color="primary"
+        >
+          <LocalShippingOutlinedIcon />
+        </IconButton>
+      </Tooltip>
 
       <Tooltip title="Кошничка">
         <IconButton

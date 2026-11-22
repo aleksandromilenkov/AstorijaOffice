@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Асторија">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#862e9c"/><stop offset="1" stop-color="#e8365d"/></linearGradient></defs>
-  <rect width="64" height="64" rx="16" fill="url(#g)"/>
-  <path d="M32.00 15.50 L36.82 27.87 L50.07 28.63 L39.80 37.03 L43.17 49.87 L32.00 42.70 L20.83 49.87 L24.20 37.03 L13.93 28.63 L27.18 27.87 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M50.00 7.50 L51.27 12.73 L56.50 14.00 L51.27 15.27 L50.00 20.50 L48.73 15.27 L43.50 14.00 L48.73 12.73 Z" fill="#fff" opacity="0.9"/>
+  <path d="M4 60 L17.5 60 L38.75 4 L25.25 4 Z" fill="#e8365d"/>
+  <path d="M46.5 60 L60 60 L38.75 4 L25.25 4 Z" fill="#862e9c"/>
+  <path d="M25.25 4 L25.25 4 L38.75 4 L32 21.79 Z" fill="#7a0a39"/>
+  <path d="M27.6 43.5 a4.4 4.4 0 1 0 8.8 0 a4.4 4.4 0 1 0 -8.8 0 Z" fill="#1d1026"/>
 </svg>

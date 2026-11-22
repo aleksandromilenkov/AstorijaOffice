@@ -95,7 +95,7 @@ export default function Footer() {
         },
       }}
     >
-      <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 8 }, pb: 3 }}>
+      <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 8 }, pb: { xs: 11, md: 3 } }}>
         <Box
           sx={{
             display: 'grid',
@@ -238,6 +238,8 @@ export default function Footer() {
             flexDirection: { xs: 'column', sm: 'row' },
             justifyContent: 'space-between',
             gap: 1,
+            // keep clear of the floating contact button
+            pr: { md: 10 },
             color: 'rgba(255,255,255,0.5)',
             fontSize: '0.8rem',
           }}

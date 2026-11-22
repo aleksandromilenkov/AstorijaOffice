@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Асторија">
+  <path d="M4 60 L17.5 60 L38.75 4 L25.25 4 Z" fill="#e8365d"/>
+  <path d="M46.5 60 L60 60 L38.75 4 L25.25 4 Z" fill="#862e9c"/>
+  <path d="M25.25 4 L25.25 4 L38.75 4 L32 21.79 Z" fill="#7a0a39"/>
+  <path d="M27.6 43.5 a4.4 4.4 0 1 0 8.8 0 a4.4 4.4 0 1 0 -8.8 0 Z" fill="#ffffff"/>
+</svg>

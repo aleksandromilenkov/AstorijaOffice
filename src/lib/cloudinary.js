@@ -59,8 +59,12 @@ export async function uploadImageToCloudinary(file, { folder } = {}) {
   }
 }
 
-/** Folder that admin uploads go into. Only images in it may be deleted. */
-export const PRODUCT_IMAGE_FOLDER = 'astorija/products'
+/**
+ * Root folder of the shop's images. The upload preset decides the final
+ * sub-folder (currently astorija/images), so deletes are allowed anywhere
+ * under it — and nowhere else in the Cloudinary account.
+ */
+export const PRODUCT_IMAGE_FOLDER = 'astorija'
 
 /**
  * Extract the Cloudinary public ID from a delivery URL, e.g.

@@ -11,9 +11,11 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-// Absolute base for canonical / Open Graph URLs. Set NEXT_PUBLIC_SITE_ORIGIN
-// to the real domain (e.g. https://astorija.mk) in Netlify.
-const siteOrigin = process.env.NEXT_PUBLIC_SITE_ORIGIN || 'http://localhost:3000'
+// Absolute base for canonical / Open Graph URLs. NEXT_PUBLIC_SITE_ORIGIN wins
+// (set it to the real domain, e.g. https://astorija.mk); otherwise Netlify's
+// own `URL` (the site's main address, set automatically during builds).
+const siteOrigin =
+  process.env.NEXT_PUBLIC_SITE_ORIGIN || process.env.URL || 'http://localhost:3000'
 
 export const metadata = {
   metadataBase: new URL(siteOrigin),

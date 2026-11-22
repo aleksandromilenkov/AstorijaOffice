@@ -1,10 +1,15 @@
 'use client'
 
+import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
+import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined'
 import { hero } from '@/content'
 
 export default function Hero() {
@@ -14,82 +19,73 @@ export default function Hero() {
       id="hero"
       sx={{
         position: 'relative',
-        minHeight: { xs: '100svh', md: '95vh' },
+        minHeight: { xs: 'calc(100svh - 64px)', md: '88vh' },
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
+        bgcolor: '#0d0612',
       }}
     >
-      {/* Background image */}
-      <Box
-        component="img"
+      {/* Background photo — optimised (WebP/AVIF, right size per screen) */}
+      <Image
         src="/img/hero-img.jpg"
         alt=""
-        aria-hidden="true"
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'center',
-          zIndex: 0,
-        }}
+        fill
+        priority
+        sizes="100vw"
+        style={{ objectFit: 'cover', objectPosition: '70% center' }}
       />
 
-      {/* Dark gradient overlay */}
+      {/* Readability overlays */}
       <Box
+        aria-hidden
         sx={{
           position: 'absolute',
           inset: 0,
-          zIndex: 1,
           background: {
-            xs: 'linear-gradient(to bottom, rgba(8,4,16,0.72) 0%, rgba(8,4,16,0.85) 100%)',
-            md: 'linear-gradient(to right, rgba(8,4,16,0.92) 0%, rgba(8,4,16,0.75) 45%, rgba(8,4,16,0.2) 100%)',
+            xs: 'linear-gradient(180deg, rgba(13,6,18,0.78) 0%, rgba(13,6,18,0.9) 100%)',
+            md: 'linear-gradient(90deg, rgba(13,6,18,0.95) 0%, rgba(13,6,18,0.82) 42%, rgba(13,6,18,0.25) 100%)',
           },
         }}
       />
-
-      {/* Purple tint layer */}
       <Box
+        aria-hidden
         sx={{
           position: 'absolute',
           inset: 0,
-          zIndex: 2,
           background:
-            'radial-gradient(ellipse 70% 80% at 20% 50%, rgba(134,46,156,0.18) 0%, transparent 70%)',
-          pointerEvents: 'none',
+            'radial-gradient(ellipse 55% 70% at 15% 55%, rgba(134,46,156,0.28) 0%, transparent 70%)',
         }}
       />
 
-      {/* Content */}
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 3, py: { xs: 10, md: 0 } }}>
-        <Box sx={{ maxWidth: { xs: '100%', md: 580 } }}>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+      <Container maxWidth="lg" sx={{ position: 'relative', py: { xs: 8, md: 10 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+        >
+          <Box sx={{ maxWidth: { xs: '100%', md: 620 } }}>
             {/* Badge */}
             <Box
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 0.75,
-                fontSize: '0.65rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#c77dff',
-                fontWeight: 700,
+                gap: 1,
                 mb: 3,
-                background: 'rgba(134,46,156,0.2)',
-                border: '1px solid rgba(134,46,156,0.4)',
-                borderRadius: '100px',
-                px: 1.75,
-                py: 0.7,
+                px: 1.5,
+                py: 0.6,
+                borderRadius: 999,
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: '#f3d9fb',
+                bgcolor: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.18)',
                 backdropFilter: 'blur(8px)',
               }}
             >
+              <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#ff8fa6' }} />
               {hero.badge}
             </Box>
 
@@ -97,10 +93,10 @@ export default function Hero() {
             <Typography
               component="h1"
               sx={{
-                fontSize: { xs: '2.8rem', sm: '3.4rem', md: '4rem' },
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.06,
+                fontSize: { xs: '2.6rem', sm: '3.4rem', md: '4.2rem' },
+                fontWeight: 900,
+                letterSpacing: '-0.035em',
+                lineHeight: 1.04,
                 color: '#fff',
                 mb: 2.5,
               }}
@@ -109,9 +105,10 @@ export default function Hero() {
               <Box
                 component="span"
                 sx={{
-                  background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                  background: 'linear-gradient(90deg, #ff8fa6, #d9a6ea)',
                   WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: 'transparent',
                 }}
               >
                 {hero.titleAccent}
@@ -121,106 +118,110 @@ export default function Hero() {
             {/* Sub */}
             <Typography
               sx={{
-                fontSize: { xs: '1rem', md: '1.1rem' },
-                color: 'rgba(255,255,255,0.7)',
-                lineHeight: 1.75,
-                mb: 4.5,
-                maxWidth: 460,
+                fontSize: { xs: '1.02rem', md: '1.15rem' },
+                color: 'rgba(255,255,255,0.78)',
+                lineHeight: 1.7,
+                mb: 3,
+                maxWidth: 520,
               }}
             >
               {hero.sub}
             </Typography>
 
+            {/* Promises */}
+            <Box
+              component="ul"
+              sx={{
+                listStyle: 'none',
+                p: 0,
+                m: 0,
+                mb: 4,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: { xs: 1, sm: 2.5 },
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
+            >
+              {hero.promises.map((promise) => (
+                <Box
+                  component="li"
+                  key={promise}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  <CheckCircleRoundedIcon sx={{ fontSize: 20, color: '#7be0a8' }} />
+                  {promise}
+                </Box>
+              ))}
+            </Box>
+
             {/* CTAs */}
-            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 5 }}>
+            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 4 }}>
               <Button
+                component={Link}
+                href="/prodavnica"
                 variant="contained"
-                href="/contact"
                 size="large"
+                endIcon={<ArrowForwardRoundedIcon />}
                 sx={{
                   px: 3.5,
-                  fontWeight: 700,
-                  borderRadius: 2,
-                  background: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
-                  boxShadow: '0 4px 24px rgba(134,46,156,0.45)',
-                  '&:hover': {
-                    boxShadow: '0 6px 32px rgba(134,46,156,0.65)',
-                    transform: 'translateY(-1px)',
-                  },
-                  transition: 'all 0.25s',
+                  py: 1.4,
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  borderRadius: 2.5,
+                  backgroundImage: 'linear-gradient(135deg, #862e9c, #c2378f)',
+                  boxShadow: '0 10px 30px -8px rgba(194,55,143,0.6)',
+                  '&:hover': { boxShadow: '0 14px 36px -8px rgba(194,55,143,0.75)' },
                 }}
               >
                 {hero.primaryCta}
               </Button>
               <Button
+                component={Link}
+                href="/contact"
                 variant="outlined"
-                href="/#process"
                 size="large"
                 sx={{
                   px: 3,
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  borderColor: 'rgba(255,255,255,0.3)',
+                  py: 1.4,
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  textTransform: 'none',
+                  borderRadius: 2.5,
                   color: '#fff',
+                  borderColor: 'rgba(255,255,255,0.35)',
+                  bgcolor: 'rgba(255,255,255,0.06)',
                   backdropFilter: 'blur(8px)',
-                  background: 'rgba(255,255,255,0.06)',
-                  '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.6)',
-                    background: 'rgba(255,255,255,0.1)',
-                  },
-                  transition: 'all 0.25s',
+                  '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.12)' },
                 }}
               >
                 {hero.secondaryCta}
               </Button>
             </Box>
-          </motion.div>
 
-          {/* Social proof */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6, delay: 0.12 }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ display: 'flex' }}>
-                {['ben.jpg', 'customer-3.jpg', 'customer-4.jpg', 'customer-5.jpg', 'hannah.jpg'].map(
-                  (src, i) => (
-                    <Box
-                      key={i}
-                      component="img"
-                      src={`/img/customers/${src}`}
-                      alt="customer"
-                      sx={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: '50%',
-                        border: '2px solid rgba(255,255,255,0.3)',
-                        ml: i ? -1.2 : 0,
-                        objectFit: 'cover',
-                      }}
-                    />
-                  )
-                )}
-              </Box>
-              <Box>
-                <Typography
-                  sx={{ fontSize: '0.85rem', color: '#fff', fontWeight: 700, lineHeight: 1.3 }}
-                >
-                  {hero.socialProof}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 0.3, mt: 0.3 }}>
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  ))}
-                </Box>
-              </Box>
+            {/* Social proof (true numbers only) */}
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 1,
+                color: 'rgba(255,255,255,0.75)',
+                fontSize: '0.92rem',
+                fontWeight: 600,
+              }}
+            >
+              <VerifiedOutlinedIcon sx={{ fontSize: 20, color: '#d9a6ea' }} />
+              {hero.socialProof}
             </Box>
-          </motion.div>
-        </Box>
+          </Box>
+        </motion.div>
       </Container>
     </Box>
   )

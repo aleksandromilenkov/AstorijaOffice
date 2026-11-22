@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import { contact } from '@/content'
+import { company, fullAddress } from '@/content'
 
 export const metadata = {
   title: 'Услови за купување и достава — Асторија',
@@ -12,9 +12,9 @@ export const metadata = {
 
 const LAST_UPDATED = '22 ноември 2026'
 
-const phones = contact.info.filter((i) => i.icon === 'phone').map((i) => i.text)
-const email = contact.info.find((i) => i.icon === 'mail')?.text
-const address = contact.info.find((i) => i.icon === 'pin')?.text
+const phones = company.phones.map((p) => p.text)
+const email = company.email
+const address = fullAddress
 
 // NOTE for the owner: add the company's full legal name and ЕДБ/ЕМБС to the
 // "Продавач" section before relying on these terms. Have them reviewed by
@@ -33,7 +33,7 @@ const SECTIONS = [
     body: [
       `Асторија — печатница${address ? `, ${address}` : ''}.`,
       `Телефон: ${phones.join(', ')}${email ? ` · Е-пошта: ${email}` : ''}.`,
-      'Работно време: понеделник – сабота, 08:00–15:00 и 19:00–22:00.',
+      `Работно време: ${company.hours.days.toLowerCase()}, ${company.hours.time}. ${company.hours.closed}: затворено.`,
     ],
   },
   {

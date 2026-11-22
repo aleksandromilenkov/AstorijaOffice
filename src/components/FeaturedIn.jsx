@@ -76,7 +76,7 @@ export default function FeaturedIn() {
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.15 }}
+          viewport={{ once: true, amount: 0.01 }}
           transition={{ duration: 0.6 }}
         >
           <Box

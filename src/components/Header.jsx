@@ -26,6 +26,7 @@ import Badge from '@mui/material/Badge'
 import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
 import HeaderSearch from '@/components/HeaderSearch'
+import Logo from '@/components/brand/Logo'
 
 /**
  * Decide if a nav link points to an in-page hash on the home page, a
@@ -95,15 +96,21 @@ export default function Header() {
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
-            minHeight: sticky ? 64 : 96,
+            minHeight: sticky ? 64 : 80,
           }}
         >
           <Box
             component={Link}
             href="/"
-            sx={{ display: 'inline-flex', alignItems: 'center' }}
+            aria-label="Асторија — почетна"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              flexShrink: 0,
+              '& svg': { height: { xs: 34, md: sticky ? 38 : 44 }, width: 'auto', transition: 'height 0.2s' },
+            }}
           >
-            <img src="/img/Screenshot_1.png" alt="Astorija logo" style={{ height: 56 }} />
+            <Logo height={44} />
           </Box>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2, flex: 1, ml: 3 }}>

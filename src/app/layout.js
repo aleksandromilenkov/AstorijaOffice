@@ -4,6 +4,7 @@ import ThemeRegistry from '@/components/ThemeRegistry'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CartShell from '@/components/store/CartShell'
+import ContactFab from '@/components/ContactFab'
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -21,7 +22,7 @@ export const metadata = {
   metadataBase: new URL(siteOrigin),
   title: 'Асторија — Професионално печатење',
   description:
-    'Асторија — доверливо име за печатење, дизајн и брендирање веќе повеќе од 25 години. Од единечен примерок до милион бренд-артикли.',
+    'Асторија — печатница во Свети Николе од 1999. Визитки, флаери, маички, обрасци и брендирани производи со бесплатна достава и плаќање при достава низ цела Македонија.',
 }
 
 export default function RootLayout({ children }) {
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
             <Header />
             <main>{children}</main>
             <Footer />
+            <ContactFab />
           </CartShell>
         </ThemeRegistry>
       </body>

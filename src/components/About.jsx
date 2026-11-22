@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import { about } from '@/content'
+import { about, company } from '@/content'
 
 function useReveal() {
   const [visible, setVisible] = useState(false)
@@ -20,7 +20,7 @@ function useReveal() {
           obs.disconnect()
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0, rootMargin: '0px 0px -8% 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -288,16 +288,13 @@ export default function About() {
               >
                 <Box sx={{ width: '100%', height: 180, overflow: 'hidden' }}>
                   <iframe
-                    title="Astorija location"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=21.90%2C41.85%2C21.98%2C41.91&layer=mapnik&marker=41.877%2C21.939"
+                    title="Локација на Асторија"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(`${company.address}, ${company.city}`)}&z=16&output=embed`}
                     width="100%"
                     height="180"
-                    style={{
-                      border: 0,
-                      display: 'block',
-                      filter: 'hue-rotate(260deg) saturate(0.6) brightness(0.85)',
-                    }}
+                    style={{ border: 0, display: 'block' }}
                     loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
                   />
                 </Box>
                 <Box sx={{ p: { xs: 2, md: 2.5 } }}>
@@ -342,22 +339,27 @@ export default function About() {
                 >
                   {about.getInTouchLabel}
                 </Typography>
-                <InfoRow icon={MAIL_ICON} href="mailto:astorijanova@yahoo.com">
-                  astorijanova@yahoo.com
+                <InfoRow icon={MAIL_ICON} href={`mailto:${company.email}`}>
+                  {company.email}
                 </InfoRow>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                   <Box sx={{ color: '#862e9c', mt: '2px', flexShrink: 0 }}>{PHONE_ICON}</Box>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: 'center' }}>
-                    <Box component="a" href="tel:+38970210128" sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
-                      070-210-128
-                    </Box>
-                    <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.88rem', display: { xs: 'none', sm: 'block' } }}>|</Box>
-                    <Box component="a" href="tel:+38975260480" sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
-                      075-260-480
-                    </Box>
+                    {company.phones.map((phone, i) => (
+                      <Box key={phone.href} component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                        {i > 0 ? (
+                          <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.88rem', display: { xs: 'none', sm: 'block' } }}>|</Box>
+                        ) : null}
+                        <Box component="a" href={phone.href} sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
+                          {phone.text}
+                        </Box>
+                      </Box>
+                    ))}
                   </Stack>
                 </Box>
-                <InfoRow icon={CLOCK_ICON}>Пон &ndash; Пет &nbsp;08:00&ndash;15:00 & 19:00&ndash;22:00</InfoRow>
+                <InfoRow icon={CLOCK_ICON}>
+                  {company.hours.days}, {company.hours.time}. {company.hours.closed}: затворено
+                </InfoRow>
               </Box>
             </RevealBox>
           </Box>

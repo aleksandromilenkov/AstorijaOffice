@@ -8,6 +8,7 @@ import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { getActivePromotions, soonestEnd } from '@/lib/promotions'
+import { yearsOfExperience } from '@/content'
 import { discountPercent } from '@/lib/pricing'
 import PromoCard from '@/components/promo/PromoCard'
 import Countdown from '@/components/promo/Countdown'
@@ -42,7 +43,7 @@ const BENEFITS = [
   },
   {
     Icon: WorkspacePremiumOutlinedIcon,
-    title: '25+ години искуство',
+    title: `${yearsOfExperience} години искуство`,
     text: 'Иста квалитетна изработка, и на промотивна цена.',
   },
 ]

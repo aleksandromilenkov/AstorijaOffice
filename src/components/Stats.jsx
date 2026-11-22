@@ -31,10 +31,13 @@ function useCountUp(target, duration = 1800, start = false) {
   return count
 }
 
+// Macedonian number format (1.000.000). While counting up show the plain
+// number; at the end show the exact display text ("5.000+").
 function formatCount(n, stat) {
-  if (stat.value === 1000000) return n >= 1000000 ? '1M+' : `${(n / 1000).toFixed(0)}K`
-  if (stat.value === 5000) return `${n.toLocaleString()}${n >= 5000 ? '+' : ''}`
-  return `${n}${stat.suffix}`
+  if (n >= stat.value) return stat.display
+  // Millions count up as "0,4М" so the number never gets wider than its box.
+  if (stat.value >= 1000000) return `${(n / 1000000).toFixed(1).replace('.', ',')}М`
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
 function StatCard({ stat, animate, index }) {

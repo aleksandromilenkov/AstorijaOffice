@@ -1,307 +1,251 @@
+'use client'
+
+import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
-import { footer } from '@/content'
+import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
+import MailOutlineIcon from '@mui/icons-material/EmailOutlined'
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
+import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
+import Logo from '@/components/brand/Logo'
+import { company, footer, fullAddress } from '@/content'
 
-const MAIL_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
-  </svg>
-)
-const PHONE_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z" />
-  </svg>
-)
-const PIN_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-)
-const CLOCK_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-)
-const DOC_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-  </svg>
-)
-const TRUCK_ICON = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="1" y="3" width="15" height="13" />
-    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-    <circle cx="5.5" cy="18.5" r="2.5" />
-    <circle cx="18.5" cy="18.5" r="2.5" />
-  </svg>
-)
+const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+  `${company.address}, ${company.city}`,
+)}`
 
-function FooterLink({ href, icon, children }) {
+const SHOP_LINKS = [
+  { label: 'Продавница', href: '/prodavnica' },
+  { label: 'Промоции', href: '/promocii' },
+  { label: 'Следи нарачка', href: '/sledenje' },
+  { label: 'Кошничка', href: '/kosnicka' },
+]
+const INFO_LINKS = [
+  { label: 'За нас', href: '/about' },
+  { label: 'Контакт', href: '/contact' },
+  { label: 'Услови за купување и достава', href: '/uslovi' },
+]
+
+const linkSx = {
+  color: 'rgba(255,255,255,0.72)',
+  fontSize: '0.9rem',
+  lineHeight: 1.5,
+  transition: 'color 0.2s',
+  '&:hover': { color: '#fff' },
+}
+
+function ColTitle({ children }) {
   return (
-    <Box
-      component={href ? 'a' : 'div'}
-      href={href}
+    <Typography
+      component="h2"
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.2,
-        color: 'rgba(255,255,255,0.82)',
-        textDecoration: 'none',
-        fontSize: '0.83rem',
-        lineHeight: 1.6,
-        transition: 'color 0.2s',
-        '&:hover': { color: '#c77dff' },
+        fontSize: '0.72rem',
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        color: '#d9a6ea',
+        fontWeight: 800,
+        mb: 2,
       }}
     >
-      <Box sx={{ flexShrink: 0, opacity: 0.85 }}>{icon}</Box>
       {children}
-    </Box>
+    </Typography>
   )
 }
 
-function FooterCol({ title, children }) {
-  return (
-    <Box>
-      <Typography
-        sx={{
-          fontSize: '0.65rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: '#862e9c',
-          fontWeight: 700,
-          mb: 2,
-        }}
-      >
-        {title}
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2 }}>{children}</Box>
+function IconLine({ icon, children, href }) {
+  const content = (
+    <>
+      <Box component="span" sx={{ display: 'inline-flex', mt: '2px', color: '#d9a6ea' }}>
+        {icon}
+      </Box>
+      <Box component="span">{children}</Box>
+    </>
+  )
+  const sx = { ...linkSx, display: 'flex', gap: 1.25, alignItems: 'flex-start' }
+  return href ? (
+    <Box component="a" href={href} sx={sx} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+      {content}
     </Box>
+  ) : (
+    <Box sx={{ ...sx, '&:hover': {} }}>{content}</Box>
   )
 }
 
 export default function Footer() {
+  const iconSx = { fontSize: 18 }
   return (
     <Box
       component="footer"
       sx={{
-        bgcolor: '#1a1a2e',
-        color: '#fff',
         position: 'relative',
-        overflow: 'hidden',
-        borderTop: '1px solid rgba(134,46,156,0.25)',
+        color: '#fff',
+        background:
+          'radial-gradient(ellipse 60% 60% at 100% 0%, rgba(232,54,93,0.10) 0%, transparent 60%),' +
+          'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(134,46,156,0.22) 0%, transparent 60%),' +
+          '#160b20',
         '&::before': {
           content: '""',
           position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '60%',
-          height: '1px',
-          background:
-            'linear-gradient(90deg, transparent, #862e9c, #c77dff, #862e9c, transparent)',
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          top: '-30%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '60vw',
-          height: '40vw',
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(134,46,156,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none',
+          inset: '0 0 auto 0',
+          height: 3,
+          background: 'linear-gradient(90deg, #862e9c, #e8365d)',
         },
       }}
     >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Top: logo + quote */}
+      <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 8 }, pb: 3 }}>
         <Box
           sx={{
-            pt: { xs: 6, md: 8 },
-            pb: { xs: 5, md: 6 },
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: { xs: 'center', md: 'flex-start' },
-            justifyContent: 'space-between',
-            gap: 4,
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            display: 'grid',
+            gap: { xs: 4, md: 5 },
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1.5fr 1fr 1.1fr 1.4fr' },
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: { xs: 'center', md: 'flex-start' },
-            }}
-          >
-            <Box
-              component="img"
-              src="/img/footer_logo.png"
-              alt="Astorija logo"
-              sx={{ height: 52, width: 'auto', mb: 2, filter: 'brightness(1.1)' }}
-            />
-            <Typography
-              sx={{
-                fontSize: '0.78rem',
-                color: 'rgba(255,255,255,0.65)',
-                letterSpacing: '0.05em',
-                maxWidth: 220,
-                textAlign: { xs: 'center', md: 'left' },
-                lineHeight: 1.6,
-              }}
-            >
-              {footer.quote}
+          {/* Brand */}
+          <Box>
+            <Box component={Link} href="/" aria-label="Асторија — почетна" sx={{ display: 'inline-flex' }}>
+              <Logo tone="light" height={46} />
+            </Box>
+            <Typography sx={{ mt: 2, color: 'rgba(255,255,255,0.72)', fontSize: '0.92rem', lineHeight: 1.7, maxWidth: 320 }}>
+              {footer.tagline} Визитки, флаери, маички, обрасци и брендирани производи — со
+              бесплатна достава низ цела Македонија.
             </Typography>
+            <Box sx={{ display: 'flex', gap: 1, mt: 2.5, flexWrap: 'wrap' }}>
+              <Box
+                component="a"
+                href={company.phones[0].href}
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.75,
+                  py: 0.9,
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  background: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+                  '&:hover': { filter: 'brightness(1.1)' },
+                }}
+              >
+                <PhoneOutlinedIcon sx={iconSx} /> {company.phones[0].text}
+              </Box>
+              <Box
+                component="a"
+                href={`viber://chat?number=${encodeURIComponent(company.viber)}`}
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  px: 1.75,
+                  py: 0.9,
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  '&:hover': { borderColor: '#fff' },
+                }}
+              >
+                Пишете на Viber
+              </Box>
+            </Box>
           </Box>
 
-          <Box sx={{ maxWidth: 380, textAlign: { xs: 'center', md: 'right' } }}>
-            <Typography
-              sx={{
-                fontSize: { xs: '1rem', md: '1.15rem' },
-                fontStyle: 'italic',
-                fontWeight: 500,
-                color: 'rgba(255,255,255,0.92)',
-                lineHeight: 1.65,
-                mb: 0.75,
-              }}
-            >
-              &quot;Quality means doing it right
-              <br />
-              when no one is looking.&quot;
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: '0.72rem',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: '#862e9c',
-                fontWeight: 600,
-              }}
-            >
-              — Henry Ford
-            </Typography>
+          {/* Shop */}
+          <Box component="nav" aria-label="Продавница">
+            <ColTitle>Продавница</ColTitle>
+            <Box sx={{ display: 'grid', gap: 1.1 }}>
+              {SHOP_LINKS.map((l) => (
+                <Box key={l.href} component={Link} href={l.href} sx={linkSx}>
+                  {l.label}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Info */}
+          <Box component="nav" aria-label="Информации">
+            <ColTitle>Информации</ColTitle>
+            <Box sx={{ display: 'grid', gap: 1.1 }}>
+              {INFO_LINKS.map((l) => (
+                <Box key={l.href} component={Link} href={l.href} sx={linkSx}>
+                  {l.label}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Contact */}
+          <Box>
+            <ColTitle>{footer.contact}</ColTitle>
+            <Box sx={{ display: 'grid', gap: 1.25 }}>
+              <IconLine icon={<PlaceOutlinedIcon sx={iconSx} />} href={mapsHref}>
+                {fullAddress}
+              </IconLine>
+              {company.phones.map((p) => (
+                <IconLine key={p.href} icon={<PhoneOutlinedIcon sx={iconSx} />} href={p.href}>
+                  {p.text}
+                </IconLine>
+              ))}
+              <IconLine icon={<MailOutlineIcon sx={iconSx} />} href={`mailto:${company.email}`}>
+                {company.email}
+              </IconLine>
+              <IconLine icon={<ScheduleOutlinedIcon sx={iconSx} />}>
+                {company.hours.days}
+                <br />
+                {company.hours.time}
+                <br />
+                <Box component="span" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                  {company.hours.closed}: {footer.closed}
+                </Box>
+              </IconLine>
+            </Box>
           </Box>
         </Box>
 
-        {/* Middle: 3 columns */}
+        {/* Promise strip */}
         <Box
           sx={{
-            py: { xs: 5, md: 6 },
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2,1fr)', md: 'repeat(3,1fr)' },
-            gap: { xs: 4, md: 6 },
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            mt: { xs: 5, md: 6 },
+            py: 2,
+            px: 2.5,
+            borderRadius: 3,
+            bgcolor: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: { xs: 1.5, md: 4 },
+            color: 'rgba(255,255,255,0.8)',
+            fontSize: '0.88rem',
+            fontWeight: 600,
           }}
         >
-          <FooterCol title={footer.contact}>
-            <FooterLink href="tel:+38970210128" icon={PHONE_ICON}>070-210-128</FooterLink>
-            <FooterLink href="tel:+38975260480" icon={PHONE_ICON}>075-260-480</FooterLink>
-            <FooterLink href="tel:+38932444466" icon={PHONE_ICON}>032-444-466</FooterLink>
-            <FooterLink href="mailto:astorijanova@yahoo.com" icon={MAIL_ICON}>
-              astorijanova@yahoo.com
-            </FooterLink>
-            <FooterLink href="/sledenje" icon={TRUCK_ICON}>
-              Следи нарачка
-            </FooterLink>
-            <FooterLink href="/uslovi" icon={DOC_ICON}>
-              Услови за купување и достава
-            </FooterLink>
-          </FooterCol>
-
-          <FooterCol title={footer.hours}>
-            <FooterLink icon={CLOCK_ICON}>Пон – Саб &nbsp; 08:00&ndash;15:00 & 19:00&ndash;22:00</FooterLink>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-              <Box sx={{ opacity: 0.3, flexShrink: 0 }}>{CLOCK_ICON}</Box>
-              <Typography
-                sx={{
-                  fontSize: '0.83rem',
-                  color: 'rgba(255,255,255,0.45)',
-                  textDecoration: 'line-through',
-                }}
-              >
-                Sunday
-              </Typography>
-              <Box
-                sx={{
-                  px: 1,
-                  py: 0.2,
-                  borderRadius: 99,
-                  background: 'rgba(134,46,156,0.2)',
-                  border: '1px solid rgba(134,46,156,0.3)',
-                  fontSize: '0.6rem',
-                  letterSpacing: '0.1em',
-                  color: '#ae3ec9',
-                  fontWeight: 600,
-                }}
-              >
-                {footer.closed}
-              </Box>
-            </Box>
-          </FooterCol>
-
-          <FooterCol title={footer.location}>
-            <FooterLink icon={PIN_ICON}>Leninova 24</FooterLink>
-            <FooterLink icon={PIN_ICON}>Square Ilinden No.34</FooterLink>
-            <FooterLink icon={PIN_ICON}>2220 Sveti Nikole, Macedonia</FooterLink>
-          </FooterCol>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LocalShippingOutlinedIcon sx={{ ...iconSx, color: '#d9a6ea' }} /> Бесплатна достава во сите 80 општини
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PaymentsOutlinedIcon sx={{ ...iconSx, color: '#d9a6ea' }} /> Плаќање при достава · фактура за фирми
+          </Box>
         </Box>
 
         {/* Bottom bar */}
         <Box
           sx={{
-            py: 3,
+            mt: 3,
+            pt: 3,
+            borderTop: '1px solid rgba(255,255,255,0.08)',
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 1.5,
+            gap: 1,
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '0.8rem',
           }}
         >
-          <Typography
-            sx={{
-              fontSize: '0.72rem',
-              color: 'rgba(255,255,255,0.55)',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {footer.copyright} {new Date().getFullYear()} Astorija. {footer.reserved}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {[1, 2, 3].map((i) => (
-              <Box
-                key={i}
-                sx={{
-                  width: i === 2 ? 16 : 4,
-                  height: 4,
-                  borderRadius: 99,
-                  background:
-                    i === 2
-                      ? 'linear-gradient(90deg,#862e9c,#c77dff)'
-                      : 'rgba(134,46,156,0.3)',
-                }}
-              />
-            ))}
-          </Box>
-
-          <Typography
-            sx={{
-              fontSize: '0.72rem',
-              color: 'rgba(255,255,255,0.55)',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {footer.dooel}
-          </Typography>
+          <span>
+            © {new Date().getFullYear()} {company.name}. {footer.reserved}
+          </span>
+          <span>{footer.dooel}</span>
         </Box>
       </Container>
     </Box>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 410 68" role="img" aria-label="Асторија">
+  <g fill="none" stroke="#1d1026" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path transform="translate(0 0)" d="M5.5 50.5 L23 5.5 L40.5 50.5 M12 34 H34"/>
+    <path transform="translate(55 0)" d="M35.4 12.1 A17.5 22.5 0 1 0 35.4 43.9"/>
+    <path transform="translate(106 0)" d="M5.5 5.5 H36.5 M21 5.5 V50.5"/>
+    <path transform="translate(157 0)" d="M23 5.5 A17.5 22.5 0 1 1 22.99 5.5 Z"/>
+    <path transform="translate(212 0)" d="M5.5 50.5 V5.5 H20 A11.5 11.5 0 0 1 20 28.5 H5.5"/>
+    <path transform="translate(259 0)" d="M5.5 5.5 V50.5 L36.5 5.5 V50.5"/>
+    <path transform="translate(310 0)" d="M27.5 5.5 V39 A11.5 11.5 0 0 1 4.5 39"/>
+    <path transform="translate(352 0)" d="M5.5 50.5 L23 5.5 L40.5 50.5 M12 34 H34"/>
+  </g>
+</svg>

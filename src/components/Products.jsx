@@ -41,7 +41,7 @@ export default function Products() {
                 onClick={() => setGalleryStart(i)}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.12 }}
+                viewport={{ once: true, amount: 0.01 }}
                 whileHover={{ scale: 1.03 }}
                 style={{ cursor: 'pointer' }}
               >

@@ -5,6 +5,24 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { weDesign } from '@/content'
+import CheckroomIcon from '@mui/icons-material/Checkroom'
+import CreateIcon from '@mui/icons-material/Create'
+import FaceIcon from '@mui/icons-material/Face'
+import DescriptionIcon from '@mui/icons-material/Description'
+import Inventory2Icon from '@mui/icons-material/Inventory2'
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
+import CoffeeIcon from '@mui/icons-material/Coffee'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import SellIcon from '@mui/icons-material/Sell'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+
+const ITEM_ICONS = { Checkroom: CheckroomIcon, Create: CreateIcon, Face: FaceIcon, Description: DescriptionIcon, Inventory2: Inventory2Icon, ShoppingBag: ShoppingBagIcon, Coffee: CoffeeIcon, CalendarMonth: CalendarMonthIcon, Sell: SellIcon, AutoAwesome: AutoAwesomeIcon, MoreHoriz: MoreHorizIcon }
+
+function ItemIcon({ name }) {
+  const Icon = ITEM_ICONS[name]
+  return Icon ? <Icon sx={{ fontSize: '1.05em', opacity: 0.85 }} /> : null
+}
 
 const KEYFRAMES = `
 @keyframes wde-fadeUp {
@@ -49,7 +67,7 @@ export default function WeDesignEverything() {
           obs.disconnect()
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0, rootMargin: '0px 0px -8% 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -225,6 +243,9 @@ export default function WeDesignEverything() {
               <Box
                 key={item.label}
                 sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
                   px: 2.2,
                   py: 0.85,
                   borderRadius: 99,
@@ -250,7 +271,7 @@ export default function WeDesignEverything() {
                   },
                 }}
               >
-                {item.icon} {item.label}
+                <ItemIcon name={item.icon} /> {item.label}
               </Box>
             ))}
           </Box>

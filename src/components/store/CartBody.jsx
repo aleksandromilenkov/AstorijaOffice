@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import Chip from '@mui/material/Chip'
 import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
@@ -18,7 +17,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
-import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
 import { placeOrder } from '@/app/checkout/actions'
@@ -26,6 +24,7 @@ import { municipalities } from '@/data/municipalities'
 import { transliterate } from '@/lib/transliterate'
 import { createClient } from '@/lib/supabase/client'
 import ProductImg from './ProductImg'
+import PaymentMethods from './PaymentMethods'
 import PriceTag from '@/components/promo/PriceTag'
 import { effectivePrice } from '@/lib/pricing'
 
@@ -311,7 +310,7 @@ export default function CartBody() {
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 
-          <Chip icon={<LocalShippingIcon />} label="Плаќање при достава" variant="outlined" sx={{ alignSelf: 'flex-start', fontWeight: 600 }} />
+          <PaymentMethods />
 
           <Button
             variant="contained"

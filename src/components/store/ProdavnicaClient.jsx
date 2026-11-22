@@ -20,6 +20,7 @@ import { sortOptions } from '@/data/categories'
 import { createClient } from '@/lib/supabase/client'
 import ProductCard from './ProductCard'
 import { transliterate } from '@/lib/transliterate'
+import { effectivePrice } from '@/lib/pricing'
 
 /**
  * The interactive "Продавница" view.
@@ -61,7 +62,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
         const [productsResponse, categoriesResponse] = await Promise.all([
           supabase
             .from('products')
-            .select('id,title,slug,description,image_url,price,category_id,in_stock,created_at')
+            .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at')
             .order('created_at', { ascending: false }),
           supabase
             .from('categories')
@@ -116,7 +117,8 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       name: product.title,
       slug: product.slug,
       description: product.description ?? '',
-      price: product.price,
+      price: effectivePrice(product),
+      regularPrice: product.price,
       imageUrl: product.image_url,
       inStock: product.in_stock ?? true,
       category: categoryKeyById.get(product.category_id) ?? 'all',

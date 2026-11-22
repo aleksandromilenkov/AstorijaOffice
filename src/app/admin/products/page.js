@@ -50,12 +50,22 @@ async function deleteProductImage(url) {
   }
 }
 
+// ISO timestamp → value for <input type="datetime-local"> in local time.
+function toLocalInputValue(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 export default function AdminProductsPage() {
   const supabase = createClient()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [salePrice, setSalePrice] = useState('')
+  const [saleEndsAt, setSaleEndsAt] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [inStock, setInStock] = useState(true)
@@ -107,7 +117,7 @@ export default function AdminProductsPage() {
   async function loadProducts() {
     const { data, error } = await supabase
       .from('products')
-      .select('id,title,slug,description,image_url,price,category_id,in_stock,created_at')
+      .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -159,6 +169,8 @@ export default function AdminProductsPage() {
     setSlug('')
     setDescription('')
     setPrice('')
+    setSalePrice('')
+    setSaleEndsAt('')
     setImageUrl('')
     setImagePreview('')
     setImageFile(null)
@@ -187,6 +199,18 @@ export default function AdminProductsPage() {
       setError('Внесете валидна цена во MKD.')
       return
     }
+
+    // Promotion (optional): promo price must be lower than the regular price.
+    let parsedSalePrice = null
+    if (String(salePrice).trim() !== '') {
+      parsedSalePrice = Number(salePrice)
+      if (!Number.isInteger(parsedSalePrice) || parsedSalePrice < 0 || parsedSalePrice >= parsedPrice) {
+        setError('Промо цената мора да биде цел број помал од редовната цена.')
+        return
+      }
+    }
+    const parsedSaleEndsAt =
+      parsedSalePrice != null && saleEndsAt ? new Date(saleEndsAt).toISOString() : null
 
     setLoading(true)
     let uploadedUrl = imageUrl
@@ -224,6 +248,8 @@ export default function AdminProductsPage() {
           description,
           category_id: categoryId,
           price: parsedPrice,
+          sale_price: parsedSalePrice,
+          sale_ends_at: parsedSaleEndsAt,
           image_url: uploadedUrl,
           in_stock: inStock,
         })
@@ -236,6 +262,8 @@ export default function AdminProductsPage() {
           description,
           category_id: categoryId,
           price: parsedPrice,
+          sale_price: parsedSalePrice,
+          sale_ends_at: parsedSaleEndsAt,
           image_url: uploadedUrl,
           in_stock: inStock,
         },
@@ -264,6 +292,8 @@ export default function AdminProductsPage() {
     setSlug(product.slug)
     setDescription(product.description ?? '')
     setPrice(String(product.price ?? ''))
+    setSalePrice(product.sale_price != null ? String(product.sale_price) : '')
+    setSaleEndsAt(toLocalInputValue(product.sale_ends_at))
     setImageUrl(product.image_url ?? '')
     setImagePreview('')
     setImageFile(null)
@@ -352,6 +382,40 @@ export default function AdminProductsPage() {
             slotProps={{ htmlInput: { min: 0 } }}
             required
           />
+
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+              p: 2,
+              borderRadius: 2,
+              bgcolor: 'rgba(232,54,93,0.05)',
+              border: '1px dashed rgba(232,54,93,0.35)',
+            }}
+          >
+            <TextField
+              label="Промо цена (MKD) — опционално"
+              value={salePrice}
+              onChange={(event) => setSalePrice(event.target.value)}
+              type="number"
+              slotProps={{ htmlInput: { min: 0 } }}
+              helperText={
+                salePrice && Number(price) > 0 && Number(salePrice) < Number(price)
+                  ? `Попуст ${Math.round(((Number(price) - Number(salePrice)) / Number(price)) * 100)}%`
+                  : 'Оставете празно ако нема промоција'
+              }
+            />
+            <TextField
+              label="Промоцијата трае до"
+              value={saleEndsAt}
+              onChange={(event) => setSaleEndsAt(event.target.value)}
+              type="datetime-local"
+              disabled={!String(salePrice).trim()}
+              slotProps={{ inputLabel: { shrink: true } }}
+              helperText="Празно = додека не ја отстраните"
+            />
+          </Box>
 
           <FormControl fullWidth>
             <InputLabel id="category-label">Категорија</InputLabel>
@@ -512,7 +576,20 @@ export default function AdminProductsPage() {
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography>{product.price} MKD</Typography>
+                      <Typography>
+                        {product.sale_price != null ? (
+                          <>
+                            <Box component="span" sx={{ color: 'sale.main', fontWeight: 800 }}>
+                              {product.sale_price} MKD
+                            </Box>{' '}
+                            <Box component="del" sx={{ color: 'text.disabled' }}>
+                              {product.price}
+                            </Box>
+                          </>
+                        ) : (
+                          <>{product.price} MKD</>
+                        )}
+                      </Typography>
                       <Typography color="text.secondary" sx={{ fontSize: 12 }}>
                         {product.in_stock ? 'На залиха' : 'Нема на залиха'}
                       </Typography>

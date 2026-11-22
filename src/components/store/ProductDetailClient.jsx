@@ -17,7 +17,9 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useCart } from '@/store/CartContext'
-import { formatPrice } from '@/lib/formatPrice'
+import { effectivePrice, isOnSale, discountPercent } from '@/lib/pricing'
+import PriceTag from '@/components/promo/PriceTag'
+import Countdown from '@/components/promo/Countdown'
 import ProductImageZoom from './ProductImageZoom'
 
 /**
@@ -45,6 +47,9 @@ export default function ProductDetailClient({ product, loadError }) {
   }
 
   const inStock = product.in_stock ?? true
+  const onSale = isOnSale(product)
+  const price = effectivePrice(product)
+  const percent = onSale ? discountPercent(product.price, product.sale_price) : 0
   const imageUrl = product.image_url || null
 
   const dec = () => setQty((q) => Math.max(1, q - 1))
@@ -57,7 +62,8 @@ export default function ProductDetailClient({ product, loadError }) {
         id: product.id,
         name: product.title,
         slug: product.slug,
-        price: product.price,
+        price,
+        regularPrice: product.price,
         imageUrl,
       },
       qty,
@@ -151,9 +157,38 @@ export default function ProductDetailClient({ product, loadError }) {
             </Typography>
           </Box>
 
-          <Typography variant="h4" sx={{ fontWeight: 800, color: 'primary.main' }}>
-            {formatPrice(product.price)}
-          </Typography>
+          <Box>
+            {onSale ? (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mb: 1.25,
+                  px: 1.25,
+                  py: 0.5,
+                  borderRadius: 999,
+                  bgcolor: 'sale.light',
+                  color: 'sale.dark',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                }}
+              >
+                Промоција −{percent}%
+              </Box>
+            ) : null}
+            <PriceTag
+              price={price}
+              regularPrice={onSale ? product.price : null}
+              size="lg"
+              showSavings
+            />
+            {onSale && product.sale_ends_at ? (
+              <Box sx={{ mt: 1 }}>
+                <Countdown endsAt={product.sale_ends_at} variant="inline" label="Промоцијата завршува за" />
+              </Box>
+            ) : null}
+          </Box>
 
           <Divider />
 

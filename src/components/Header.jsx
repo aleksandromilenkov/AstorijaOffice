@@ -20,6 +20,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import InfoIcon from '@mui/icons-material/Info'
 import EmailIcon from '@mui/icons-material/Email'
+import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import Badge from '@mui/material/Badge'
 import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
@@ -113,6 +114,7 @@ export default function Header() {
                 Storefront: StorefrontIcon,
                 Info: InfoIcon,
                 Email: EmailIcon,
+                LocalOffer: LocalOfferIcon,
               }[item.icon] || null
 
               return (
@@ -125,8 +127,13 @@ export default function Header() {
                   startIcon={IconComponent ? <IconComponent /> : null}
                   sx={{
                     textTransform: 'none',
-                    fontWeight: 600,
+                    fontWeight: item.accent ? 800 : 600,
                     letterSpacing: '0.02em',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    // Icons only on wide screens, so the search keeps its room.
+                    '& .MuiButton-startIcon': { display: { md: 'none', lg: 'inherit' } },
+                    ...(item.accent ? { color: 'sale.main', '&:hover': { bgcolor: 'rgba(232,54,93,0.08)' } } : {}),
                   }}
                 >
                   {item.label}
@@ -227,8 +234,9 @@ export default function Header() {
                       Storefront: StorefrontIcon,
                       Info: InfoIcon,
                       Email: EmailIcon,
+                      LocalOffer: LocalOfferIcon,
                     }[item.icon]
-                    return IconComponent ? <IconComponent sx={{ mr: 1.5, color: 'primary.main' }} /> : null
+                    return IconComponent ? <IconComponent sx={{ mr: 1.5, color: item.accent ? 'sale.main' : 'primary.main' }} /> : null
                   })()}
                   <Typography
                     sx={{

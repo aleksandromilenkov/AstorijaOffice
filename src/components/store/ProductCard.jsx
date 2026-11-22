@@ -18,7 +18,8 @@ import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useCart } from '@/store/CartContext'
-import { formatPrice } from '@/lib/formatPrice'
+import { discountPercent } from '@/lib/pricing'
+import PriceTag from '@/components/promo/PriceTag'
 import ProductImg from './ProductImg'
 
 /**
@@ -65,6 +66,25 @@ export default function ProductCard({ product }) {
             bgcolor: 'grey.100',
           }}
         />
+        {discountPercent(product.regularPrice, product.price) > 0 && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              px: 1.1,
+              py: 0.4,
+              borderRadius: 999,
+              bgcolor: 'sale.main',
+              color: 'sale.contrastText',
+              fontWeight: 900,
+              fontSize: '0.85rem',
+              boxShadow: '0 6px 16px -6px rgba(232,54,93,0.6)',
+            }}
+          >
+            −{discountPercent(product.regularPrice, product.price)}%
+          </Box>
+        )}
         {/* Out‑of‑stock chip stays on top of the image */}
         {!product.inStock && (
           <Chip
@@ -113,9 +133,7 @@ export default function ProductCard({ product }) {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main' }}>
-          {formatPrice(product.price)}
-        </Typography>
+        <PriceTag price={product.price} regularPrice={product.regularPrice} size="md" />
 
         <Divider flexItem sx={{ my: 0.5 }} />
 

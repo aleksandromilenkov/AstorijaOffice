@@ -26,6 +26,8 @@ import { municipalities } from '@/data/municipalities'
 import { transliterate } from '@/lib/transliterate'
 import { createClient } from '@/lib/supabase/client'
 import ProductImg from './ProductImg'
+import PriceTag from '@/components/promo/PriceTag'
+import { effectivePrice } from '@/lib/pricing'
 
 export default function CartBody() {
   const { items, count, subtotal, updateQty, removeItem, clear, replaceItems } = useCart()
@@ -213,7 +215,7 @@ export default function CartBody() {
               </Box>
               <Stack sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.25 }}>{it.name}</Typography>
-                <Typography variant="body2" color="primary" sx={{ fontWeight: 700, mt: 0.25 }}>{formatPrice(it.price)}</Typography>
+                <Box sx={{ mt: 0.25 }}><PriceTag price={it.price} regularPrice={it.regularPrice} size="sm" /></Box>
                 <Stack direction="row" spacing={1} sx={{ mt: 1.5, alignItems: 'center' }}>
                   <IconButton size="small" onClick={() => updateQty(it.id, it.qty - 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
                     <RemoveIcon fontSize="small" />
@@ -351,7 +353,7 @@ function useCartPriceSync(items, replaceItems) {
       if (ids.length > 0) {
         const { data, error } = await createClient()
           .from('products')
-          .select('id,title,slug,price,image_url,in_stock')
+          .select('id,title,slug,price,sale_price,sale_ends_at,image_url,in_stock')
           .in('id', ids)
         if (error) return // keep the cart as is; the server re-checks on order
         rows = data ?? []
@@ -370,16 +372,19 @@ function useCartPriceSync(items, replaceItems) {
           messages.push(`„${row.title}“ моментално нема на залиха и е отстранет од кошничката.`)
           continue
         }
-        if (row.price !== it.price) {
+        const currentPrice = effectivePrice(row)
+        const regularPrice = currentPrice < row.price ? row.price : null
+        if (currentPrice !== it.price) {
           messages.push(
-            `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(row.price)}`,
+            `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(currentPrice)}`,
           )
         }
         next.push({
           ...it,
           name: row.title,
           slug: row.slug,
-          price: row.price,
+          price: currentPrice,
+          regularPrice,
           imageUrl: row.image_url || null,
         })
       }
@@ -387,7 +392,7 @@ function useCartPriceSync(items, replaceItems) {
       const changed =
         next.length !== snapshot.length ||
         next.some((it, i) =>
-          ['name', 'slug', 'price', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
+          ['name', 'slug', 'price', 'regularPrice', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
         )
       if (changed) replaceItems(next)
       setNotices(messages)

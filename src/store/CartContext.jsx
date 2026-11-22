@@ -149,6 +149,7 @@ export function CartProvider({ children }) {
         id: product.id,
         name: product.name,
         price: product.price,
+        regularPrice: product.regularPrice ?? null,
         imageUrl: product.imageUrl,
         slug: product.slug,
         qty: q,

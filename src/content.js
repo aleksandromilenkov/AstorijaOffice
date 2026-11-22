@@ -11,6 +11,7 @@
 export const navLinks = [
   { label: 'Дома', href: '/', icon: 'Home' },
   { label: 'Продавница', href: '/prodavnica', icon: 'Storefront' },
+  { label: 'Промоции', href: '/promocii', icon: 'LocalOffer', accent: true },
   { label: 'За нас', href: '/about', icon: 'Info' },
   { label: 'Контакт', href: '/contact', variant: 'contained', icon: 'Email' },
 ]

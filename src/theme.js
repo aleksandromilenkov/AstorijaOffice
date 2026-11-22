@@ -8,6 +8,13 @@ const theme = createTheme({
     secondary: {
       main: '#ae3ec9',
     },
+    // Promotions: discount badges and promo prices.
+    sale: {
+      main: '#e8365d',
+      dark: '#c41f47',
+      light: '#ffe3ea',
+      contrastText: '#ffffff',
+    },
   },
   typography: {
     fontFamily: 'Inter, Arial, sans-serif',

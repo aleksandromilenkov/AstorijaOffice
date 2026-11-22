@@ -45,7 +45,7 @@ export default function ProductDetailClient({ product, loadError }) {
   }
 
   const inStock = product.in_stock ?? true
-  const imageUrl = product.image_url || '/img/products/vizitki.svg'
+  const imageUrl = product.image_url || null
 
   const dec = () => setQty((q) => Math.max(1, q - 1))
   const inc = () => setQty((q) => q + 1)

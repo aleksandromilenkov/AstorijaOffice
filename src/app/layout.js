@@ -11,7 +11,12 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
+// Absolute base for canonical / Open Graph URLs. Set NEXT_PUBLIC_SITE_ORIGIN
+// to the real domain (e.g. https://astorija.mk) in Netlify.
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_ORIGIN || 'http://localhost:3000'
+
 export const metadata = {
+  metadataBase: new URL(siteOrigin),
   title: 'Асторија — Професионално печатење',
   description:
     'Асторија — доверливо име за печатење, дизајн и брендирање веќе повеќе од 25 години. Од единечен примерок до милион бренд-артикли.',

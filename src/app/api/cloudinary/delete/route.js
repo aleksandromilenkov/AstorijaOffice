@@ -1,52 +1,59 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
+import { v2 as cloudinary } from 'cloudinary'
+import { createClient } from '@/lib/supabase/server'
+import { cloudinaryPublicId, PRODUCT_IMAGE_FOLDER } from '@/lib/cloudinary'
 
 /**
- * DELETE an image from Cloudinary.
- * This runs on the server (App Router API route), so the private API key
- * and secret can be used safely.
+ * POST /api/cloudinary/delete   body: { imageUrl }
  *
- * Expected payload (JSON): { "imageUrl": "https://res.cloudinary.com/.../upload/v123/.../name.jpg" }
+ * Deletes a product image from Cloudinary. Only for logged-in admins
+ * (a row in `admins`), and only for images in the product folder, so the
+ * route cannot be used to wipe anything else in the Cloudinary account.
  */
 export async function POST(request) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
+  }
+  // RLS on `admins` lets a user read only their own row.
+  const { data: adminRow } = await supabase
+    .from('admins')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle()
+  if (!adminRow) {
+    return NextResponse.json({ error: 'Admins only' }, { status: 403 })
+  }
+
+  let imageUrl
   try {
-    const { imageUrl } = await request.json();
-    if (!imageUrl) {
-      return NextResponse.json({ error: 'Missing imageUrl' }, { status: 400 });
-    }
+    ;({ imageUrl } = await request.json())
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    if (!cloudName || !apiKey || !apiSecret) {
-      return NextResponse.json({ error: 'Cloudinary credentials not configured' }, { status: 500 });
-    }
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.CLOUDINARY_API_KEY
+  const apiSecret = process.env.CLOUDINARY_API_SECRET
+  if (!cloudName || !apiKey || !apiSecret) {
+    return NextResponse.json({ error: 'Cloudinary credentials not configured' }, { status: 500 })
+  }
 
-    // Extract the public ID from the URL (after '/upload/' and before extension)
-    const uploadSegment = '/upload/';
-    const idx = imageUrl.indexOf(uploadSegment);
-    if (idx === -1) {
-      return NextResponse.json({ error: 'Unable to parse Cloudinary URL' }, { status: 400 });
-    }
-    const path = imageUrl.substring(idx + uploadSegment.length);
-    const publicId = path.replace(/\.[^/.]+$/, ''); // strip file extension
+  const publicId = typeof imageUrl === 'string' ? cloudinaryPublicId(imageUrl, cloudName) : null
+  if (!publicId || !publicId.startsWith(`${PRODUCT_IMAGE_FOLDER}/`)) {
+    return NextResponse.json({ error: 'Not a product image on this Cloudinary account' }, { status: 400 })
+  }
 
-    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload/${publicId}`;
-    const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-    const resp = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Basic ${auth}`,
-      },
-    });
-
-    if (!resp.ok) {
-      const text = await resp.text();
-      return NextResponse.json({ error: `Cloudinary delete failed ${resp.status}`, details: text }, { status: resp.status });
-    }
-
-    return NextResponse.json({ success: true });
+  cloudinary.config({ cloud_name: cloudName, api_key: apiKey, api_secret: apiSecret, secure: true })
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, { invalidate: true })
+    // result.result is 'ok' or 'not found' (already gone) — both are fine.
+    return NextResponse.json({ success: true, result: result?.result ?? null })
   } catch (err) {
-    //console.error('Cloudinary delete API error', err);
-    return NextResponse.json({ error: err.message || 'Unknown error' }, { status: 500 });
+    console.error('Cloudinary delete failed', publicId, err)
+    return NextResponse.json({ error: 'Cloudinary delete failed' }, { status: 502 })
   }
 }

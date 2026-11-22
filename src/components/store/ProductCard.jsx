@@ -19,6 +19,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
+import ProductImg from './ProductImg'
 
 /**
  * Single product tile on the Продавница grid.
@@ -53,37 +54,16 @@ export default function ProductCard({ product }) {
           }}
         >
         {/* Product image */}
-        {product.imageUrl ? (
-          <Box
-            component="img"
-            src={product.imageUrl}
-            alt={product.name}
-            sx={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-            }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'
-            }}
-          />
-        ) : (
-          <Box
-            sx={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#f0f0f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#999',
-              fontSize: '0.8rem',
-            }}
-          >
-            No Image
-          </Box>
-        )}
+        <ProductImg
+          src={product.imageUrl}
+          alt={product.name}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+          }}
+        />
         {/* Out‑of‑stock chip stays on top of the image */}
         {!product.inStock && (
           <Chip

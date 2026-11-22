@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -24,32 +23,22 @@ import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
 import { placeOrder } from '@/app/checkout/actions'
 import { municipalities } from '@/data/municipalities'
+import { transliterate } from '@/lib/transliterate'
+import { createClient } from '@/lib/supabase/client'
+import ProductImg from './ProductImg'
 
 export default function CartBody() {
-  const { items, count, subtotal, updateQty, removeItem, clear } = useCart()
+  const { items, count, subtotal, updateQty, removeItem, clear, replaceItems } = useCart()
+  const cartNotices = useCartPriceSync(items, replaceItems)
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('07')
   const [address, setAddress] = useState('')
   const [city, setCity] = useState('')
 
-  const cyrillicToLatin = {
-    'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Ѓ': 'Gj', 'Е': 'E', 'Ж': 'Z', 'З': 'Z', 'Ѕ': 'Dz',
-    'И': 'I', 'Ј': 'J', 'К': 'K', 'Л': 'L', 'Љ': 'Lj', 'М': 'M', 'Н': 'N', 'Њ': 'Nj', 'О': 'O', 'П': 'P',
-    'Р': 'R', 'С': 'S', 'Т': 'T', 'Ќ': 'Kj', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Џ': 'Dz', 'Ш': 'S',
-    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'ѓ': 'gj', 'е': 'e', 'ж': 'z', 'з': 'z', 'ѕ': 'dz',
-    'и': 'i', 'ј': 'j', 'к': 'k', 'л': 'l', 'љ': 'lj', 'м': 'm', 'н': 'n', 'њ': 'nj', 'о': 'o', 'п': 'p',
-    'р': 'r', 'с': 's', 'т': 't', 'ќ': 'kj', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'џ': 'dz', 'ш': 's',
-    ' ': ' ', '-': '-'
-  }
-
-  const transliterate = (text) => {
-    return text.split('').map(char => cyrillicToLatin[char] || char).join('').toLowerCase()
-  }
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [orderResult, setOrderResult] = useState(null)
-  const [notifyWarning, setNotifyWarning] = useState(null)
 
   const shipping = 0
   const total = subtotal + shipping
@@ -91,7 +80,6 @@ export default function CartBody() {
 
       clear()
       setOrderResult({ orderId: result.orderId, total: result.total })
-      setNotifyWarning(result?.notifyError ?? null)
     } catch (err) {
       setError(err?.message ?? 'Нарачката не успеа. Обидете се повторно.')
     } finally {
@@ -142,12 +130,6 @@ export default function CartBody() {
             Ви благодариме! Вашата нарачка е примена и ќе ја обработиме во
             најкраток можен рок. Наскоро ќе ве контактираме за потврда на
             доставата.
-          {notifyWarning ? (
-            <Alert severity="warning" sx={{ mb: 3, textAlign: 'left' }}>
-              Нарачката е зачувана, но известувањето по е-пошта не можеше да
-              се испрати: {notifyWarning}
-            </Alert>
-          ) : null}
           </Typography>
           {shortId ? (
             <Box
@@ -216,13 +198,18 @@ export default function CartBody() {
       {/* line items — unchanged from your version */}
       <Stack spacing={2}>
         <Typography variant="h6" sx={{ fontWeight: 800 }}>Производи ({count})</Typography>
+        {cartNotices.length > 0 ? (
+          <Alert severity="info">
+            {cartNotices.map((notice) => (
+              <div key={notice}>{notice}</div>
+            ))}
+          </Alert>
+        ) : null}
         <Stack spacing={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden', bgcolor: 'background.paper' }}>
           {items.map((it, idx) => (
             <Stack key={it.id} direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ p: 2, borderTop: idx === 0 ? 'none' : '1px solid', borderColor: 'divider' }}>
               <Box sx={{ width: { xs: '100%', sm: 96 }, height: 96, borderRadius: 2, bgcolor: 'grey.100', background: 'linear-gradient(135deg, rgba(134,46,156,0.12), rgba(174,62,201,0.12))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                {it.imageUrl ? (
-                  <Image src={it.imageUrl} alt={it.name} width={96} height={96} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-                ) : null}
+                <ProductImg src={it.imageUrl} alt={it.name} sx={{ objectFit: 'cover', width: '100%', height: '100%' }} />
               </Box>
               <Stack sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.25 }}>{it.name}</Typography>
@@ -309,7 +296,7 @@ export default function CartBody() {
             renderInput={(params) => (
               <TextField 
                 {...params} 
-                label="Град / Општина *" 
+                label="Град / Општина" 
                 size="small" 
                 required 
                 autoComplete="address-level2" 
@@ -339,4 +326,75 @@ export default function CartBody() {
       </Box>
     </Box>
   )
+}
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * The cart lives in localStorage, so its prices/names can be days old.
+ * When the cart page opens, re-read every product from Supabase:
+ *   - update price, name, image and slug to the current values
+ *   - drop products that were deleted or are out of stock
+ * Returns human-readable notices about what changed.
+ */
+function useCartPriceSync(items, replaceItems) {
+  const [notices, setNotices] = useState([])
+  const synced = useRef(false)
+
+  useEffect(() => {
+    if (synced.current || items.length === 0) return
+    synced.current = true
+    const snapshot = items
+
+    async function sync() {
+      const ids = snapshot.map((it) => it.id).filter((id) => UUID_RE.test(id))
+      let rows = []
+      if (ids.length > 0) {
+        const { data, error } = await createClient()
+          .from('products')
+          .select('id,title,slug,price,image_url,in_stock')
+          .in('id', ids)
+        if (error) return // keep the cart as is; the server re-checks on order
+        rows = data ?? []
+      }
+      const byId = new Map(rows.map((row) => [row.id, row]))
+
+      const next = []
+      const messages = []
+      for (const it of snapshot) {
+        const row = byId.get(it.id)
+        if (!row) {
+          messages.push(`„${it.name}“ повеќе не е достапен и е отстранет од кошничката.`)
+          continue
+        }
+        if (!row.in_stock) {
+          messages.push(`„${row.title}“ моментално нема на залиха и е отстранет од кошничката.`)
+          continue
+        }
+        if (row.price !== it.price) {
+          messages.push(
+            `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(row.price)}`,
+          )
+        }
+        next.push({
+          ...it,
+          name: row.title,
+          slug: row.slug,
+          price: row.price,
+          imageUrl: row.image_url || null,
+        })
+      }
+
+      const changed =
+        next.length !== snapshot.length ||
+        next.some((it, i) =>
+          ['name', 'slug', 'price', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
+        )
+      if (changed) replaceItems(next)
+      setNotices(messages)
+    }
+
+    sync()
+  }, [items, replaceItems])
+
+  return notices
 }

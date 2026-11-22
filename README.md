@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Асторија — online store
 
-## Getting Started
+Web store for the Astorija printing house: marketing site, product catalogue,
+cart with cash-on-delivery checkout, and an admin panel for products,
+categories and orders.
 
-First, run the development server:
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router, `src/`), React 19, MUI 9 |
+| Database & auth | Supabase (Postgres + RLS, email/password admin login) |
+| Images | Cloudinary |
+| Email | EmailJS (contact form + new-order email to the owner) |
+| Hosting | Netlify, auto-deploys from `master` on GitHub |
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # then fill in the values
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Pages
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+| Route | |
+|---|---|
+| `/prodavnica`, `/prodavnica/[slug]` | Store and product pages |
+| `/kosnicka` | Cart + checkout (cart is kept in the browser's localStorage) |
+| `/admin/login` | Admin sign-in (new sign-ups are disabled in Supabase) |
+| `/admin/products`, `/admin/categories`, `/admin/orders` | Admin panel |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`src/proxy.js` redirects `/admin/*` to the login page when nobody is signed in.
+What each user may read or change is enforced by Supabase RLS: only users
+listed in the `admins` table can manage products, categories and orders.
 
-## Learn More
+## How an order is placed
 
-To learn more about Next.js, take a look at the following resources:
+The cart sends only product ids and quantities to the `placeOrder` Server
+Action (`src/app/checkout/actions.js`), which calls the `place_order` Postgres
+function. That function validates the customer details, reads prices and stock
+from `products`, computes the total and writes `orders` + `order_items` in one
+transaction. The browser never decides prices. Then the owner gets an email.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database changes (Supabase migrations)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The schema lives in `supabase/migrations/`. Never change tables or policies by
+hand in the dashboard — add a migration instead.
 
-## Deploy on Vercel
+```bash
+npx supabase migration new <name>     # create an empty migration file
+npx supabase start                     # local copy in Docker (needs Docker Desktop)
+npx supabase db reset                  # re-apply all migrations to the LOCAL copy
+npx supabase db push --db-url "<session pooler connection string>"   # apply to LIVE
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Use the **Session pooler** connection string from Supabase → Connect.
+Never run `db reset` with `--linked`: that wipes the live database.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+Push to `master` → Netlify builds and publishes. When a change includes a new
+migration, run `db push` **before** pushing the code.

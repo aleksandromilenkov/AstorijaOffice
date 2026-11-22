@@ -48,6 +48,9 @@ export default function AdminOrderDetailClient({ order, loadError }) {
   }
 
   const lineItems = getOrderLines(order)
+  const history = [...(order.order_status_history ?? [])].sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at),
+  )
   const shortId = (order.id ?? '').slice(0, 8).toUpperCase()
   const statusColor = STATUS_COLORS[status] ?? 'default'
 
@@ -270,6 +273,41 @@ export default function AdminOrderDetailClient({ order, loadError }) {
               >
                 {updating ? 'Зачувување...' : 'Зачувај промена'}
               </Button>
+            </Stack>
+
+            <Stack spacing={1.5} sx={{ mt: 3 }}>
+              {history.map((entry) => (
+                <Box
+                  key={entry.id}
+                  sx={{ borderLeft: '3px solid', borderColor: 'primary.light', pl: 1.5 }}
+                >
+                  <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                    <Chip
+                      label={STATUS_LABELS[entry.status] ?? entry.status}
+                      color={STATUS_COLORS[entry.status] ?? 'default'}
+                      size="small"
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {new Date(entry.created_at).toLocaleString('mk-MK', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                      })}
+                    </Typography>
+                  </Stack>
+                  {entry.note ? (
+                    <Typography variant="body2" sx={{ mt: 0.5, whiteSpace: 'pre-wrap' }}>
+                      {entry.note}
+                    </Typography>
+                  ) : null}
+                </Box>
+              ))}
+              <Typography variant="caption" color="text.secondary">
+                Нарачката е креирана{' '}
+                {new Date(order.created_at).toLocaleString('mk-MK', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
+              </Typography>
             </Stack>
           </Paper>
         </Stack>

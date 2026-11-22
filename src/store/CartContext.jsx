@@ -167,6 +167,9 @@ export function CartProvider({ children }) {
 
   const clear = useCallback(() => setSnapshot([]), [])
 
+  // Overwrite the whole cart (used to refresh prices from the database).
+  const replaceItems = useCallback((next) => setSnapshot(Array.isArray(next) ? next : []), [])
+
   const { count, subtotal, hydrated } = useMemo(() => {
     let c = 0
     let s = 0
@@ -189,8 +192,8 @@ export function CartProvider({ children }) {
   // the persisted items — no extra effect needed.
 
   const value = useMemo(
-    () => ({ items, count, subtotal, hydrated, addItem, updateQty, removeItem, clear }),
-    [items, count, subtotal, hydrated, addItem, updateQty, removeItem, clear]
+    () => ({ items, count, subtotal, hydrated, addItem, updateQty, removeItem, clear, replaceItems }),
+    [items, count, subtotal, hydrated, addItem, updateQty, removeItem, clear, replaceItems]
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

@@ -34,6 +34,22 @@ function slugify(value = '') {
     .replace(/^-+|-+$/g, '')
 }
 
+// Ask the server to delete a replaced/removed image from Cloudinary.
+// Failures are only logged: a leftover image is harmless.
+async function deleteProductImage(url) {
+  if (!url || !url.startsWith('https://res.cloudinary.com/')) return
+  try {
+    const resp = await fetch('/api/cloudinary/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl: url }),
+    })
+    if (!resp.ok) console.warn('Cloudinary delete failed:', await resp.text())
+  } catch (err) {
+    console.warn('Cloudinary delete request failed:', err)
+  }
+}
+
 export default function AdminProductsPage() {
   const supabase = createClient()
   const [title, setTitle] = useState('')
@@ -195,6 +211,9 @@ export default function AdminProductsPage() {
     }
 
     let result
+    const previousImageUrl = editingId
+      ? products.find((product) => product.id === editingId)?.image_url ?? null
+      : null
 
     if (editingId) {
       result = await supabase
@@ -230,6 +249,10 @@ export default function AdminProductsPage() {
       return
     }
 
+    if (previousImageUrl && previousImageUrl !== uploadedUrl) {
+      deleteProductImage(previousImageUrl)
+    }
+
     resetForm()
     setMessage(editingId ? 'Продуктот е успешно ажуриран.' : 'Продуктот е успешно додаден.')
     loadProducts()
@@ -261,24 +284,6 @@ export default function AdminProductsPage() {
     }
 
     setLoading(true)
-    // First try to delete the image from Cloudinary via a server‑side API route.
-    // This avoids exposing the API secret in the client bundle.
-    if (product.image_url) {
-      try {
-        const resp = await fetch('/api/cloudinary/delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: product.image_url }),
-        })
-        if (!resp.ok) {
-          const err = await resp.json()
-          console.warn('Cloudinary delete failed:', err)
-        }
-      } catch (imgErr) {
-        console.warn('Failed to call Cloudinary delete API:', imgErr)
-      }
-    }
-
     const { error } = await supabase
       .from('products')
       .delete()
@@ -289,6 +294,9 @@ export default function AdminProductsPage() {
       setError(error.message)
       return
     }
+
+    // Only remove the image once the product row is really gone.
+    deleteProductImage(product.image_url)
 
     setMessage('Продуктот е успешно избришан.')
     if (editingId === product.id) {

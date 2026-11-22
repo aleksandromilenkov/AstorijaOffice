@@ -40,7 +40,7 @@ function orderErrorMessage(dbMessage = '') {
  * in one transaction. It runs with the table owner's rights, so it works
  * for logged-out customers even though they cannot read `orders`.
  *
- * Returns `{ ok: true, orderId, total, notifyError }` or `{ ok: false, error }`.
+ * Returns `{ ok: true, orderId, total }` or `{ ok: false, error }`.
  */
 export async function placeOrder(payload) {
   const customer = payload?.customer ?? {}
@@ -74,9 +74,8 @@ export async function placeOrder(payload) {
     }
   }
 
-  // Owner notification. If email fails the order is still saved; we return
-  // a soft `notifyError` so the client can show a non-blocking hint.
-  let notifyError = null
+  // Owner notification. If email fails the order is still saved; the error
+  // is only logged (Netlify function logs) — the customer never sees it.
   try {
     const sendResult = await sendOrderEmail({
       order: {
@@ -91,15 +90,13 @@ export async function placeOrder(payload) {
       },
     })
     if (!sendResult.ok) {
-      notifyError = sendResult.error
       console.error('Order notification email failed:', sendResult.error)
     }
   } catch (emailError) {
-    notifyError = emailError?.message ?? 'email_failed'
     console.error('Order notification email threw:', emailError)
   }
 
-  return { ok: true, orderId: data.order_id, total: data.total_amount, notifyError }
+  return { ok: true, orderId: data.order_id, total: data.total_amount }
 }
 
 async function sendOrderEmail({ order }) {

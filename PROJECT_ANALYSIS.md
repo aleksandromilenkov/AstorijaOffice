@@ -67,6 +67,8 @@ Cart (localStorage) → `placeOrder` Server Action (`src/app/checkout/actions.js
 ## Problems found (ordered by importance)
 
 > **Fixed on 2026-11-22** (migration `20261122150000_place_order_rpc.sql` + code): #0, #1, #4b, #4c, #6, #7, #8, no logout button. Checkout now calls the `place_order` DB function (server-side prices, validation, writes `orders` + `order_items`); direct public inserts removed; sample products removed; admin pages read `order_items` (old orders fall back to `notes`). Tested against a local Supabase copy.
+>
+> **Fixed on 2026-11-23** (migration `20261123100000_order_status_history.sql` + code): #2 Cloudinary delete (admin-only, product folder only, correct public ID, image deleted only after the DB row), #9, #10 (status history), #11 (`proxy.js`, dead middleware removed), #12, #13 (+ share metadata), #14, #17 (README, `.env.example`). Also: broken product images now show a placeholder, cart refreshes prices/stock from the DB, customers no longer see email errors, Cyrillic product slugs no longer 404. Not done: #4 (admin UI gate — accepted, sign-ups are off), #16, #18, #19.
 
 ### 0. Checkout almost certainly fails for real (logged-out) customers
 `placeOrder` runs as the visitor. Anon may only INSERT into `orders`, but the code does `.insert(...).select('id')` — returning the row needs a SELECT policy, so Postgres rejects it with "new row violates row-level security policy". The follow-up `update notes` would also do nothing for anon (no UPDATE policy). All 9 existing orders have `notes` filled → they were all placed while logged in as admin in the same browser. **Verify: place an order from an incognito window.**

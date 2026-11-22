@@ -10,6 +10,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
+import { PRODUCT_PLACEHOLDER } from './ProductImg'
 import { styled } from '@mui/material/styles'
 
 /**
@@ -42,6 +43,10 @@ const ModalImage = styled('img')({
 })
 
 export default function ProductImageZoom({ imageUrl, alt }) {
+  // Fall back to the placeholder when there is no image or it fails to load.
+  const [failedSrc, setFailedSrc] = useState(null)
+  const src = !imageUrl || failedSrc === imageUrl ? PRODUCT_PLACEHOLDER : imageUrl
+
   // ---- Hover zoom state ----
   const [hovered, setHovered] = useState(false)
   const [origin, setOrigin] = useState({ x: '50%', y: '50%' })
@@ -118,9 +123,9 @@ export default function ProductImageZoom({ imageUrl, alt }) {
       >
         {/* The visible image */}
         <StyledImage
-          src={imageUrl}
+          src={src}
           alt={alt}
-          onError={(e) => (e.currentTarget.style.display = 'none')}
+          onError={() => imageUrl && setFailedSrc(imageUrl)}
           sx={{
             transition: hovered ? 'none' : 'transform 0.3s ease',
             transform: hovered ? `scale(2)` : 'scale(1)',
@@ -190,7 +195,7 @@ export default function ProductImageZoom({ imageUrl, alt }) {
             onClick={(e) => e.stopPropagation()}
           >
             <ModalImage
-              src={imageUrl}
+              src={src}
               alt={alt}
               sx={{
                 cursor: zoom > 1 ? 'grab' : 'default',

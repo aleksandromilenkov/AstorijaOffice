@@ -19,8 +19,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import { sortOptions } from '@/data/categories'
 import { createClient } from '@/lib/supabase/client'
 import ProductCard from './ProductCard'
-import { transliterate } from '@/lib/transliterate'
-import { effectivePrice } from '@/lib/pricing'
+import { matchesSearch } from '@/lib/transliterate'
+import { effectivePrice, variantPrice } from '@/lib/pricing'
 
 /**
  * The interactive "Продавница" view.
@@ -62,7 +62,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
         const [productsResponse, categoriesResponse] = await Promise.all([
           supabase
             .from('products')
-            .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at')
+            .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,price)')
             .order('created_at', { ascending: false }),
           supabase
             .from('categories')
@@ -112,18 +112,26 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
   }, [dbCategories])
 
   const mergedProducts = useMemo(() => {
-    return dbProducts.map((product) => ({
+    return dbProducts.map((product) => {
+      const options = product.product_variants ?? []
+      // With quantity options, show the cheapest option ("од ... ден.").
+      const regular = options.length ? Math.min(...options.map((v) => v.price)) : product.price
+      const current = options.length ? variantPrice(product, regular) : effectivePrice(product)
+      return {
       id: product.id,
       name: product.title,
       slug: product.slug,
       description: product.description ?? '',
-      price: effectivePrice(product),
-      regularPrice: product.price,
+      specs: product.specs ?? [],
+      hasVariants: options.length > 0,
+      price: current,
+      regularPrice: regular,
       imageUrl: product.image_url,
       inStock: product.in_stock ?? true,
       category: categoryKeyById.get(product.category_id) ?? 'all',
       createdAt: product.created_at,
-    }))
+      }
+    })
   }, [dbProducts, categoryKeyById])
 
   const filtered = useMemo(() => {
@@ -133,14 +141,11 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       list = list.filter((p) => p.category === category)
     }
     if (q) {
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          transliterate(p.name).includes(q) ||
-          (p.description ?? '').toLowerCase().includes(q) ||
-          transliterate(p.description ?? '').includes(q) ||
-          (p.category ?? '').toLowerCase().includes(q) ||
-          transliterate(p.category ?? '').includes(q)
+      // Cyrillic or Latin, any spelling ("vizitki", "визитки"); specs count too.
+      list = list.filter((p) =>
+        [p.name, p.description, p.category, ...(p.specs ?? [])].some((field) =>
+          matchesSearch(field, q),
+        ),
       )
     }
     const sorted = list.slice()
@@ -237,7 +242,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
           Продавница
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-          Изберете од нашите најпопуларни производи за печатење. Испорака низ цела Македонија
+          Изберете од нашите најпопуларни производи за печатење. Бесплатна испорака низ цела Македонија. Сите цени се со вклучен ДДВ.
         </Typography>
       </Stack>
 

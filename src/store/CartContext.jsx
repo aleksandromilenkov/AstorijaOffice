@@ -58,6 +58,15 @@ function emit() {
   for (const l of listeners) l()
 }
 
+/** Cart line identity: same product with a different option = separate line. */
+export function cartKey(productId, variantId) {
+  return variantId ? `${productId}:${variantId}` : productId
+}
+
+function withKey(it) {
+  return { ...it, key: it.key ?? cartKey(it.id, it.variantId) }
+}
+
 function safeParse(raw) {
   try {
     const parsed = JSON.parse(raw)
@@ -69,7 +78,7 @@ function safeParse(raw) {
         typeof it.name === 'string' &&
         Number.isFinite(it.price) &&
         Number.isFinite(it.qty)
-    )
+    ).map(withKey)
   } catch {
     return []
   }
@@ -136,7 +145,8 @@ export function CartProvider({ children }) {
   const addItem = useCallback((product, qty = 1) => {
     if (!product || !product.id) return
     const q = Math.max(1, Number(qty) || 1)
-    const i = snapshot.findIndex((it) => it.id === product.id)
+    const key = cartKey(product.id, product.variantId)
+    const i = snapshot.findIndex((it) => it.key === key)
     if (i >= 0) {
       const next = snapshot.slice()
       next[i] = { ...next[i], qty: next[i].qty + q }
@@ -146,7 +156,10 @@ export function CartProvider({ children }) {
     setSnapshot([
       ...snapshot,
       {
+        key,
         id: product.id,
+        variantId: product.variantId ?? null,
+        variantLabel: product.variantLabel ?? null,
         name: product.name,
         price: product.price,
         regularPrice: product.regularPrice ?? null,
@@ -157,19 +170,23 @@ export function CartProvider({ children }) {
     ])
   }, [])
 
-  const updateQty = useCallback((id, qty) => {
+  // Both take the line key (product id, or "productId:variantId").
+  const updateQty = useCallback((key, qty) => {
     const q = Math.max(1, Number(qty) || 1)
-    setSnapshot(snapshot.map((it) => (it.id === id ? { ...it, qty: q } : it)))
+    setSnapshot(snapshot.map((it) => (it.key === key ? { ...it, qty: q } : it)))
   }, [])
 
-  const removeItem = useCallback((id) => {
-    setSnapshot(snapshot.filter((it) => it.id !== id))
+  const removeItem = useCallback((key) => {
+    setSnapshot(snapshot.filter((it) => it.key !== key))
   }, [])
 
   const clear = useCallback(() => setSnapshot([]), [])
 
   // Overwrite the whole cart (used to refresh prices from the database).
-  const replaceItems = useCallback((next) => setSnapshot(Array.isArray(next) ? next : []), [])
+  const replaceItems = useCallback(
+    (next) => setSnapshot(Array.isArray(next) ? next.map(withKey) : []),
+    [],
+  )
 
   const { count, subtotal, hydrated } = useMemo(() => {
     let c = 0

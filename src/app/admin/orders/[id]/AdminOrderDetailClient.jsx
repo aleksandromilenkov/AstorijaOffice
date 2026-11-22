@@ -176,6 +176,11 @@ export default function AdminOrderDetailClient({ order, loadError }) {
                     <Typography sx={{ fontWeight: 700 }} noWrap>
                       {item.product_name}
                     </Typography>
+                    {item.variant_label ? (
+                      <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        {item.variant_label}
+                      </Typography>
+                    ) : null}
                     {item.product_slug ? (
                       <Typography variant="caption" color="text.secondary">
                         /prodavnica/{item.product_slug}

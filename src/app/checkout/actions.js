@@ -16,11 +16,16 @@ const ORDER_ERRORS = {
   empty_cart: 'Вашата кошничка е празна.',
   too_many_items: 'Премногу различни производи во една нарачка (најмногу 50).',
   invalid_quantity: 'Невалидна количина (1–1000 по производ).',
+  terms_not_accepted: 'За да нарачате, потребно е да се согласите со условите за купување.',
   unknown_product:
     'Некој производ во кошничката повеќе не е достапен. Отстранете го и обидете се повторно.',
 }
 
 function orderErrorMessage(dbMessage = '') {
+  if (dbMessage.startsWith('variant_required:')) {
+    const title = dbMessage.slice('variant_required:'.length)
+    return `Изберете количина за „${title}“ (отстранете го од кошничката и додадете го повторно).`
+  }
   if (dbMessage.startsWith('out_of_stock:')) {
     const title = dbMessage.slice('out_of_stock:'.length)
     return `„${title}“ моментално нема на залиха. Отстранете го од кошничката.`
@@ -32,7 +37,8 @@ function orderErrorMessage(dbMessage = '') {
  * Place a customer order (Server Action).
  *
  * Payload:
- *   { customer: { name, phone, city, address }, items: [{ id, qty }] }
+ *   { customer: { name, phone, city, address }, items: [{ id, variantId?, qty }],
+ *     acceptTerms: true }
  *
  * All the real work happens in the `place_order` Postgres function: it
  * validates the input, reads prices from `products` (browser prices are
@@ -55,6 +61,9 @@ export async function placeOrder(payload) {
   if (items.length === 0) {
     return { ok: false, error: ORDER_ERRORS.empty_cart }
   }
+  if (payload?.acceptTerms !== true) {
+    return { ok: false, error: ORDER_ERRORS.terms_not_accepted }
+  }
 
   const supabase = await createClient()
   const { data, error } = await supabase.rpc('place_order', {
@@ -62,7 +71,12 @@ export async function placeOrder(payload) {
     p_phone: String(customer.phone),
     p_city: String(customer.city),
     p_address: String(customer.address ?? ''),
-    p_items: items.map((it) => ({ product_id: it?.id, quantity: it?.qty })),
+    p_items: items.map((it) => ({
+      product_id: it?.id,
+      variant_id: it?.variantId ?? null,
+      quantity: it?.qty,
+    })),
+    p_terms_accepted: true,
   })
 
   if (error || !data?.order_id) {
@@ -116,7 +130,7 @@ async function sendOrderEmail({ order }) {
   const itemsBlock = (Array.isArray(order.lines) ? order.lines : [])
     .map(
       (line) =>
-        `• ${line.product_name} x${line.quantity} — ${formatMoney(line.line_total)} ден.`,
+        `• ${line.product_name}${line.variant_label ? ` (${line.variant_label})` : ""} x${line.quantity} — ${formatMoney(line.line_total)} ден.`,
     )
     .join('\n')
 

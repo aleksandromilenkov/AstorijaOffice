@@ -12,6 +12,7 @@ export function getOrderLines(order) {
     return rows.map((row) => ({
       product_id: row.product_id,
       product_name: row.product_name,
+      variant_label: row.variant_label ?? null,
       product_slug: row.products?.slug ?? null,
       quantity: row.quantity,
       unit_price: row.unit_price,

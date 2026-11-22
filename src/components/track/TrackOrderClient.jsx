@@ -249,7 +249,8 @@ function OrderResult({ order }) {
           {order.items.map((item, i) => (
             <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
               <Typography sx={{ minWidth: 0 }}>
-                {item.product_name}{' '}
+                {item.product_name}
+                {item.variant_label ? ` (${item.variant_label})` : ''}{' '}
                 <Box component="span" sx={{ color: 'text.secondary' }}>
                   × {item.quantity}
                 </Box>

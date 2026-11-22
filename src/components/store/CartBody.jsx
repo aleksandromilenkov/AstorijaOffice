@@ -13,6 +13,8 @@ import Autocomplete from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
@@ -21,12 +23,12 @@ import { useCart } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
 import { placeOrder } from '@/app/checkout/actions'
 import { municipalities } from '@/data/municipalities'
-import { transliterate } from '@/lib/transliterate'
+import { matchesSearch } from '@/lib/transliterate'
 import { createClient } from '@/lib/supabase/client'
 import ProductImg from './ProductImg'
 import PaymentMethods from './PaymentMethods'
 import PriceTag from '@/components/promo/PriceTag'
-import { effectivePrice } from '@/lib/pricing'
+import { effectivePrice, variantPrice } from '@/lib/pricing'
 
 export default function CartBody() {
   const { items, count, subtotal, updateQty, removeItem, clear, replaceItems } = useCart()
@@ -38,6 +40,8 @@ export default function CartBody() {
   const [city, setCity] = useState('')
 
   const [submitting, setSubmitting] = useState(false)
+  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [termsError, setTermsError] = useState(false)
   const [error, setError] = useState(null)
   const [orderResult, setOrderResult] = useState(null)
 
@@ -65,13 +69,20 @@ export default function CartBody() {
       return
     }
 
+    if (!acceptTerms) {
+      setTermsError(true)
+      setError('За да нарачате, потврдете дека се согласувате со условите за купување.')
+      return
+    }
+
     setSubmitting(true)
     try {
       const result = await placeOrder({
         customer: { name, phone, city, address },
+        acceptTerms,
         // Only ids and quantities — prices and the total are taken from the
         // database by the server.
-        items: items.map((it) => ({ id: it.id, qty: it.qty })),
+        items: items.map((it) => ({ id: it.id, variantId: it.variantId ?? null, qty: it.qty })),
       })
 
       if (!result?.ok) {
@@ -215,23 +226,28 @@ export default function CartBody() {
         ) : null}
         <Stack spacing={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden', bgcolor: 'background.paper' }}>
           {items.map((it, idx) => (
-            <Stack key={it.id} direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ p: 2, borderTop: idx === 0 ? 'none' : '1px solid', borderColor: 'divider' }}>
+            <Stack key={it.key} direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ p: 2, borderTop: idx === 0 ? 'none' : '1px solid', borderColor: 'divider' }}>
               <Box sx={{ width: { xs: '100%', sm: 96 }, height: 96, borderRadius: 2, bgcolor: 'grey.100', background: 'linear-gradient(135deg, rgba(134,46,156,0.12), rgba(174,62,201,0.12))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                 <ProductImg src={it.imageUrl} alt={it.name} sx={{ objectFit: 'cover', width: '100%', height: '100%' }} />
               </Box>
               <Stack sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.25 }}>{it.name}</Typography>
+                {it.variantLabel ? (
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                    {it.variantLabel}
+                  </Typography>
+                ) : null}
                 <Box sx={{ mt: 0.25 }}><PriceTag price={it.price} regularPrice={it.regularPrice} size="sm" /></Box>
                 <Stack direction="row" spacing={1} sx={{ mt: 1.5, alignItems: 'center' }}>
-                  <IconButton size="small" onClick={() => updateQty(it.id, it.qty - 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+                  <IconButton size="small" onClick={() => updateQty(it.key, it.qty - 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
                     <RemoveIcon fontSize="small" />
                   </IconButton>
                   <Typography sx={{ minWidth: 28, textAlign: 'center', fontWeight: 700 }}>{it.qty}</Typography>
-                  <IconButton size="small" onClick={() => updateQty(it.id, it.qty + 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+                  <IconButton size="small" onClick={() => updateQty(it.key, it.qty + 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
                     <AddIcon fontSize="small" />
                   </IconButton>
                   <Box sx={{ flex: 1 }} />
-                  <IconButton size="small" color="error" onClick={() => removeItem(it.id)}>
+                  <IconButton size="small" color="error" onClick={() => removeItem(it.key)}>
                     <DeleteOutlineIcon fontSize="small" />
                   </IconButton>
                 </Stack>
@@ -266,6 +282,9 @@ export default function CartBody() {
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Вкупно</Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatPrice(total)}</Typography>
           </Stack>
+          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right' }}>
+            Цените се со вклучен ДДВ
+          </Typography>
         </Stack>
 
         <Divider sx={{ my: 2 }} />
@@ -294,13 +313,10 @@ export default function CartBody() {
             options={municipalities}
             value={city}
             onChange={(event, newValue) => setCity(newValue || '')}
-            filterOptions={(options, state) => {
-              const search = state.inputValue.toLowerCase()
-              return options.filter(option => 
-                option.toLowerCase().includes(search) || 
-                transliterate(option).includes(search)
-              )
-            }}
+            filterOptions={(options, state) =>
+              // Cyrillic or Latin, any spelling: "Штип", "stip", "shtip", "štip".
+              options.filter((option) => matchesSearch(option, state.inputValue))
+            }
             renderInput={(params) => (
               <TextField 
                 {...params} 
@@ -315,9 +331,47 @@ export default function CartBody() {
           />
           <TextField label="Адреса за достава (опционално)" size="small" fullWidth multiline minRows={2} value={address} onChange={(e) => setAddress(e.target.value)} autoComplete="street-address" />
 
-          {error ? <Alert severity="error">{error}</Alert> : null}
-
           <PaymentMethods />
+
+          <FormControlLabel
+            sx={{
+              alignItems: 'flex-start',
+              mx: 0,
+              p: 1,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: termsError && !acceptTerms ? 'error.main' : 'transparent',
+              bgcolor: termsError && !acceptTerms ? 'rgba(211,47,47,0.04)' : 'transparent',
+            }}
+            control={
+              <Checkbox
+                checked={acceptTerms}
+                onChange={(e) => {
+                  setAcceptTerms(e.target.checked)
+                  if (e.target.checked) setTermsError(false)
+                }}
+                sx={{ mt: -0.75, ml: -0.75 }}
+              />
+            }
+            label={
+              <Typography variant="body2" sx={{ pt: 0.25 }}>
+                Ги прочитав и се согласувам со{' '}
+                <Box
+                  component={Link}
+                  href="/uslovi"
+                  target="_blank"
+                  rel="noopener"
+                  onClick={(e) => e.stopPropagation()}
+                  sx={{ color: 'primary.main', fontWeight: 700, textDecoration: 'underline' }}
+                >
+                  условите за купување и достава
+                </Box>
+                .
+              </Typography>
+            }
+          />
+
+          {error ? <Alert severity="error">{error}</Alert> : null}
 
           <Button
             variant="contained"
@@ -359,7 +413,7 @@ function useCartPriceSync(items, replaceItems) {
       if (ids.length > 0) {
         const { data, error } = await createClient()
           .from('products')
-          .select('id,title,slug,price,sale_price,sale_ends_at,image_url,in_stock')
+          .select('id,title,slug,price,sale_price,sale_ends_at,image_url,in_stock,product_variants(id,label,price)')
           .in('id', ids)
         if (error) return // keep the cart as is; the server re-checks on order
         rows = data ?? []
@@ -378,8 +432,23 @@ function useCartPriceSync(items, replaceItems) {
           messages.push(`„${row.title}“ моментално нема на залиха и е отстранет од кошничката.`)
           continue
         }
-        const currentPrice = effectivePrice(row)
-        const regularPrice = currentPrice < row.price ? row.price : null
+        const options = row.product_variants ?? []
+        let currentPrice
+        let regularPrice
+        let variantLabel = null
+        if (options.length > 0) {
+          const option = options.find((v) => v.id === it.variantId)
+          if (!option) {
+            messages.push(`За „${row.title}“ изберете количина повторно — опцијата е изменета.`)
+            continue
+          }
+          currentPrice = variantPrice(row, option.price)
+          regularPrice = currentPrice < option.price ? option.price : null
+          variantLabel = option.label
+        } else {
+          currentPrice = effectivePrice(row)
+          regularPrice = currentPrice < row.price ? row.price : null
+        }
         if (currentPrice !== it.price) {
           messages.push(
             `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(currentPrice)}`,
@@ -391,6 +460,7 @@ function useCartPriceSync(items, replaceItems) {
           slug: row.slug,
           price: currentPrice,
           regularPrice,
+          variantLabel,
           imageUrl: row.image_url || null,
         })
       }
@@ -398,7 +468,7 @@ function useCartPriceSync(items, replaceItems) {
       const changed =
         next.length !== snapshot.length ||
         next.some((it, i) =>
-          ['name', 'slug', 'price', 'regularPrice', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
+          ['name', 'slug', 'price', 'regularPrice', 'variantLabel', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
         )
       if (changed) replaceItems(next)
       setNotices(messages)

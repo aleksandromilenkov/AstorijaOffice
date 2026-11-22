@@ -16,6 +16,31 @@ export function effectivePrice(product, now = Date.now()) {
   return isOnSale(product, now) ? product.sale_price : product.price
 }
 
+/**
+ * Price of a quantity option right now. While the product's promo is active,
+ * the same percentage discount applies to every option (same rounding as the
+ * database).
+ */
+export function variantPrice(product, regularVariantPrice, now = Date.now()) {
+  if (!isOnSale(product, now) || !product.price) return regularVariantPrice
+  return Math.round((regularVariantPrice * product.sale_price) / product.price)
+}
+
+/** "100 парчиња" → 100 (for the per-piece price); null when no leading number. */
+export function variantUnits(label) {
+  const m = String(label ?? '').trim().match(/^(\d[\d\s.]*)/)
+  if (!m) return null
+  const n = Number(m[1].replace(/[\s.]/g, ''))
+  return Number.isFinite(n) && n > 1 ? n : null
+}
+
+/** Sorted options of a product row that embedded `product_variants(...)`. */
+export function sortedVariants(product) {
+  return [...(product?.product_variants ?? [])].sort(
+    (a, b) => a.sort_order - b.sort_order || a.price - b.price,
+  )
+}
+
 /** Whole-number discount, e.g. 450 → 359 gives 20. */
 export function discountPercent(regular, sale) {
   if (!regular || sale == null || sale >= regular) return 0

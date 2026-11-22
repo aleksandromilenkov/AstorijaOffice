@@ -20,6 +20,8 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { useCart } from '@/store/CartContext'
 import { discountPercent } from '@/lib/pricing'
 import PriceTag from '@/components/promo/PriceTag'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import SpecList from './SpecList'
 import ProductImg from './ProductImg'
 
 /**
@@ -118,25 +120,47 @@ export default function ProductCard({ product }) {
           {product.name}
         </Typography>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {product.description}
-        </Typography>
+        {product.specs?.length ? (
+          <SpecList specs={product.specs.slice(0, 3)} dense />
+        ) : (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {product.description}
+          </Typography>
+        )}
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <PriceTag price={product.price} regularPrice={product.regularPrice} size="md" />
+        <PriceTag
+          price={product.price}
+          regularPrice={product.regularPrice}
+          size="md"
+          fromPrefix={product.hasVariants}
+        />
 
         <Divider flexItem sx={{ my: 0.5 }} />
 
+        {product.hasVariants ? (
+          <Button
+            component={Link}
+            href={`/prodavnica/${encodeURIComponent(product.slug)}`}
+            variant="contained"
+            size="small"
+            disabled={!product.inStock}
+            endIcon={<ArrowForwardIcon />}
+            sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+          >
+            Избери количина
+          </Button>
+        ) : (
         <Stack
           direction="row"
           spacing={1}
@@ -196,6 +220,7 @@ export default function ProductCard({ product }) {
             Додади во кошничка
           </Button>
         </Stack>
+        )}
       </CardContent>
     </Card>
   );

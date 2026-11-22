@@ -11,7 +11,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import { useCart } from '@/store/CartContext'
-import { discountPercent } from '@/lib/pricing'
+import { discountPercent, variantPrice } from '@/lib/pricing'
 import ProductImg from '@/components/store/ProductImg'
 import PriceTag from './PriceTag'
 import Countdown from './Countdown'
@@ -27,6 +27,11 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
   const [added, setAdded] = useState(false)
   const href = `/prodavnica/${encodeURIComponent(product.slug)}`
   const percent = discountPercent(product.price, product.sale_price)
+  // Products with quantity options: show the cheapest option, choose on the product page.
+  const options = product.product_variants ?? []
+  const hasVariants = options.length > 0
+  const regular = hasVariants ? Math.min(...options.map((v) => v.price)) : product.price
+  const current = hasVariants ? variantPrice(product, regular) : product.sale_price
   const horizontal = layout === 'horizontal'
 
   function handleAdd() {
@@ -157,10 +162,36 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
           ) : null}
         </Box>
 
-        <PriceTag price={product.sale_price} regularPrice={product.price} size="lg" showSavings />
+        <PriceTag
+          price={current}
+          regularPrice={regular}
+          size="lg"
+          showSavings={!hasVariants}
+          fromPrefix={hasVariants}
+        />
 
         {product.sale_ends_at ? <Countdown endsAt={product.sale_ends_at} variant="inline" /> : null}
 
+        {hasVariants ? (
+          <Button
+            component={Link}
+            href={href}
+            variant="contained"
+            size="large"
+            fullWidth
+            disabled={!product.in_stock}
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 800,
+              borderRadius: 2.5,
+              py: 1.25,
+              backgroundImage: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+            }}
+          >
+            Избери количина
+          </Button>
+        ) : (
         <Stack spacing={1}>
           <Button
             variant="contained"
@@ -193,6 +224,7 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
             {added ? 'Кон кошничка' : 'Погледни детали'}
           </Button>
         </Stack>
+        )}
 
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center', color: 'text.secondary' }}>
           <LocalShippingOutlinedIcon fontSize="small" />

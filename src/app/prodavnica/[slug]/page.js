@@ -50,7 +50,7 @@ const fetchProductBySlug = cache(async (slug) => {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('products')
-    .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at')
+    .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,label,price,sort_order)')
     .eq('slug', slug)
     .maybeSingle()
 

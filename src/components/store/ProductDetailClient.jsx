@@ -17,7 +17,16 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useCart } from '@/store/CartContext'
-import { effectivePrice, isOnSale, discountPercent } from '@/lib/pricing'
+import {
+  effectivePrice,
+  isOnSale,
+  discountPercent,
+  sortedVariants,
+  variantPrice,
+  variantUnits,
+} from '@/lib/pricing'
+import { formatPrice } from '@/lib/formatPrice'
+import SpecList from './SpecList'
 import PriceTag from '@/components/promo/PriceTag'
 import Countdown from '@/components/promo/Countdown'
 import ProductImageZoom from './ProductImageZoom'
@@ -33,6 +42,8 @@ export default function ProductDetailClient({ product, loadError }) {
   const { addItem } = useCart()
   const [qty, setQty] = useState(1)
   const [confirmation, setConfirmation] = useState('')
+  const options = sortedVariants(product)
+  const [selectedId, setSelectedId] = useState(options[0]?.id ?? null)
 
   if (loadError) {
     return (
@@ -48,7 +59,20 @@ export default function ProductDetailClient({ product, loadError }) {
 
   const inStock = product.in_stock ?? true
   const onSale = isOnSale(product)
-  const price = effectivePrice(product)
+  const selected = options.find((o) => o.id === selectedId) ?? options[0] ?? null
+  // With quantity options the chosen option sets the price.
+  const regularPrice = selected ? selected.price : product.price
+  const price = selected ? variantPrice(product, selected.price) : effectivePrice(product)
+
+  // Per-piece price for each option ("100 парчиња" → price / 100), and which
+  // option is the best value.
+  const optionRows = options.map((o) => {
+    const now = variantPrice(product, o.price)
+    const units = variantUnits(o.label)
+    return { ...o, now, perUnit: units ? now / units : null }
+  })
+  const perUnits = optionRows.map((o) => o.perUnit).filter((v) => v != null)
+  const bestPerUnit = perUnits.length > 1 ? Math.min(...perUnits) : null
   const percent = onSale ? discountPercent(product.price, product.sale_price) : 0
   const imageUrl = product.image_url || null
 
@@ -63,15 +87,18 @@ export default function ProductDetailClient({ product, loadError }) {
         name: product.title,
         slug: product.slug,
         price,
-        regularPrice: product.price,
+        regularPrice,
         imageUrl,
+        variantId: selected?.id ?? null,
+        variantLabel: selected?.label ?? null,
       },
       qty,
     )
+    const what = selected ? ` (${selected.label})` : ''
     setConfirmation(
       qty === 1
-        ? 'Производот е додаден во кошничката.'
-        : `Додадени ${qty} парчиња во кошничката.`,
+        ? `Производот${what} е додаден во кошничката.`
+        : `Додадени ${qty} ×${what} во кошничката.`,
     )
   }
 
@@ -179,16 +206,101 @@ export default function ProductDetailClient({ product, loadError }) {
             ) : null}
             <PriceTag
               price={price}
-              regularPrice={onSale ? product.price : null}
+              regularPrice={onSale ? regularPrice : null}
               size="lg"
               showSavings
             />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+              Цената е со вклучен ДДВ · Бесплатна достава
+            </Typography>
             {onSale && product.sale_ends_at ? (
               <Box sx={{ mt: 1 }}>
                 <Countdown endsAt={product.sale_ends_at} variant="inline" label="Промоцијата завршува за" />
               </Box>
             ) : null}
           </Box>
+
+          {optionRows.length > 0 ? (
+            <Box role="radiogroup" aria-label="Количина">
+              <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1 }}>
+                Изберете количина
+              </Typography>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 1,
+                  gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(3, 1fr)' },
+                }}
+              >
+                {optionRows.map((o) => {
+                  const active = o.id === selected?.id
+                  const best = bestPerUnit != null && o.perUnit === bestPerUnit
+                  return (
+                    <Box
+                      key={o.id}
+                      component="button"
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setSelectedId(o.id)}
+                      sx={{
+                        position: 'relative',
+                        textAlign: 'left',
+                        font: 'inherit',
+                        cursor: 'pointer',
+                        p: 1.5,
+                        borderRadius: 2.5,
+                        border: '2px solid',
+                        borderColor: active ? 'primary.main' : 'divider',
+                        bgcolor: active ? 'rgba(134,46,156,0.06)' : 'background.paper',
+                        transition: 'border-color 150ms ease, background-color 150ms ease',
+                        '&:hover': { borderColor: active ? 'primary.main' : 'primary.light' },
+                        '&:focus-visible': { outline: '3px solid rgba(134,46,156,0.35)', outlineOffset: 2 },
+                      }}
+                    >
+                      {best ? (
+                        <Box
+                          component="span"
+                          sx={{
+                            position: 'absolute',
+                            top: -10,
+                            right: 8,
+                            px: 0.75,
+                            borderRadius: 999,
+                            bgcolor: 'success.main',
+                            color: '#fff',
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            lineHeight: '18px',
+                          }}
+                        >
+                          Најисплатливо
+                        </Box>
+                      ) : null}
+                      <Typography sx={{ fontWeight: 800, lineHeight: 1.25 }}>{o.label}</Typography>
+                      <Typography sx={{ fontWeight: 700, color: onSale ? 'sale.main' : 'primary.main' }}>
+                        {formatPrice(o.now)}
+                      </Typography>
+                      {o.perUnit != null ? (
+                        <Typography variant="caption" color="text.secondary">
+                          {o.perUnit.toLocaleString('en-US', { maximumFractionDigits: 2 }).replace('.', ',')} ден./парче
+                        </Typography>
+                      ) : null}
+                    </Box>
+                  )
+                })}
+              </Box>
+            </Box>
+          ) : null}
+
+          {product.specs?.length ? (
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1 }}>
+                Спецификации
+              </Typography>
+              <SpecList specs={product.specs} />
+            </Box>
+          ) : null}
 
           <Divider />
 

@@ -19,6 +19,7 @@ export default function PriceTag({
   size = 'md',
   showSavings = false,
   inverted = false,
+  fromPrefix = false,
 }) {
   const s = SIZES[size] ?? SIZES.md
   const onSale = regularPrice != null && regularPrice > price
@@ -36,6 +37,11 @@ export default function PriceTag({
             letterSpacing: '-0.01em',
           }}
         >
+          {fromPrefix ? (
+            <Box component="span" sx={{ fontSize: '0.6em', fontWeight: 700, mr: 0.5 }}>
+              од
+            </Box>
+          ) : null}
           {formatPrice(price)}
         </Typography>
         {onSale ? (

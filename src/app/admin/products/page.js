@@ -19,6 +19,8 @@ import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import AddIcon from '@mui/icons-material/Add'
+import { sortedVariants } from '@/lib/pricing'
 import { createClient } from '@/lib/supabase/client'
 import { uploadImageToCloudinary } from '@/lib/cloudinary'
 import AdminNav from '@/components/admin/AdminNav'
@@ -69,6 +71,10 @@ export default function AdminProductsPage() {
   const [imageUrl, setImageUrl] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [inStock, setInStock] = useState(true)
+  // One spec per line, e.g. "100 листа".
+  const [specsText, setSpecsText] = useState('')
+  // Quantity options: [{ id?, key, label, price }]
+  const [variants, setVariants] = useState([])
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
@@ -117,7 +123,7 @@ export default function AdminProductsPage() {
   async function loadProducts() {
     const { data, error } = await supabase
       .from('products')
-      .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at')
+      .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,label,price,sort_order)')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -176,6 +182,8 @@ export default function AdminProductsPage() {
     setImageFile(null)
     setUploadProgress('')
     setInStock(true)
+    setSpecsText('')
+    setVariants([])
     setCategoryId(categories?.[0]?.id ?? '')
     setError('')
     setMessage('')
@@ -189,12 +197,34 @@ export default function AdminProductsPage() {
       // Normalise the slug only at submit time so the user can edit it freely.
       const normalizedSlug = slugify(slug)
 
-      if (!title.trim() || !normalizedSlug.trim() || !price.trim() || !categoryId) {
+      // Quantity options (optional). With options, the product price is the
+      // lowest option price ("од ... ден.").
+      const cleanVariants = variants
+        .map((v) => ({ ...v, label: v.label.trim(), price: String(v.price).trim() }))
+        .filter((v) => v.label || v.price)
+      for (const v of cleanVariants) {
+        const n = Number(v.price)
+        if (!v.label || v.label.length > 60 || !Number.isInteger(n) || n < 0) {
+          setError('Секоја опција за количина треба опис (пр. „100 парчиња“) и цена како цел број.')
+          return
+        }
+      }
+      const hasVariants = cleanVariants.length > 0
+      const specs = specsText
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .slice(0, 12)
+        .map((line) => line.slice(0, 80))
+
+      if (!title.trim() || !normalizedSlug.trim() || (!hasVariants && !price.trim()) || !categoryId) {
       setError('Пополнете ги сите задолжителни полиња.')
       return
     }
 
-    const parsedPrice = Number(price)
+    const parsedPrice = hasVariants
+      ? Math.min(...cleanVariants.map((v) => Number(v.price)))
+      : Number(price)
     if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
       setError('Внесете валидна цена во MKD.')
       return
@@ -252,6 +282,7 @@ export default function AdminProductsPage() {
           sale_ends_at: parsedSaleEndsAt,
           image_url: uploadedUrl,
           in_stock: inStock,
+          specs,
         })
         .eq('id', editingId)
     } else {
@@ -266,8 +297,18 @@ export default function AdminProductsPage() {
           sale_ends_at: parsedSaleEndsAt,
           image_url: uploadedUrl,
           in_stock: inStock,
+          specs,
         },
       ])
+        .select('id')
+        .single()
+    }
+
+    // Save quantity options: update kept ones, insert new, delete removed.
+    if (!result.error) {
+      const productId = editingId ?? result.data?.id
+      const variantError = await saveVariants(productId, cleanVariants)
+      if (variantError) result = { error: variantError }
     }
 
     setLoading(false)
@@ -286,6 +327,26 @@ export default function AdminProductsPage() {
     loadProducts()
   }
 
+  async function saveVariants(productId, rows) {
+    if (!productId) return null
+    const existing = products.find((p) => p.id === productId)?.product_variants ?? []
+    const keepIds = rows.filter((r) => r.id).map((r) => r.id)
+    const removed = existing.filter((v) => !keepIds.includes(v.id)).map((v) => v.id)
+
+    if (removed.length) {
+      const { error } = await supabase.from('product_variants').delete().in('id', removed)
+      if (error) return error
+    }
+    for (const [index, row] of rows.entries()) {
+      const values = { label: row.label, price: Number(row.price), sort_order: index }
+      const { error } = row.id
+        ? await supabase.from('product_variants').update(values).eq('id', row.id)
+        : await supabase.from('product_variants').insert({ ...values, product_id: productId })
+      if (error) return error
+    }
+    return null
+  }
+
   function handleEdit(product) {
     setEditingId(product.id)
     setTitle(product.title)
@@ -300,6 +361,10 @@ export default function AdminProductsPage() {
     setUploadProgress('')
     setCategoryId(product.category_id ?? '')
     setInStock(product.in_stock ?? true)
+    setSpecsText((product.specs ?? []).join('\n'))
+    setVariants(
+      sortedVariants(product).map((v) => ({ id: v.id, key: v.id, label: v.label, price: String(v.price) })),
+    )
     setMessage('')
     setError('')
     // After state is set, scroll the form into view
@@ -375,13 +440,88 @@ export default function AdminProductsPage() {
           />
 
           <TextField
+            label="Спецификации (по една во ред)"
+            value={specsText}
+            onChange={(event) => setSpecsText(event.target.value)}
+            multiline
+            minRows={3}
+            placeholder={'100 листа\nХартија бездрвна 80 g/m2\nДимензија: 210 х 99 мм'}
+            helperText="Се прикажуваат како точки на картичката и на страницата на производот (најмногу 12)."
+          />
+
+          <TextField
             label="Цена (MKD)"
             value={price}
             onChange={(event) => setPrice(event.target.value)}
             type="number"
             slotProps={{ htmlInput: { min: 0 } }}
-            required
+            required={variants.length === 0}
+            disabled={variants.length > 0}
+            helperText={
+              variants.length > 0
+                ? 'Се пресметува автоматски: најниската цена од опциите за количина.'
+                : undefined
+            }
           />
+
+          <Box sx={{ p: 2, borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+            <Typography sx={{ fontWeight: 700 }}>Опции за количина (опционално)</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+              На пр. „100 парчиња“ 190 ден., „500 парчиња“ 690 ден. Купувачот избира една опција.
+              Промо цената важи како ист процент попуст за сите опции.
+            </Typography>
+            <Stack spacing={1.25}>
+              {variants.map((variant, index) => (
+                <Box
+                  key={variant.key}
+                  sx={{ display: 'grid', gap: 1, gridTemplateColumns: '1fr 140px auto', alignItems: 'center' }}
+                >
+                  <TextField
+                    size="small"
+                    label="Опис"
+                    placeholder="100 парчиња"
+                    value={variant.label}
+                    onChange={(event) =>
+                      setVariants((list) =>
+                        list.map((v, i) => (i === index ? { ...v, label: event.target.value } : v)),
+                      )
+                    }
+                  />
+                  <TextField
+                    size="small"
+                    label="Цена (MKD)"
+                    type="number"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    value={variant.price}
+                    onChange={(event) =>
+                      setVariants((list) =>
+                        list.map((v, i) => (i === index ? { ...v, price: event.target.value } : v)),
+                      )
+                    }
+                  />
+                  <IconButton
+                    aria-label="Отстрани опција"
+                    onClick={() => setVariants((list) => list.filter((_, i) => i !== index))}
+                    size="small"
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+            </Stack>
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() =>
+                setVariants((list) => [
+                  ...list,
+                  { key: `new-${Date.now()}-${list.length}`, label: '', price: '' },
+                ])
+              }
+              sx={{ mt: 1, textTransform: 'none', fontWeight: 700 }}
+            >
+              Додади опција
+            </Button>
+          </Box>
 
           <Box
             sx={{

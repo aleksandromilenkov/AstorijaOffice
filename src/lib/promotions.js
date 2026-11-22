@@ -9,7 +9,7 @@ export async function getActivePromotions({ limit } = {}) {
   const nowIso = new Date().toISOString()
   const query = createPublicClient()
     .from('products')
-    .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,in_stock')
+    .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,in_stock,specs,product_variants(id,price)')
     .not('sale_price', 'is', null)
     .or(`sale_ends_at.is.null,sale_ends_at.gt.${nowIso}`)
     .eq('in_stock', true)

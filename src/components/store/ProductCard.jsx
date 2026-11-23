@@ -131,22 +131,38 @@ export default function ProductCard({ product }) {
           {product.name}
         </Typography>
 
-        {product.specs?.length ? (
-          <SpecList specs={product.specs.slice(0, 3)} dense />
-        ) : (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {product.description}
-          </Typography>
-        )}
+        {/* Description / specs also open the product page — styled as plain
+            text (no link colour or underline). */}
+        <Box
+          component={Link}
+          href={product.slug ? `/prodavnica/${encodeURIComponent(product.slug)}` : '#'}
+          tabIndex={-1}
+          sx={{
+            display: 'block',
+            color: 'inherit',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            '& p, & li p': { transition: 'color 0.2s ease' },
+            '&:hover p': { color: 'text.primary' },
+          }}
+        >
+          {product.specs?.length ? (
+            <SpecList specs={product.specs.slice(0, 3)} dense />
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {product.description}
+            </Typography>
+          )}
+        </Box>
 
         <Box sx={{ flexGrow: 1 }} />
 

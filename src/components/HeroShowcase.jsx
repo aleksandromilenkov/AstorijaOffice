@@ -9,7 +9,7 @@ const SHOTS = [
   { src: '/img/products/shirt1.jpg', rotate: -12, x: -118, y: 18 },
   { src: '/img/products/shirt3.jpg', rotate: -4, x: -40, y: -6 },
   { src: '/img/products/shirt6.jpg', rotate: 5, x: 38, y: 4 },
-  { src: '/img/products/shirt10.jpg', rotate: 13, x: 116, y: 26 },
+  { src: '/img/products/shirt2.jpg', rotate: 13, x: 116, y: 26 },
 ]
 
 export const GALLERY_HREF = '/#products'

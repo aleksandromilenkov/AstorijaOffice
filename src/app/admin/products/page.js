@@ -18,12 +18,12 @@ import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import AddIcon from '@mui/icons-material/Add'
 import { sortedVariants } from '@/lib/pricing'
 import { createClient } from '@/lib/supabase/client'
 import { uploadImageToCloudinary } from '@/lib/cloudinary'
 import AdminNav from '@/components/admin/AdminNav'
+import ProductPhotosEditor, { photosFromUrls } from '@/components/admin/ProductPhotosEditor'
 
 function slugify(value = '') {
   return value
@@ -68,7 +68,8 @@ export default function AdminProductsPage() {
   const [price, setPrice] = useState('')
   const [salePrice, setSalePrice] = useState('')
   const [saleEndsAt, setSaleEndsAt] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
+  // [{ key, url? , file?, preview? }] — first is the main photo
+  const [photos, setPhotos] = useState([])
   const [categoryId, setCategoryId] = useState('')
   const [inStock, setInStock] = useState(true)
   // One spec per line, e.g. "100 листа".
@@ -85,8 +86,6 @@ export default function AdminProductsPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
 
@@ -96,13 +95,6 @@ export default function AdminProductsPage() {
     loadProducts()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview)
-      }
-    }
-  }, [imagePreview])
 
   async function loadCategories() {
     const { data, error } = await supabase
@@ -123,7 +115,7 @@ export default function AdminProductsPage() {
   async function loadProducts() {
     const { data, error } = await supabase
       .from('products')
-      .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,label,price,sort_order)')
+      .select('id,title,slug,description,image_url,images,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,label,price,sort_order)')
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -177,9 +169,7 @@ export default function AdminProductsPage() {
     setPrice('')
     setSalePrice('')
     setSaleEndsAt('')
-    setImageUrl('')
-    setImagePreview('')
-    setImageFile(null)
+    setPhotos([])
     setUploadProgress('')
     setInStock(true)
     setSpecsText('')
@@ -243,31 +233,38 @@ export default function AdminProductsPage() {
       parsedSalePrice != null && saleEndsAt ? new Date(saleEndsAt).toISOString() : null
 
     setLoading(true)
-    let uploadedUrl = imageUrl
-
-    if (imageFile) {
-      try {
-        setUploadingImage(true)
-        setUploadProgress('Се прикачува слика на Cloudinary...')
-        const uploadResult = await uploadImageToCloudinary(imageFile, { folder: 'astorija/products' })
-        uploadedUrl = uploadResult.url
-        setImageUrl(uploadedUrl)
-        setUploadProgress('Сликата е успешно прикачена.')
-      } catch (uploadError) {
-        setLoading(false)
-        setUploadingImage(false)
-        setUploadProgress('')
-        setError(uploadError.message ?? 'Прикачувањето на сликата не успеа.')
-        return
-      } finally {
-        setUploadingImage(false)
+    // Upload new photos (in order); keep already-saved ones as they are.
+    const pending = photos.filter((p) => p.file)
+    let images = []
+    try {
+      if (pending.length) setUploadingImage(true)
+      let done = 0
+      for (const photo of photos) {
+        if (photo.url) {
+          images.push(photo.url)
+          continue
+        }
+        setUploadProgress(`Се прикачува фотографија ${done + 1} од ${pending.length}...`)
+        const uploaded = await uploadImageToCloudinary(photo.file, { folder: 'astorija/products' })
+        images.push(uploaded.url)
+        done++
       }
+      if (pending.length) setUploadProgress('Фотографиите се прикачени.')
+    } catch (uploadError) {
+      setLoading(false)
+      setUploadingImage(false)
+      setUploadProgress('')
+      setError(uploadError.message ?? 'Прикачувањето на фотографиите не успеа.')
+      return
     }
+    setUploadingImage(false)
+    // Show saved URLs in the editor (so a retry does not upload twice).
+    setPhotos(photosFromUrls(images))
 
     let result
-    const previousImageUrl = editingId
-      ? products.find((product) => product.id === editingId)?.image_url ?? null
-      : null
+    const previousImages = editingId
+      ? products.find((product) => product.id === editingId)?.images ?? []
+      : []
 
     if (editingId) {
       result = await supabase
@@ -280,7 +277,7 @@ export default function AdminProductsPage() {
           price: parsedPrice,
           sale_price: parsedSalePrice,
           sale_ends_at: parsedSaleEndsAt,
-          image_url: uploadedUrl,
+          images,
           in_stock: inStock,
           specs,
         })
@@ -295,7 +292,7 @@ export default function AdminProductsPage() {
           price: parsedPrice,
           sale_price: parsedSalePrice,
           sale_ends_at: parsedSaleEndsAt,
-          image_url: uploadedUrl,
+          images,
           in_stock: inStock,
           specs,
         },
@@ -318,8 +315,9 @@ export default function AdminProductsPage() {
       return
     }
 
-    if (previousImageUrl && previousImageUrl !== uploadedUrl) {
-      deleteProductImage(previousImageUrl)
+    // Photos removed from the product: delete them from Cloudinary too.
+    for (const url of previousImages) {
+      if (!images.includes(url)) deleteProductImage(url)
     }
 
     resetForm()
@@ -355,9 +353,7 @@ export default function AdminProductsPage() {
     setPrice(String(product.price ?? ''))
     setSalePrice(product.sale_price != null ? String(product.sale_price) : '')
     setSaleEndsAt(toLocalInputValue(product.sale_ends_at))
-    setImageUrl(product.image_url ?? '')
-    setImagePreview('')
-    setImageFile(null)
+    setPhotos(photosFromUrls(product.images?.length ? product.images : [product.image_url]))
     setUploadProgress('')
     setCategoryId(product.category_id ?? '')
     setInStock(product.in_stock ?? true)
@@ -390,8 +386,10 @@ export default function AdminProductsPage() {
       return
     }
 
-    // Only remove the image once the product row is really gone.
-    deleteProductImage(product.image_url)
+    // Only remove the photos once the product row is really gone.
+    for (const url of product.images?.length ? product.images : [product.image_url]) {
+      deleteProductImage(url)
+    }
 
     setMessage('Продуктот е успешно избришан.')
     if (editingId === product.id) {
@@ -575,51 +573,7 @@ export default function AdminProductsPage() {
           </FormControl>
 
           <Box sx={{ display: 'grid', gap: 1 }}>
-            <Button
-              component="label"
-              variant="outlined"
-              startIcon={<CloudUploadIcon />}
-              disabled={uploadingImage}
-            >
-              {imageFile ? `Избрана: ${imageFile.name}` : 'Прикачи слика на Cloudinary'}
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (imagePreview) {
-                    URL.revokeObjectURL(imagePreview)
-                  }
-                  setImageFile(file ?? null)
-                  setImagePreview(file ? URL.createObjectURL(file) : '')
-                  if (file) {
-                    setUploadProgress('')
-                  }
-                }}
-              />
-            </Button>
-            {(imagePreview || imageUrl) ? (
-              <Box
-                sx={{
-                  mt: 1,
-                  width: '100%',
-                  maxWidth: 260,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  overflow: 'hidden',
-                  backgroundColor: 'background.paper',
-                }}
-              >
-                <Box
-                  component="img"
-                  src={imagePreview || imageUrl}
-                  alt="Преглед на слика"
-                  sx={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </Box>
-            ) : null}
+            <ProductPhotosEditor photos={photos} onChange={setPhotos} disabled={uploadingImage || loading} />
             {uploadProgress ? (
               <Typography variant="body2" color="text.secondary">
                 {uploadProgress}

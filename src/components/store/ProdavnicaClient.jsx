@@ -62,7 +62,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
         const [productsResponse, categoriesResponse] = await Promise.all([
           supabase
             .from('products')
-            .select('id,title,slug,description,image_url,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,price)')
+            .select('id,title,slug,description,image_url,images,price,sale_price,sale_ends_at,category_id,in_stock,created_at,specs,product_variants(id,price)')
             .order('created_at', { ascending: false }),
           supabase
             .from('categories')
@@ -127,6 +127,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
       price: current,
       regularPrice: regular,
       imageUrl: product.image_url,
+      hoverImageUrl: product.images?.[1] ?? null,
       inStock: product.in_stock ?? true,
       category: categoryKeyById.get(product.category_id) ?? 'all',
       createdAt: product.created_at,

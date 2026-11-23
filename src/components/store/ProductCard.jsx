@@ -76,6 +76,24 @@ export default function ProductCard({ product }) {
             bgcolor: 'grey.100',
           }}
         />
+        {/* Second photo (e.g. the back side) cross-fades in on hover */}
+        {product.hoverImageUrl ? (
+          <ProductImg
+            src={product.hoverImageUrl}
+            alt=""
+            className="card-hover-photo"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              opacity: 0,
+              transition: 'opacity 0.45s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important',
+              '.MuiCard-root:hover &': { opacity: 1 },
+            }}
+          />
+        ) : null}
         {discountPercent(product.regularPrice, product.price) > 0 && (
           <Box
             className="a-shine-loop"

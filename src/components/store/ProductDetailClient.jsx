@@ -30,6 +30,9 @@ import SpecList from './SpecList'
 import PriceTag from '@/components/promo/PriceTag'
 import Countdown from '@/components/promo/Countdown'
 import ProductImageZoom from './ProductImageZoom'
+import ProductImg from './ProductImg'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
 /**
  * Public product detail page (`/prodavnica/[slug]`).
@@ -44,6 +47,10 @@ export default function ProductDetailClient({ product, loadError }) {
   const [confirmation, setConfirmation] = useState('')
   const options = sortedVariants(product)
   const [selectedId, setSelectedId] = useState(options[0]?.id ?? null)
+  // All product photos (first = main); old products have only image_url.
+  const photos = (product?.images?.length ? product.images : [product?.image_url]).filter(Boolean)
+  const [photoIndex, setPhotoIndex] = useState(0)
+  const showPhoto = (i) => setPhotoIndex((i + photos.length) % photos.length)
 
   if (loadError) {
     return (
@@ -133,6 +140,7 @@ export default function ProductDetailClient({ product, loadError }) {
           alignItems: 'flex-start',
         }}
       >
+        <Box sx={{ minWidth: 0 }}>
         <Paper
           elevation={0}
           sx={{
@@ -153,7 +161,56 @@ export default function ProductDetailClient({ product, loadError }) {
                 'linear-gradient(135deg, rgba(215,31,43,0.10), rgba(179,18,29,0.10))',
             }}
           />
-          <ProductImageZoom imageUrl={imageUrl} alt={product.title} />
+          <Box key={photoIndex} sx={{ position: 'absolute', inset: 0, animation: 'a-fade-in 0.35s ease' }}>
+            <ProductImageZoom
+              imageUrl={photos[photoIndex] ?? null}
+              alt={photos.length > 1 ? `${product.title} — фотографија ${photoIndex + 1}` : product.title}
+            />
+          </Box>
+          {photos.length > 1 ? (
+            <>
+              {[
+                { side: 'left', delta: -1, Icon: ChevronLeftIcon, label: 'Претходна фотографија' },
+                { side: 'right', delta: 1, Icon: ChevronRightIcon, label: 'Следна фотографија' },
+              ].map(({ side, delta, Icon, label }) => (
+                <IconButton
+                  key={side}
+                  aria-label={label}
+                  onClick={() => showPhoto(photoIndex + delta)}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    [side]: 12,
+                    transform: 'translateY(-50%)',
+                    zIndex: 2,
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                    '&:hover': { bgcolor: '#fff' },
+                  }}
+                >
+                  <Icon />
+                </IconButton>
+              ))}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 12,
+                  left: 12,
+                  zIndex: 2,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 999,
+                  bgcolor: 'rgba(20,22,26,0.7)',
+                  color: '#fff',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {photoIndex + 1} / {photos.length}
+              </Box>
+            </>
+          ) : null}
           {!inStock ? (
             <Chip
               label="Нема на залиха"
@@ -169,6 +226,44 @@ export default function ProductDetailClient({ product, loadError }) {
             />
           ) : null}
         </Paper>
+        {photos.length > 1 ? (
+          <Box
+            role="tablist"
+            aria-label="Фотографии од производот"
+            sx={{ display: 'flex', gap: 1.25, mt: 1.5, overflowX: 'auto', pb: 0.5 }}
+          >
+            {photos.map((src, i) => (
+              <Box
+                key={src}
+                component="button"
+                type="button"
+                role="tab"
+                aria-selected={i === photoIndex}
+                aria-label={`Фотографија ${i + 1}`}
+                onClick={() => setPhotoIndex(i)}
+                sx={{
+                  flexShrink: 0,
+                  width: { xs: 64, sm: 84 },
+                  aspectRatio: '1 / 1',
+                  p: 0,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  bgcolor: '#fff',
+                  border: '2px solid',
+                  borderColor: i === photoIndex ? 'primary.main' : 'divider',
+                  opacity: i === photoIndex ? 1 : 0.7,
+                  transition: 'border-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease',
+                  '&:hover': { opacity: 1, transform: 'translateY(-2px)' },
+                  '&:focus-visible': { outline: '3px solid rgba(215,31,43,0.35)', outlineOffset: 2 },
+                }}
+              >
+                <ProductImg src={src} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </Box>
+            ))}
+          </Box>
+        ) : null}
+        </Box>
 
         <Stack spacing={2.5} sx={{ minWidth: 0 }}>
           <Box>

@@ -39,7 +39,7 @@ export default function Hero() {
         sx={{
           position: 'absolute',
           inset: 0,
-          animation: 'a-kenburns 14s cubic-bezier(0.16, 1, 0.3, 1) both',
+          animation: 'a-kenburns 14s cubic-bezier(0.16, 1, 0.3, 1) backwards',
           willChange: 'transform',
         }}
       >

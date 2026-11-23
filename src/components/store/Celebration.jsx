@@ -90,7 +90,7 @@ export function SuccessCheck({ size = 84 }) {
       sx={{
         display: 'block',
         mx: 'auto',
-        animation: 'a-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        animation: 'a-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards',
         '& .ring': {
           strokeDasharray: 157,
           strokeDashoffset: 157,

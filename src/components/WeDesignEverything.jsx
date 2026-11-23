@@ -258,7 +258,7 @@ export default function WeDesignEverything() {
                   letterSpacing: '0.02em',
                   cursor: 'default',
                   opacity: visible ? 1 : 0,
-                  animation: visible ? `wde-pillIn 0.5s ease both` : 'none',
+                  animation: visible ? `wde-pillIn 0.5s ease backwards` : 'none',
                   animationDelay: `${0.35 + i * 0.055}s`,
                   transition:
                     'background 0.22s, border-color 0.22s, color 0.22s, transform 0.22s, box-shadow 0.22s',

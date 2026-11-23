@@ -118,7 +118,7 @@ export default function CartBody() {
             borderRadius: 4,
             bgcolor: 'background.paper',
             position: 'relative',
-            animation: 'a-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both',
+            animation: 'a-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards',
           }}
         >
           <Confetti />

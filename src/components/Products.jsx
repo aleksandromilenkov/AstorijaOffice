@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import Portal from '@mui/material/Portal'
 import Gallery from './Gallery'
 import { products } from '@/content'
 
@@ -110,7 +111,11 @@ export default function Products() {
       </Box>
 
       {galleryStart !== null && (
-        <Gallery initialIndex={galleryStart} onClose={() => setGalleryStart(null)} />
+        // Portal: render the full-screen viewer at <body>, so no ancestor
+        // (transforms, filters, overflow) can ever trap or clip it.
+        <Portal>
+          <Gallery initialIndex={galleryStart} onClose={() => setGalleryStart(null)} />
+        </Portal>
       )}
     </>
   )

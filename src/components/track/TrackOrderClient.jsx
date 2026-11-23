@@ -336,8 +336,8 @@ function Timeline({ currentIndex, reachedAt }) {
                   transformOrigin: { xs: 'top', md: 'left' },
                   animation: done
                     ? {
-                        xs: `a-grow-y 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms both`,
-                        md: `a-grow-x 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms both`,
+                        xs: `a-grow-y 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms backwards`,
+                        md: `a-grow-x 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms backwards`,
                       }
                     : 'none',
                   // vertical on mobile, horizontal on desktop
@@ -363,7 +363,7 @@ function Timeline({ currentIndex, reachedAt }) {
                 border: '2px solid',
                 borderColor: reached ? 'primary.main' : 'divider',
                 boxShadow: current ? '0 0 0 6px rgba(215,31,43,0.18)' : 'none',
-                animation: reached ? `a-scale-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 220}ms both` : 'none',
+                animation: reached ? `a-scale-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 220}ms backwards` : 'none',
                 '&::after': current
                   ? {
                       content: '""',

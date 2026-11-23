@@ -22,6 +22,7 @@ import InfoIcon from '@mui/icons-material/Info'
 import EmailIcon from '@mui/icons-material/Email'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
+import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined'
 import Badge from '@mui/material/Badge'
 import { useCart } from '@/store/CartContext'
 import { navLinks } from '@/content'
@@ -264,6 +265,7 @@ export default function Header() {
                       Email: EmailIcon,
                       LocalOffer: LocalOfferIcon,
                       LocalShipping: LocalShippingOutlinedIcon,
+                      Collections: CollectionsOutlinedIcon,
                     }[item.icon]
                     return IconComponent ? <IconComponent sx={{ mr: 1.5, color: item.accent ? 'sale.main' : 'primary.main' }} /> : null
                   })()}

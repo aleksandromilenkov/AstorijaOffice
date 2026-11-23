@@ -20,6 +20,7 @@ const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURICom
 const SHOP_LINKS = [
   { label: 'Продавница', href: '/prodavnica' },
   { label: 'Промоции', href: '/promocii' },
+  { label: 'Галерија', href: '/#products' },
   { label: 'Следи нарачка', href: '/sledenje' },
   { label: 'Кошничка', href: '/kosnicka' },
 ]

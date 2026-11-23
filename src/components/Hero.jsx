@@ -10,6 +10,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined'
 import { hero } from '@/content'
+import HeroShowcase, { GALLERY_HREF } from './HeroShowcase'
 
 /** "Печатете го вашиот бренд" → ["Печатете го", "вашиот бренд"] */
 function splitTitle(text) {
@@ -75,6 +76,7 @@ export default function Hero() {
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', py: { xs: 8, md: 10 } }}>
+        <HeroShowcase />
         <Box>
           <Box sx={{ maxWidth: { xs: '100%', md: 620 } }}>
             {/* Badge */}
@@ -252,6 +254,30 @@ export default function Hero() {
               >
                 {hero.secondaryCta}
               </Button>
+            </Box>
+
+            {/* Smaller screens: the photo stack doesn't fit, so a text link */}
+            <Box
+              component="a"
+              href={GALLERY_HREF}
+              className="a-fade-up"
+              style={{ '--d': '950ms' }}
+              sx={{
+                display: { xs: 'inline-flex', lg: 'none' },
+                alignItems: 'center',
+                gap: 0.75,
+                mt: -1.5,
+                mb: 3.5,
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '0.98rem',
+                borderBottom: '2px solid rgba(255,90,95,0.7)',
+                pb: 0.25,
+                '& svg': { transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' },
+                '&:hover svg': { transform: 'translateX(4px)' },
+              }}
+            >
+              Погледни ги нашите работи <ArrowForwardRoundedIcon fontSize="small" />
             </Box>
 
             {/* Social proof (true numbers only) */}

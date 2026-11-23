@@ -175,6 +175,7 @@ function OrderResult({ order }) {
   return (
     <Paper
       elevation={0}
+      className="a-fade-up"
       sx={{
         p: { xs: 2.5, md: 3.5 },
         borderRadius: 4,
@@ -331,6 +332,14 @@ function Timeline({ currentIndex, reachedAt }) {
                 sx={{
                   position: 'absolute',
                   bgcolor: done ? 'primary.main' : 'divider',
+                  // the line "fills up" step by step
+                  transformOrigin: { xs: 'top', md: 'left' },
+                  animation: done
+                    ? {
+                        xs: `a-grow-y 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms both`,
+                        md: `a-grow-x 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${200 + i * 220}ms both`,
+                      }
+                    : 'none',
                   // vertical on mobile, horizontal on desktop
                   left: { xs: 21, md: 'calc(50% + 26px)' },
                   top: { xs: 46, md: 21 },
@@ -354,6 +363,18 @@ function Timeline({ currentIndex, reachedAt }) {
                 border: '2px solid',
                 borderColor: reached ? 'primary.main' : 'divider',
                 boxShadow: current ? '0 0 0 6px rgba(215,31,43,0.18)' : 'none',
+                animation: reached ? `a-scale-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 220}ms both` : 'none',
+                '&::after': current
+                  ? {
+                      content: '""',
+                      position: 'absolute',
+                      inset: -2,
+                      borderRadius: '50%',
+                      border: '2px solid',
+                      borderColor: 'primary.main',
+                      animation: 'a-pulse-ring 1.8s cubic-bezier(0.16, 1, 0.3, 1) 1s infinite',
+                    }
+                  : {},
               }}
             >
               {done ? <CheckIcon /> : <Icon fontSize="small" />}

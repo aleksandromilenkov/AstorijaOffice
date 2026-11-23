@@ -15,7 +15,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import Typography from '@mui/material/Typography'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import CartIcon from '@/components/store/CartIcon'
 import HomeIcon from '@mui/icons-material/Home'
 import StorefrontIcon from '@mui/icons-material/Storefront'
 import InfoIcon from '@mui/icons-material/Info'
@@ -103,6 +103,7 @@ export default function Header() {
             component={Link}
             href="/"
             aria-label="Асторија — почетна"
+            className="logo-link"
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -139,6 +140,25 @@ export default function Header() {
                     letterSpacing: '0.02em',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
+                    ...(item.variant === 'contained'
+                      ? {}
+                      : {
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            left: 12,
+                            right: 12,
+                            bottom: 4,
+                            height: 2,
+                            borderRadius: 2,
+                            bgcolor: 'currentColor',
+                            transform: 'scaleX(0)',
+                            transformOrigin: 'left',
+                            transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                          },
+                          '&:hover::after': { transform: 'scaleX(1)' },
+                          '&:hover': { bgcolor: 'transparent' },
+                        }),
                     // Icons only on wide screens, so the search keeps its room.
                     '& .MuiButton-startIcon': { display: { md: 'none', lg: 'inherit' } },
                     ...(item.accent ? { color: 'sale.main', '&:hover': { bgcolor: 'rgba(242,106,27,0.08)' } } : {}),
@@ -164,7 +184,7 @@ export default function Header() {
                 overlap="circular"
                 max={99}
               >
-                <ShoppingCartIcon />
+                <CartIcon />
               </Badge>
             </IconButton>
             <IconButton

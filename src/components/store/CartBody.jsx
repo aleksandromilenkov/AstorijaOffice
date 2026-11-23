@@ -15,7 +15,6 @@ import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
@@ -26,6 +25,7 @@ import { municipalities } from '@/data/municipalities'
 import { matchesSearch } from '@/lib/transliterate'
 import { createClient } from '@/lib/supabase/client'
 import ProductImg from './ProductImg'
+import { Confetti, SuccessCheck } from './Celebration'
 import PaymentMethods from './PaymentMethods'
 import PriceTag from '@/components/promo/PriceTag'
 import { effectivePrice, variantPrice } from '@/lib/pricing'
@@ -117,28 +117,18 @@ export default function CartBody() {
             borderColor: 'divider',
             borderRadius: 4,
             bgcolor: 'background.paper',
+            position: 'relative',
+            animation: 'a-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both',
           }}
         >
-          <Box
-            sx={{
-              mx: 'auto',
-              mb: 2,
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: 'rgba(215,31,43,0.10)',
-              color: 'primary.main',
-            }}
-          >
-            <CheckCircleIcon sx={{ fontSize: 44 }} />
+          <Confetti />
+          <Box sx={{ mb: 2 }}>
+            <SuccessCheck />
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
+          <Typography variant="h4" className="a-fade-up" style={{ '--d': '500ms' }} sx={{ fontWeight: 800, mb: 1 }}>
             Нарачката е потврдена
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body1" color="text.secondary" className="a-fade-up" style={{ '--d': '620ms' }} sx={{ mb: 3 }}>
             Ви благодариме! Вашата нарачка е примена и ќе ја обработиме во
             најкраток можен рок. Наскоро ќе ве контактираме за потврда на
             доставата.

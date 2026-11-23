@@ -105,7 +105,7 @@ export default function Footer() {
         >
           {/* Brand */}
           <Box>
-            <Box component={Link} href="/" aria-label="Асторија — почетна" sx={{ display: 'inline-flex' }}>
+            <Box component={Link} href="/" aria-label="Асторија — почетна" className="logo-link" sx={{ display: 'inline-flex' }}>
               <Logo tone="light" height={46} />
             </Box>
             <Typography sx={{ mt: 2, color: 'rgba(255,255,255,0.72)', fontSize: '0.92rem', lineHeight: 1.7, maxWidth: 320 }}>

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -11,6 +10,13 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined'
 import { hero } from '@/content'
+
+/** "Печатете го вашиот бренд" → ["Печатете го", "вашиот бренд"] */
+function splitTitle(text) {
+  const words = text.split(' ')
+  const half = Math.ceil(words.length / 2)
+  return [words.slice(0, half).join(' '), words.slice(half).join(' ')].filter(Boolean)
+}
 
 export default function Hero() {
   return (
@@ -27,14 +33,24 @@ export default function Hero() {
       }}
     >
       {/* Background photo — optimised (WebP/AVIF, right size per screen) */}
-      <Image
-        src="/img/hero-img.jpg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        style={{ objectFit: 'cover', objectPosition: '70% center' }}
-      />
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          animation: 'a-kenburns 14s cubic-bezier(0.16, 1, 0.3, 1) both',
+          willChange: 'transform',
+        }}
+      >
+        <Image
+          src="/img/hero-img.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: 'cover', objectPosition: '70% center' }}
+        />
+      </Box>
 
       {/* Readability overlays */}
       <Box
@@ -59,14 +75,11 @@ export default function Hero() {
       />
 
       <Container maxWidth="lg" sx={{ position: 'relative', py: { xs: 8, md: 10 } }}>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
-        >
+        <Box>
           <Box sx={{ maxWidth: { xs: '100%', md: 620 } }}>
             {/* Badge */}
             <Box
+              className="a-fade-up"
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -85,7 +98,24 @@ export default function Hero() {
                 backdropFilter: 'blur(8px)',
               }}
             >
-              <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#ff3b47' }} />
+              <Box
+                component="span"
+                sx={{
+                  position: 'relative',
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  bgcolor: '#ff3b47',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '50%',
+                    bgcolor: '#ff3b47',
+                    animation: 'a-pulse-ring 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite',
+                  },
+                }}
+              />
               {hero.badge}
             </Box>
 
@@ -101,22 +131,34 @@ export default function Hero() {
                 mb: 2.5,
               }}
             >
-              {hero.titlePrefix}{' '}
-              <Box
-                component="span"
-                sx={{
-                  background: 'linear-gradient(90deg, #ff3b47, #ff7a6b)',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  color: 'transparent',
-                }}
-              >
-                {hero.titleAccent}
-              </Box>
+              {splitTitle(hero.titlePrefix).map((line, i) => (
+                <span key={line} className="a-line">
+                  <span style={{ '--d': `${120 + i * 110}ms` }}>{line}</span>
+                </span>
+              ))}
+              <span className="a-line">
+                <span style={{ '--d': '340ms' }}>
+                  <Box
+                    component="span"
+                    sx={{
+                      backgroundImage: 'linear-gradient(90deg, #ff3b47, #ff8a5b, #ff3b47)',
+                      backgroundSize: '200% auto',
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      color: 'transparent',
+                      animation: 'a-gradient-pan 6s linear 1.2s infinite',
+                    }}
+                  >
+                    {hero.titleAccent}
+                  </Box>
+                </span>
+              </span>
             </Typography>
 
             {/* Sub */}
             <Typography
+              className="a-fade-up"
+              style={{ '--d': '480ms' }}
               sx={{
                 fontSize: { xs: '1.02rem', md: '1.15rem' },
                 color: 'rgba(255,255,255,0.78)',
@@ -142,10 +184,12 @@ export default function Hero() {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {hero.promises.map((promise) => (
+              {hero.promises.map((promise, i) => (
                 <Box
                   component="li"
                   key={promise}
+                  className="a-fade-up"
+                  style={{ '--d': `${600 + i * 90}ms` }}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -162,14 +206,18 @@ export default function Hero() {
             </Box>
 
             {/* CTAs */}
-            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 4 }}>
+            <Box className="a-fade-up" style={{ '--d': '880ms' }} sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 4 }}>
               <Button
                 component={Link}
                 href="/prodavnica"
                 variant="contained"
                 size="large"
                 endIcon={<ArrowForwardRoundedIcon />}
+                className="a-shine"
                 sx={{
+                  overflow: 'hidden',
+                  '& .MuiButton-endIcon': { transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' },
+                  '&:hover .MuiButton-endIcon': { transform: 'translateX(4px)' },
                   px: 3.5,
                   py: 1.4,
                   fontWeight: 800,
@@ -208,6 +256,8 @@ export default function Hero() {
 
             {/* Social proof (true numbers only) */}
             <Box
+              className="a-fade-up"
+              style={{ '--d': '1000ms' }}
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -221,7 +271,7 @@ export default function Hero() {
               {hero.socialProof}
             </Box>
           </Box>
-        </motion.div>
+        </Box>
       </Container>
     </Box>
   )

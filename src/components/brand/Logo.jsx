@@ -7,7 +7,7 @@ function Emblem({ circle = COLORS.red, star = COLORS.white }) {
   return (
     <>
       <circle cx={EMBLEM.circle.cx} cy={EMBLEM.circle.cy} r={EMBLEM.circle.r} fill={circle} />
-      <path d={EMBLEM.star} fill={star} />
+      <path className="astorija-star" d={EMBLEM.star} fill={star} />
     </>
   )
 }

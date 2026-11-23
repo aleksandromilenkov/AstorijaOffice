@@ -7,6 +7,7 @@ import {
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import { flyToCart } from '@/lib/flyToCart'
 
 /**
  * Shopping cart state with localStorage persistence.
@@ -147,6 +148,7 @@ export function CartProvider({ children }) {
     const q = Math.max(1, Number(qty) || 1)
     const key = cartKey(product.id, product.variantId)
     const i = snapshot.findIndex((it) => it.key === key)
+    flyToCart()
     if (i >= 0) {
       const next = snapshot.slice()
       next[i] = { ...next[i], qty: next[i].qty + q }

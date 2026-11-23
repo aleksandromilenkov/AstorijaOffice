@@ -106,7 +106,13 @@ export default function Countdown({ endsAt, variant = 'boxes', inverted = false,
                 color: inverted ? '#fff' : 'text.primary',
               }}
             >
-              {key === 'days' ? (p ? p.days : '--') : pad(p?.[key])}
+              <Box
+                component="span"
+                key={p ? p[key] : 'x'}
+                sx={{ display: 'inline-block', animation: 'a-tick 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}
+              >
+                {key === 'days' ? (p ? p.days : '--') : pad(p?.[key])}
+              </Box>
             </Typography>
             <Typography
               variant="caption"

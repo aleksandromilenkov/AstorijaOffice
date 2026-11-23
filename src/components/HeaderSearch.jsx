@@ -9,7 +9,7 @@ import InputBase from '@mui/material/InputBase'
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import SearchIcon from '@mui/icons-material/Search'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import CartIcon from '@/components/store/CartIcon'
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import { useCart } from '@/store/CartContext'
 
@@ -108,7 +108,7 @@ export default function HeaderSearch() {
             overlap="circular"
             max={99}
           >
-            <ShoppingCartIcon />
+            <CartIcon />
           </Badge>
         </IconButton>
       </Tooltip>

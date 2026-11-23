@@ -107,8 +107,10 @@ export default async function PromotionsSection() {
             gridTemplateColumns: { xs: '1fr', lg: featured.length > 1 ? '1fr 1fr' : '1fr' },
           }}
         >
-          {featured.map((product) => (
-            <PromoCard key={product.id} product={product} />
+          {featured.map((product, i) => (
+            <div key={product.id} className="a-fade-up" style={{ '--d': `${150 + i * 140}ms` }}>
+              <PromoCard product={product} />
+            </div>
           ))}
         </Box>
 

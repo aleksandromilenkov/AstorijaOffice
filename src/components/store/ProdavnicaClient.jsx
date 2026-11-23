@@ -369,8 +369,15 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
                 },
               }}
             >
-              {filtered.map((p) => (
-                <ProductCard key={p.id} product={p} />
+              {filtered.map((p, i) => (
+                <Box
+                  key={p.id}
+                  className="a-fade-up"
+                  style={{ '--d': `${Math.min(i, 8) * 70}ms` }}
+                  sx={{ height: '100%' }}
+                >
+                  <ProductCard product={p} />
+                </Box>
               ))}
             </Box>
           )}

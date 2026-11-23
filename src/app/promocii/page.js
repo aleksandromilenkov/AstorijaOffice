@@ -158,8 +158,10 @@ export default async function PromotionsPage() {
               gridTemplateColumns: { xs: '1fr', lg: promotions.length > 1 ? '1fr 1fr' : '1fr' },
             }}
           >
-            {promotions.map((product) => (
-              <PromoCard key={product.id} product={product} />
+            {promotions.map((product, i) => (
+              <div key={product.id} className="a-fade-up" style={{ '--d': `${150 + i * 140}ms` }}>
+                <PromoCard product={product} />
+              </div>
             ))}
           </Box>
         ) : (

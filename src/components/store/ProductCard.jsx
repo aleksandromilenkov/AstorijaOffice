@@ -46,6 +46,14 @@ export default function ProductCard({ product }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease',
+        '&:hover': {
+          transform: 'translateY(-6px)',
+          boxShadow: '0 22px 40px -24px rgba(20,22,26,0.45)',
+        },
+        '& img': { transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)' },
+        '&:hover img': { transform: 'scale(1.06)' },
+        '& .MuiCardActionArea-root': { overflow: 'hidden' },
       }}
     >
         <CardActionArea
@@ -70,7 +78,10 @@ export default function ProductCard({ product }) {
         />
         {discountPercent(product.regularPrice, product.price) > 0 && (
           <Box
+            className="a-shine-loop"
             sx={{
+              overflow: 'hidden',
+              zIndex: 1,
               position: 'absolute',
               top: 12,
               right: 12,

@@ -32,6 +32,37 @@ const theme = createTheme({
     h2: { fontSize: '2rem' },
   },
   components: {
+    // Tactile buttons: lift on hover, press in on click.
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          transition:
+            'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease',
+          '&:active': { transform: 'scale(0.97)' },
+        },
+        contained: {
+          '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 10px 24px -10px rgba(215,31,43,0.6)' },
+          '&:active': { transform: 'translateY(0) scale(0.97)' },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease',
+          '&:active': { transform: 'scale(0.9)' },
+        },
+      },
+    },
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease',
+          '&:hover': { transform: 'scale(1.06)' },
+          '&:active': { transform: 'scale(0.94)' },
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         'html, body': {

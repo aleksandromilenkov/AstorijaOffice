@@ -85,6 +85,19 @@ export default function ContactFab() {
         onClick={() => setOpen((v) => !v)}
         sx={{
           color: '#fff',
+          '&::before': open
+            ? {}
+            : {
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                bgcolor: '#d71f2b',
+                zIndex: -1,
+                animation: 'a-pulse-ring 2.6s cubic-bezier(0.16, 1, 0.3, 1) 1.5s infinite',
+              },
+          '& svg': { transition: 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)' },
+          '&[aria-expanded="true"] svg': { transform: 'rotate(90deg)' },
           backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)',
           boxShadow: '0 10px 28px -8px rgba(215,31,43,0.7)',
         }}

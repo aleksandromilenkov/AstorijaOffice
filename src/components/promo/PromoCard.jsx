@@ -102,7 +102,9 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
         />
         {percent > 0 ? (
           <Box
+            className="a-shine-loop"
             sx={{
+              overflow: 'hidden',
               position: 'absolute',
               top: 16,
               left: 16,

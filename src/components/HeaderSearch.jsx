@@ -60,7 +60,7 @@ export default function HeaderSearch() {
           transition: 'box-shadow 160ms ease, border-color 160ms ease',
           '&:focus-within': {
             borderColor: 'primary.main',
-            boxShadow: '0 0 0 4px rgba(134,46,156,0.12)',
+            boxShadow: '0 0 0 4px rgba(215,31,43,0.12)',
           },
         }}
       >

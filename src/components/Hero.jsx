@@ -23,7 +23,7 @@ export default function Hero() {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        bgcolor: '#0d0612',
+        bgcolor: '#0f1113',
       }}
     >
       {/* Background photo — optimised (WebP/AVIF, right size per screen) */}
@@ -43,8 +43,8 @@ export default function Hero() {
           position: 'absolute',
           inset: 0,
           background: {
-            xs: 'linear-gradient(180deg, rgba(13,6,18,0.78) 0%, rgba(13,6,18,0.9) 100%)',
-            md: 'linear-gradient(90deg, rgba(13,6,18,0.95) 0%, rgba(13,6,18,0.82) 42%, rgba(13,6,18,0.25) 100%)',
+            xs: 'linear-gradient(180deg, rgba(15,17,19,0.78) 0%, rgba(15,17,19,0.9) 100%)',
+            md: 'linear-gradient(90deg, rgba(15,17,19,0.95) 0%, rgba(15,17,19,0.82) 42%, rgba(15,17,19,0.25) 100%)',
           },
         }}
       />
@@ -54,7 +54,7 @@ export default function Hero() {
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(ellipse 55% 70% at 15% 55%, rgba(134,46,156,0.28) 0%, transparent 70%)',
+            'radial-gradient(ellipse 55% 70% at 15% 55%, rgba(215,31,43,0.22) 0%, transparent 70%)',
         }}
       />
 
@@ -79,13 +79,13 @@ export default function Hero() {
                 fontWeight: 800,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: '#f3d9fb',
+                color: '#ffe1e1',
                 bgcolor: 'rgba(255,255,255,0.08)',
                 border: '1px solid rgba(255,255,255,0.18)',
                 backdropFilter: 'blur(8px)',
               }}
             >
-              <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#ff8fa6' }} />
+              <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#ff3b47' }} />
               {hero.badge}
             </Box>
 
@@ -105,7 +105,7 @@ export default function Hero() {
               <Box
                 component="span"
                 sx={{
-                  background: 'linear-gradient(90deg, #ff8fa6, #d9a6ea)',
+                  background: 'linear-gradient(90deg, #ff3b47, #ff7a6b)',
                   WebkitBackgroundClip: 'text',
                   backgroundClip: 'text',
                   color: 'transparent',
@@ -176,9 +176,9 @@ export default function Hero() {
                   fontSize: '1rem',
                   textTransform: 'none',
                   borderRadius: 2.5,
-                  backgroundImage: 'linear-gradient(135deg, #862e9c, #c2378f)',
-                  boxShadow: '0 10px 30px -8px rgba(194,55,143,0.6)',
-                  '&:hover': { boxShadow: '0 14px 36px -8px rgba(194,55,143,0.75)' },
+                  backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)',
+                  boxShadow: '0 10px 30px -8px rgba(179,18,29,0.6)',
+                  '&:hover': { boxShadow: '0 14px 36px -8px rgba(179,18,29,0.75)' },
                 }}
               >
                 {hero.primaryCta}
@@ -217,7 +217,7 @@ export default function Hero() {
                 fontWeight: 600,
               }}
             >
-              <VerifiedOutlinedIcon sx={{ fontSize: 20, color: '#d9a6ea' }} />
+              <VerifiedOutlinedIcon sx={{ fontSize: 20, color: '#ff5a5f' }} />
               {hero.socialProof}
             </Box>
           </Box>

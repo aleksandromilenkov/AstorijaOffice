@@ -150,7 +150,7 @@ export default function ProductDetailClient({ product, loadError }) {
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(135deg, rgba(134,46,156,0.10), rgba(174,62,201,0.10))',
+                'linear-gradient(135deg, rgba(215,31,43,0.10), rgba(179,18,29,0.10))',
             }}
           />
           <ProductImageZoom imageUrl={imageUrl} alt={product.title} />
@@ -252,10 +252,10 @@ export default function ProductDetailClient({ product, loadError }) {
                         borderRadius: 2.5,
                         border: '2px solid',
                         borderColor: active ? 'primary.main' : 'divider',
-                        bgcolor: active ? 'rgba(134,46,156,0.06)' : 'background.paper',
+                        bgcolor: active ? 'rgba(215,31,43,0.06)' : 'background.paper',
                         transition: 'border-color 150ms ease, background-color 150ms ease',
                         '&:hover': { borderColor: active ? 'primary.main' : 'primary.light' },
-                        '&:focus-visible': { outline: '3px solid rgba(134,46,156,0.35)', outlineOffset: 2 },
+                        '&:focus-visible': { outline: '3px solid rgba(215,31,43,0.35)', outlineOffset: 2 },
                       }}
                     >
                       {best ? (

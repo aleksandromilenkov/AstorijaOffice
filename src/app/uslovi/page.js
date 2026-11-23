@@ -132,8 +132,8 @@ export default function TermsPage() {
           mb: 5,
           p: { xs: 2, md: 2.5 },
           borderRadius: 3,
-          bgcolor: 'rgba(134,46,156,0.05)',
-          border: '1px solid rgba(134,46,156,0.12)',
+          bgcolor: 'rgba(215,31,43,0.05)',
+          border: '1px solid rgba(215,31,43,0.12)',
         }}
       >
         <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1 }}>

@@ -63,12 +63,12 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
         borderRadius: 4,
         overflow: 'hidden',
         border: '1px solid',
-        borderColor: 'rgba(134,46,156,0.14)',
-        boxShadow: '0 18px 40px -24px rgba(60,10,80,0.35)',
+        borderColor: 'rgba(215,31,43,0.14)',
+        boxShadow: '0 18px 40px -24px rgba(20,22,26,0.35)',
         transition: 'transform 220ms ease, box-shadow 220ms ease',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 28px 56px -26px rgba(60,10,80,0.45)',
+          boxShadow: '0 28px 56px -26px rgba(20,22,26,0.45)',
         },
         '&:hover .promo-img': { transform: 'scale(1.04)' },
       }}
@@ -82,7 +82,7 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
           position: 'relative',
           display: 'block',
           overflow: 'hidden',
-          bgcolor: '#f6f0f8',
+          bgcolor: '#f5f3f2',
           aspectRatio: horizontal ? { xs: '4 / 3', sm: 'auto' } : '4 / 3',
           minHeight: horizontal ? { sm: 300 } : undefined,
         }}
@@ -114,7 +114,7 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
               fontWeight: 900,
               fontSize: '1.05rem',
               letterSpacing: '0.02em',
-              boxShadow: '0 8px 20px -6px rgba(232,54,93,0.6)',
+              boxShadow: '0 8px 20px -6px rgba(242,106,27,0.6)',
             }}
           >
             −{percent}%
@@ -186,7 +186,7 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
               fontWeight: 800,
               borderRadius: 2.5,
               py: 1.25,
-              backgroundImage: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+              backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)',
             }}
           >
             Избери количина
@@ -208,7 +208,7 @@ export default function PromoCard({ product, layout = 'horizontal' }) {
               py: 1.25,
               ...(added
                 ? {}
-                : { backgroundImage: 'linear-gradient(135deg, #862e9c, #ae3ec9)' }),
+                : { backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)' }),
             }}
             color={added ? 'success' : 'primary'}
           >

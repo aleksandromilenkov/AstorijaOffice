@@ -530,8 +530,8 @@ export default function AdminProductsPage() {
               gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
               p: 2,
               borderRadius: 2,
-              bgcolor: 'rgba(232,54,93,0.05)',
-              border: '1px dashed rgba(232,54,93,0.35)',
+              bgcolor: 'rgba(242,106,27,0.05)',
+              border: '1px dashed rgba(242,106,27,0.35)',
             }}
           >
             <TextField

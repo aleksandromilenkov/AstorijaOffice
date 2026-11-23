@@ -81,8 +81,8 @@ function ServiceCard({ service, index }) {
           p: { xs: 2.5, md: 3 },
           borderRadius: 2,
           border: '1px solid',
-          borderColor: 'rgba(134,46,156,0.15)',
-          background: 'rgba(134,46,156,0.04)',
+          borderColor: 'rgba(215,31,43,0.15)',
+          background: 'rgba(215,31,43,0.04)',
           position: 'relative',
           overflow: 'hidden',
           cursor: 'default',
@@ -90,9 +90,9 @@ function ServiceCard({ service, index }) {
           transform: visible ? 'translateY(0)' : 'translateY(24px)',
           transition: `opacity 0.5s ease ${index * 80}ms, transform 0.5s ease ${index * 80}ms, border-color 0.3s, background 0.3s`,
           '&:hover': {
-            borderColor: 'rgba(134,46,156,0.5)',
-            background: 'rgba(134,46,156,0.09)',
-            '& .svc-icon': { color: '#c77dff', transform: 'scale(1.1)' },
+            borderColor: 'rgba(215,31,43,0.5)',
+            background: 'rgba(215,31,43,0.09)',
+            '& .svc-icon': { color: '#ff6b6b', transform: 'scale(1.1)' },
           },
           '&::before': {
             content: '""',
@@ -101,7 +101,7 @@ function ServiceCard({ service, index }) {
             left: 0,
             right: 0,
             height: '2px',
-            background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+            background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
             transform: 'scaleX(0)',
             transformOrigin: 'left',
             transition: 'transform 0.4s ease',
@@ -114,7 +114,7 @@ function ServiceCard({ service, index }) {
         <Box
           className="svc-icon"
           sx={{
-            color: '#862e9c',
+            color: '#d71f2b',
             mb: 2,
             display: 'inline-flex',
             transition: 'color 0.3s, transform 0.3s',
@@ -161,7 +161,7 @@ export default function Services() {
           height: '40vw',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.07) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(215,31,43,0.07) 0%, transparent 70%)',
           pointerEvents: 'none',
         },
       }}
@@ -194,7 +194,7 @@ export default function Services() {
             <Box
               component="span"
               sx={{
-                background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}

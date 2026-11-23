@@ -30,9 +30,9 @@ export default async function PromotionsSection() {
         overflow: 'hidden',
         py: { xs: 7, md: 10 },
         background:
-          'radial-gradient(ellipse 60% 70% at 85% 0%, rgba(232,54,93,0.22) 0%, transparent 60%),' +
-          'radial-gradient(ellipse 70% 80% at 0% 100%, rgba(174,62,201,0.35) 0%, transparent 60%),' +
-          'linear-gradient(160deg, #1a0a24 0%, #2a0f3a 55%, #3a1050 100%)',
+          'radial-gradient(ellipse 60% 70% at 85% 0%, rgba(242,106,27,0.22) 0%, transparent 60%),' +
+          'radial-gradient(ellipse 70% 80% at 0% 100%, rgba(179,18,29,0.35) 0%, transparent 60%),' +
+          'linear-gradient(160deg, #141619 0%, #1d2024 55%, #272b30 100%)',
         color: '#fff',
       }}
     >
@@ -57,9 +57,9 @@ export default async function PromotionsSection() {
                 px: 1.5,
                 py: 0.6,
                 borderRadius: 999,
-                bgcolor: 'rgba(232,54,93,0.16)',
-                border: '1px solid rgba(255,143,166,0.35)',
-                color: '#ffb3c3',
+                bgcolor: 'rgba(242,106,27,0.16)',
+                border: '1px solid rgba(255,179,122,0.35)',
+                color: '#ffd1ad',
                 fontWeight: 800,
                 fontSize: '0.78rem',
                 letterSpacing: '0.14em',
@@ -82,7 +82,7 @@ export default async function PromotionsSection() {
               <Box
                 component="span"
                 sx={{
-                  background: 'linear-gradient(90deg, #ff8fa6, #c77dff)',
+                  background: 'linear-gradient(90deg, #ffb37a, #ff6b6b)',
                   WebkitBackgroundClip: 'text',
                   backgroundClip: 'text',
                   color: 'transparent',

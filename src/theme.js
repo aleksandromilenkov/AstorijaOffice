@@ -2,17 +2,27 @@ import { createTheme } from '@mui/material/styles'
 
 const theme = createTheme({
   palette: {
+    // Astorija brand red (logo, buttons, key highlights)
     primary: {
-      main: '#862e9c',
+      main: '#d71f2b',
+      dark: '#b3121d',
+      light: '#ff5a5f',
+      contrastText: '#ffffff',
     },
+    // Charcoal (dark sections, secondary accents)
     secondary: {
-      main: '#ae3ec9',
+      main: '#1d2024',
+      contrastText: '#ffffff',
+    },
+    text: {
+      primary: '#1b1d21',
+      secondary: '#5b5f66',
     },
     // Promotions: discount badges and promo prices.
     sale: {
-      main: '#e8365d',
-      dark: '#c41f47',
-      light: '#ffe3ea',
+      main: '#f26a1b',
+      dark: '#c2500f',
+      light: '#ffeddc',
       contrastText: '#ffffff',
     },
   },

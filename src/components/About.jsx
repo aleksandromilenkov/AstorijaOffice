@@ -80,10 +80,10 @@ function InfoRow({ icon, children, href }) {
         gap: 1.5,
         color: href ? 'inherit' : 'text.secondary',
         textDecoration: 'none',
-        '&:hover span': href ? { color: '#c77dff' } : {},
+        '&:hover span': href ? { color: '#ff6b6b' } : {},
       }}
     >
-      <Box sx={{ color: '#862e9c', mt: '2px', flexShrink: 0 }}>{icon}</Box>
+      <Box sx={{ color: '#d71f2b', mt: '2px', flexShrink: 0 }}>{icon}</Box>
       <Typography
         component="span"
         sx={{
@@ -117,7 +117,7 @@ export default function About() {
           height: '40vw',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.06) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(215,31,43,0.06) 0%, transparent 70%)',
           pointerEvents: 'none',
         },
       }}
@@ -149,7 +149,7 @@ export default function About() {
             <Box
               component="span"
               sx={{
-                background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -173,8 +173,8 @@ export default function About() {
               sx={{
                 p: { xs: 3, md: 4 },
                 borderRadius: 3,
-                border: '1px solid rgba(134,46,156,0.15)',
-                background: 'rgba(134,46,156,0.04)',
+                border: '1px solid rgba(215,31,43,0.15)',
+                background: 'rgba(215,31,43,0.04)',
                 height: '100%',
                 position: 'relative',
                 overflow: 'hidden',
@@ -185,7 +185,7 @@ export default function About() {
                   left: 0,
                   right: 0,
                   height: '2px',
-                  background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                  background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                 },
               }}
             >
@@ -193,7 +193,7 @@ export default function About() {
                 sx={{
                   fontSize: '6rem',
                   lineHeight: 0.6,
-                  color: 'rgba(134,46,156,0.15)',
+                  color: 'rgba(215,31,43,0.15)',
                   fontWeight: 900,
                   mb: 2,
                   display: 'block',
@@ -226,7 +226,7 @@ export default function About() {
                           left: '50%',
                           right: '-50%',
                           height: '1px',
-                          background: 'rgba(134,46,156,0.25)',
+                          background: 'rgba(215,31,43,0.25)',
                           zIndex: 0,
                         }}
                       />
@@ -246,9 +246,9 @@ export default function About() {
                           height: 14,
                           borderRadius: '50%',
                           background:
-                            i === arr.length - 1 ? '#862e9c' : 'rgba(134,46,156,0.3)',
+                            i === arr.length - 1 ? '#d71f2b' : 'rgba(215,31,43,0.3)',
                           border: '2px solid',
-                          borderColor: '#862e9c',
+                          borderColor: '#d71f2b',
                           mb: 0.75,
                         }}
                       />
@@ -279,17 +279,17 @@ export default function About() {
               <Box
                 sx={{
                   borderRadius: 3,
-                  border: '1px solid rgba(134,46,156,0.15)',
-                  background: 'rgba(134,46,156,0.04)',
+                  border: '1px solid rgba(215,31,43,0.15)',
+                  background: 'rgba(215,31,43,0.04)',
                   overflow: 'hidden',
                   transition: 'border-color 0.3s',
-                  '&:hover': { borderColor: 'rgba(134,46,156,0.4)' },
+                  '&:hover': { borderColor: 'rgba(215,31,43,0.4)' },
                 }}
               >
                 <Box sx={{ width: '100%', height: 180, overflow: 'hidden' }}>
                   <iframe
                     title="Локација на Асторија"
-                    src={`https://www.google.com/maps?q=${encodeURIComponent(`${company.address}, ${company.city}`)}&z=16&output=embed`}
+                    src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d371.41019758507383!2d21.942590028039223!3d41.86528785215503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1355cc056d81913d%3A0x99519aab9e4e60ac!2z0JrQvdC40LbQsNGA0L3QuNGG0LAg0JDRgdGC0L7RgNC40ZjQsA!5e0!3m2!1sen!2sus!4v1795385361806!5m2!1sen!2sus`}
                     width="100%"
                     height="180"
                     style={{ border: 0, display: 'block' }}
@@ -308,13 +308,13 @@ export default function About() {
                 sx={{
                   p: { xs: 2.5, md: 3 },
                   borderRadius: 3,
-                  border: '1px solid rgba(134,46,156,0.15)',
-                  background: 'rgba(134,46,156,0.04)',
+                  border: '1px solid rgba(215,31,43,0.15)',
+                  background: 'rgba(215,31,43,0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 2,
                   transition: 'border-color 0.3s',
-                  '&:hover': { borderColor: 'rgba(134,46,156,0.4)' },
+                  '&:hover': { borderColor: 'rgba(215,31,43,0.4)' },
                   position: 'relative',
                   overflow: 'hidden',
                   '&::before': {
@@ -324,7 +324,7 @@ export default function About() {
                     left: 0,
                     right: 0,
                     height: '2px',
-                    background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                    background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                   },
                 }}
               >
@@ -343,14 +343,14 @@ export default function About() {
                   {company.email}
                 </InfoRow>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                  <Box sx={{ color: '#862e9c', mt: '2px', flexShrink: 0 }}>{PHONE_ICON}</Box>
+                  <Box sx={{ color: '#d71f2b', mt: '2px', flexShrink: 0 }}>{PHONE_ICON}</Box>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: 'center' }}>
                     {company.phones.map((phone, i) => (
                       <Box key={phone.href} component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
                         {i > 0 ? (
                           <Box component="span" sx={{ color: 'text.disabled', fontSize: '0.88rem', display: { xs: 'none', sm: 'block' } }}>|</Box>
                         ) : null}
-                        <Box component="a" href={phone.href} sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#c77dff' }, transition: 'color 0.2s' }}>
+                        <Box component="a" href={phone.href} sx={{ color: 'text.secondary', textDecoration: 'none', fontSize: '0.88rem', lineHeight: 1.6, '&:hover': { color: '#ff6b6b' }, transition: 'color 0.2s' }}>
                           {phone.text}
                         </Box>
                       </Box>

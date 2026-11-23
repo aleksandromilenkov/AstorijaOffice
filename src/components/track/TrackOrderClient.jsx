@@ -98,7 +98,7 @@ export default function TrackOrderClient({ initialCode = '' }) {
           borderRadius: 4,
           border: '1px solid',
           borderColor: 'divider',
-          boxShadow: '0 18px 40px -24px rgba(60,10,80,0.35)',
+          boxShadow: '0 18px 40px -24px rgba(20,22,26,0.35)',
         }}
       >
         <Box
@@ -140,7 +140,7 @@ export default function TrackOrderClient({ initialCode = '' }) {
               fontWeight: 800,
               borderRadius: 2.5,
               whiteSpace: 'nowrap',
-              backgroundImage: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+              backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)',
             }}
           >
             Провери
@@ -216,7 +216,7 @@ function OrderResult({ order }) {
             mt: 2.5,
             p: 2,
             borderRadius: 3,
-            bgcolor: 'rgba(134,46,156,0.06)',
+            bgcolor: 'rgba(215,31,43,0.06)',
             display: 'flex',
             gap: 1.5,
             alignItems: 'center',
@@ -353,7 +353,7 @@ function Timeline({ currentIndex, reachedAt }) {
                 color: reached ? '#fff' : 'text.disabled',
                 border: '2px solid',
                 borderColor: reached ? 'primary.main' : 'divider',
-                boxShadow: current ? '0 0 0 6px rgba(134,46,156,0.18)' : 'none',
+                boxShadow: current ? '0 0 0 6px rgba(215,31,43,0.18)' : 'none',
               }}
             >
               {done ? <CheckIcon /> : <Icon fontSize="small" />}

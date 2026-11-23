@@ -61,7 +61,7 @@ function StatCard({ stat, animate, index }) {
           top: '15%',
           height: '70%',
           width: '1px',
-          background: 'rgba(134,46,156,0.15)',
+          background: 'rgba(215,31,43,0.15)',
         },
         '&:nth-of-type(3)::before': {
           display: { xs: 'none', sm: 'block' },
@@ -126,10 +126,10 @@ export default function Stats() {
       ref={ref}
       sx={{
         py: { xs: 6, md: 8 },
-        background: 'linear-gradient(180deg, rgba(134,46,156,0.04) 0%, transparent 100%)',
+        background: 'linear-gradient(180deg, rgba(215,31,43,0.04) 0%, transparent 100%)',
         borderTop: '1px solid',
         borderBottom: '1px solid',
-        borderColor: 'rgba(134,46,156,0.1)',
+        borderColor: 'rgba(215,31,43,0.1)',
       }}
     >
       <Container maxWidth="lg">

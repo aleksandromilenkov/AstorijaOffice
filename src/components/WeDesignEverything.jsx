@@ -94,8 +94,8 @@ export default function WeDesignEverything() {
           inset: 0,
           pointerEvents: 'none',
           backgroundImage: `
-            linear-gradient(rgba(134,46,156,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(134,46,156,0.06) 1px, transparent 1px)
+            linear-gradient(rgba(215,31,43,0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(215,31,43,0.06) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px',
           animation: 'wde-gridPan 8s linear infinite',
@@ -113,7 +113,7 @@ export default function WeDesignEverything() {
           height: '65vw',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.18) 0%, transparent 65%)',
+            'radial-gradient(circle, rgba(215,31,43,0.18) 0%, transparent 65%)',
           animation: 'wde-glow 6s ease-in-out infinite',
           pointerEvents: 'none',
           zIndex: 0,
@@ -130,7 +130,7 @@ export default function WeDesignEverything() {
           height: { xs: 120, md: 220 },
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(174,62,201,0.18) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(179,18,29,0.18) 0%, transparent 70%)',
           animation: 'wde-orb1 9s ease-in-out infinite',
           pointerEvents: 'none',
           zIndex: 0,
@@ -145,7 +145,7 @@ export default function WeDesignEverything() {
           height: { xs: 100, md: 180 },
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.15) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(215,31,43,0.15) 0%, transparent 70%)',
           animation: 'wde-orb2 11s ease-in-out infinite',
           pointerEvents: 'none',
           zIndex: 0,
@@ -167,7 +167,7 @@ export default function WeDesignEverything() {
                 fontSize: '0.65rem',
                 letterSpacing: '0.25em',
                 textTransform: 'uppercase',
-                color: '#862e9c',
+                color: '#d71f2b',
                 fontWeight: 700,
                 mb: 2,
               }}
@@ -214,7 +214,7 @@ export default function WeDesignEverything() {
                 fontWeight: 800,
                 letterSpacing: '-0.03em',
                 lineHeight: 1.05,
-                background: 'linear-gradient(90deg, #862e9c 0%, #c77dff 50%, #862e9c 100%)',
+                background: 'linear-gradient(90deg, #d71f2b 0%, #ff6b6b 50%, #d71f2b 100%)',
                 backgroundSize: '200% auto',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -249,8 +249,8 @@ export default function WeDesignEverything() {
                   px: 2.2,
                   py: 0.85,
                   borderRadius: 99,
-                  border: '1px solid rgba(134,46,156,0.35)',
-                  background: 'rgba(134,46,156,0.1)',
+                  border: '1px solid rgba(215,31,43,0.35)',
+                  background: 'rgba(215,31,43,0.1)',
                   backdropFilter: 'blur(8px)',
                   fontSize: { xs: '0.82rem', md: '0.88rem' },
                   fontWeight: 500,
@@ -263,11 +263,11 @@ export default function WeDesignEverything() {
                   transition:
                     'background 0.22s, border-color 0.22s, color 0.22s, transform 0.22s, box-shadow 0.22s',
                   '&:hover': {
-                    background: 'rgba(134,46,156,0.3)',
-                    borderColor: '#ae3ec9',
+                    background: 'rgba(215,31,43,0.3)',
+                    borderColor: '#b3121d',
                     color: '#fff',
                     transform: 'translateY(-3px)',
-                    boxShadow: '0 6px 22px rgba(134,46,156,0.35)',
+                    boxShadow: '0 6px 22px rgba(215,31,43,0.35)',
                   },
                 }}
               >

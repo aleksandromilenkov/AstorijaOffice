@@ -91,7 +91,7 @@ function Step({ step, index, total }) {
             sx={{
               width: '100%',
               height: '100%',
-              backgroundImage: 'linear-gradient(90deg, #862e9c 50%, transparent 50%)',
+              backgroundImage: 'linear-gradient(90deg, #d71f2b 50%, transparent 50%)',
               backgroundSize: '10px 1px',
               opacity: visible ? 0.5 : 0,
               transition: `opacity 0.6s ease ${index * 150 + 300}ms`,
@@ -104,7 +104,7 @@ function Step({ step, index, total }) {
               left: 0,
               height: '2px',
               width: visible ? '100%' : '0%',
-              background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+              background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
               transition: `width 0.9s ease ${index * 150 + 400}ms`,
               mt: '-1px',
             }}
@@ -122,7 +122,7 @@ function Step({ step, index, total }) {
             left: 27,
             width: '1px',
             height: 'calc(100% - 20px)',
-            backgroundImage: 'linear-gradient(180deg, #862e9c 50%, transparent 50%)',
+            backgroundImage: 'linear-gradient(180deg, #d71f2b 50%, transparent 50%)',
             backgroundSize: '1px 10px',
             opacity: 0.4,
             zIndex: 0,
@@ -139,18 +139,18 @@ function Step({ step, index, total }) {
           width: 56,
           height: 56,
           borderRadius: '50%',
-          border: '1.5px solid rgba(134,46,156,0.4)',
-          background: 'rgba(134,46,156,0.08)',
+          border: '1.5px solid rgba(215,31,43,0.4)',
+          background: 'rgba(215,31,43,0.08)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ae3ec9',
+          color: '#b3121d',
           mb: { xs: 0, md: 2.5 },
           mr: { xs: 2.5, md: 0 },
           transition: 'all 0.3s',
           '&:hover': {
-            background: 'rgba(134,46,156,0.2)',
-            borderColor: '#862e9c',
+            background: 'rgba(215,31,43,0.2)',
+            borderColor: '#d71f2b',
             transform: 'scale(1.08)',
           },
           '&::after': {
@@ -161,7 +161,7 @@ function Step({ step, index, total }) {
             width: 20,
             height: 20,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #862e9c, #c77dff)',
+            background: 'linear-gradient(135deg, #d71f2b, #9e0f19)',
             fontSize: '0.55rem',
             fontWeight: 800,
             color: '#fff',
@@ -222,7 +222,7 @@ export default function Process() {
           height: '40vw',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.06) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(215,31,43,0.06) 0%, transparent 70%)',
           pointerEvents: 'none',
         },
       }}
@@ -254,7 +254,7 @@ export default function Process() {
             <Box
               component="span"
               sx={{
-                background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -304,17 +304,17 @@ export default function Process() {
               px: 3.5,
               py: 1.4,
               borderRadius: 99,
-              background: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+              background: 'linear-gradient(135deg, #d71f2b, #b3121d)',
               color: '#fff',
               fontSize: '0.85rem',
               fontWeight: 600,
               letterSpacing: '0.04em',
               textDecoration: 'none',
-              boxShadow: '0 4px 24px rgba(134,46,156,0.35)',
+              boxShadow: '0 4px 24px rgba(215,31,43,0.35)',
               transition: 'all 0.25s',
               '&:hover': {
                 transform: 'translateY(-2px)',
-                boxShadow: '0 8px 32px rgba(134,46,156,0.5)',
+                boxShadow: '0 8px 32px rgba(215,31,43,0.5)',
               },
             }}
           >

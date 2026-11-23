@@ -85,8 +85,8 @@ export default function ContactFab() {
         onClick={() => setOpen((v) => !v)}
         sx={{
           color: '#fff',
-          backgroundImage: 'linear-gradient(135deg, #862e9c, #e8365d)',
-          boxShadow: '0 10px 28px -8px rgba(134,46,156,0.7)',
+          backgroundImage: 'linear-gradient(135deg, #d71f2b, #b3121d)',
+          boxShadow: '0 10px 28px -8px rgba(215,31,43,0.7)',
         }}
       >
         {open ? <CloseRoundedIcon /> : <ChatRoundedIcon />}

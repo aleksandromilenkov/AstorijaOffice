@@ -71,7 +71,7 @@ export default function Products() {
                     sx={{
                       position: 'absolute',
                       inset: 0,
-                      background: 'rgba(134,46,156,0.3)',
+                      background: 'rgba(215,31,43,0.3)',
                       opacity: 0,
                       transition: 'opacity 0.25s',
                       display: 'flex',

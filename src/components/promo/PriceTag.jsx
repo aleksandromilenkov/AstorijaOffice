@@ -33,7 +33,7 @@ export default function PriceTag({
             fontWeight: 800,
             fontSize: s.now,
             lineHeight: 1.1,
-            color: onSale ? (inverted ? '#ff8fa6' : 'sale.main') : inverted ? '#fff' : 'primary.main',
+            color: onSale ? (inverted ? '#ffb37a' : 'sale.main') : inverted ? '#fff' : 'primary.main',
             letterSpacing: '-0.01em',
           }}
         >

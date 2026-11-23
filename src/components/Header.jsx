@@ -141,7 +141,7 @@ export default function Header() {
                     flexShrink: 0,
                     // Icons only on wide screens, so the search keeps its room.
                     '& .MuiButton-startIcon': { display: { md: 'none', lg: 'inherit' } },
-                    ...(item.accent ? { color: 'sale.main', '&:hover': { bgcolor: 'rgba(232,54,93,0.08)' } } : {}),
+                    ...(item.accent ? { color: 'sale.main', '&:hover': { bgcolor: 'rgba(242,106,27,0.08)' } } : {}),
                   }}
                 >
                   {item.label}
@@ -232,7 +232,7 @@ export default function Header() {
                     py: 2.5,
                     px: 3,
                     gap: 2,
-                    '&:hover': { bgcolor: 'rgba(134,46,156,0.08)' },
+                    '&:hover': { bgcolor: 'rgba(215,31,43,0.08)' },
                   }}
                 >
                   {/* Render icon manually since ListItemButton doesn't have startIcon */}

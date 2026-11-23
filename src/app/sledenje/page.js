@@ -25,8 +25,8 @@ export default async function TrackOrderPage({ searchParams }) {
           pt: { xs: 6, md: 8 },
           pb: { xs: 12, md: 14 },
           background:
-            'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(174,62,201,0.4) 0%, transparent 60%),' +
-            'linear-gradient(160deg, #1a0a24 0%, #2a0f3a 55%, #3a1050 100%)',
+            'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(179,18,29,0.4) 0%, transparent 60%),' +
+            'linear-gradient(160deg, #141619 0%, #1d2024 55%, #272b30 100%)',
         }}
       >
         <Container maxWidth="md">

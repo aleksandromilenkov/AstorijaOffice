@@ -45,7 +45,7 @@ function ColTitle({ children }) {
         fontSize: '0.72rem',
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
-        color: '#d9a6ea',
+        color: '#ff5a5f',
         fontWeight: 800,
         mb: 2,
       }}
@@ -58,7 +58,7 @@ function ColTitle({ children }) {
 function IconLine({ icon, children, href }) {
   const content = (
     <>
-      <Box component="span" sx={{ display: 'inline-flex', mt: '2px', color: '#d9a6ea' }}>
+      <Box component="span" sx={{ display: 'inline-flex', mt: '2px', color: '#ff5a5f' }}>
         {icon}
       </Box>
       <Box component="span">{children}</Box>
@@ -83,15 +83,15 @@ export default function Footer() {
         position: 'relative',
         color: '#fff',
         background:
-          'radial-gradient(ellipse 60% 60% at 100% 0%, rgba(232,54,93,0.10) 0%, transparent 60%),' +
-          'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(134,46,156,0.22) 0%, transparent 60%),' +
-          '#160b20',
+          'radial-gradient(ellipse 60% 60% at 100% 0%, rgba(242,106,27,0.10) 0%, transparent 60%),' +
+          'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(215,31,43,0.22) 0%, transparent 60%),' +
+          '#141619',
         '&::before': {
           content: '""',
           position: 'absolute',
           inset: '0 0 auto 0',
           height: 3,
-          background: 'linear-gradient(90deg, #862e9c, #e8365d)',
+          background: 'linear-gradient(90deg, #d71f2b, #f26a1b)',
         },
       }}
     >
@@ -125,7 +125,7 @@ export default function Footer() {
                   borderRadius: 2,
                   fontWeight: 700,
                   fontSize: '0.88rem',
-                  background: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
+                  background: 'linear-gradient(135deg, #d71f2b, #b3121d)',
                   '&:hover': { filter: 'brightness(1.1)' },
                 }}
               >
@@ -221,10 +221,10 @@ export default function Footer() {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LocalShippingOutlinedIcon sx={{ ...iconSx, color: '#d9a6ea' }} /> Бесплатна достава во сите 80 општини
+            <LocalShippingOutlinedIcon sx={{ ...iconSx, color: '#ff5a5f' }} /> Бесплатна достава во сите 80 општини
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <PaymentsOutlinedIcon sx={{ ...iconSx, color: '#d9a6ea' }} /> Плаќање при достава · фактура за фирми
+            <PaymentsOutlinedIcon sx={{ ...iconSx, color: '#ff5a5f' }} /> Плаќање при достава · фактура за фирми
           </Box>
         </Box>
 

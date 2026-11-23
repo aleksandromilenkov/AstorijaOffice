@@ -48,14 +48,14 @@ const SEND_ICON = (
 
 const FIELD_SX = {
   '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.45)', fontSize: '0.88rem' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#ae3ec9' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#b3121d' },
   '& .MuiOutlinedInput-root': {
     color: '#fff',
     borderRadius: 2,
     fontSize: '0.92rem',
     '& fieldset': { borderColor: 'rgba(255,255,255,0.12)' },
-    '&:hover fieldset': { borderColor: 'rgba(134,46,156,0.5)' },
-    '&.Mui-focused fieldset': { borderColor: '#862e9c' },
+    '&:hover fieldset': { borderColor: 'rgba(215,31,43,0.5)' },
+    '&.Mui-focused fieldset': { borderColor: '#d71f2b' },
   },
 }
 
@@ -136,8 +136,8 @@ export default function Contact() {
         position: 'relative',
         overflow: 'hidden',
         backgroundImage: `
-          linear-gradient(rgba(134,46,156,0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(134,46,156,0.05) 1px, transparent 1px)
+          linear-gradient(rgba(215,31,43,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(215,31,43,0.05) 1px, transparent 1px)
         `,
         backgroundSize: '48px 48px',
         '&::before': {
@@ -149,7 +149,7 @@ export default function Contact() {
           height: '50vw',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.1) 0%, transparent 65%)',
+            'radial-gradient(circle, rgba(215,31,43,0.1) 0%, transparent 65%)',
           pointerEvents: 'none',
         },
       }}
@@ -216,8 +216,8 @@ export default function Contact() {
                     gap: 2,
                     p: 2,
                     borderRadius: 2,
-                    border: '1px solid rgba(134,46,156,0.15)',
-                    background: 'rgba(134,46,156,0.06)',
+                    border: '1px solid rgba(215,31,43,0.15)',
+                    background: 'rgba(215,31,43,0.06)',
                     color: 'rgba(255,255,255,0.7)',
                     textDecoration: 'none',
                     fontSize: '0.88rem',
@@ -226,14 +226,14 @@ export default function Contact() {
                     transition: `opacity 0.5s ease ${0.2 + i * 0.1}s, transform 0.5s ease ${0.2 + i * 0.1}s, border-color 0.22s, background 0.22s, color 0.22s`,
                     '&:hover': href
                       ? {
-                          borderColor: 'rgba(134,46,156,0.45)',
-                          background: 'rgba(134,46,156,0.12)',
+                          borderColor: 'rgba(215,31,43,0.45)',
+                          background: 'rgba(215,31,43,0.12)',
                           color: '#fff',
                         }
                       : {},
                   }}
                 >
-                  <Box sx={{ color: '#862e9c', flexShrink: 0 }}>{renderIcon(icon)}</Box>
+                  <Box sx={{ color: '#d71f2b', flexShrink: 0 }}>{renderIcon(icon)}</Box>
                   {text}
                 </Box>
               ))}
@@ -249,8 +249,8 @@ export default function Contact() {
               sx={{
                 p: { xs: 3, md: 4 },
                 borderRadius: 3,
-                border: '1px solid rgba(134,46,156,0.15)',
-                background: 'rgba(134,46,156,0.04)',
+                border: '1px solid rgba(215,31,43,0.15)',
+                background: 'rgba(215,31,43,0.04)',
                 backdropFilter: 'blur(12px)',
                 display: 'flex',
                 flexDirection: 'column',
@@ -267,7 +267,7 @@ export default function Contact() {
                   left: 0,
                   right: 0,
                   height: '2px',
-                  background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+                  background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
                 },
               }}
             >
@@ -306,12 +306,12 @@ export default function Contact() {
                   textTransform: 'none',
                   alignSelf: 'flex-start',
                   px: 4,
-                  background: 'linear-gradient(135deg, #862e9c, #ae3ec9)',
-                  boxShadow: '0 4px 20px rgba(134,46,156,0.35)',
+                  background: 'linear-gradient(135deg, #d71f2b, #b3121d)',
+                  boxShadow: '0 4px 20px rgba(215,31,43,0.35)',
                   transition: 'all 0.25s',
                   '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 28px rgba(134,46,156,0.55)',
+                    boxShadow: '0 8px 28px rgba(215,31,43,0.55)',
                   },
                 }}
               >

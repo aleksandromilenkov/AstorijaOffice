@@ -81,7 +81,7 @@ export default function ProductCard({ product }) {
               color: 'sale.contrastText',
               fontWeight: 900,
               fontSize: '0.85rem',
-              boxShadow: '0 6px 16px -6px rgba(232,54,93,0.6)',
+              boxShadow: '0 6px 16px -6px rgba(242,106,27,0.6)',
             }}
           >
             −{discountPercent(product.regularPrice, product.price)}%

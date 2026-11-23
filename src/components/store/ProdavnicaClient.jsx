@@ -200,11 +200,11 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
                 textTransform: 'none',
                 fontWeight: selected ? 800 : 600,
                 color: selected ? 'primary.main' : 'text.primary',
-                bgcolor: selected ? 'rgba(134,46,156,0.08)' : 'transparent',
+                bgcolor: selected ? 'rgba(215,31,43,0.08)' : 'transparent',
                 px: 1.5,
                 py: 1.25,
                 borderRadius: 2,
-                '&:hover': { bgcolor: 'rgba(134,46,156,0.06)' },
+                '&:hover': { bgcolor: 'rgba(215,31,43,0.06)' },
               }}
             >
               {c.label}

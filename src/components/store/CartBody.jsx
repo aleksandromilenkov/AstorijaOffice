@@ -129,7 +129,7 @@ export default function CartBody() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: 'rgba(134,46,156,0.10)',
+              bgcolor: 'rgba(215,31,43,0.10)',
               color: 'primary.main',
             }}
           >
@@ -152,7 +152,7 @@ export default function CartBody() {
                 py: 1,
                 display: 'inline-block',
                 borderRadius: 999,
-                bgcolor: 'rgba(134,46,156,0.08)',
+                bgcolor: 'rgba(215,31,43,0.08)',
                 color: 'primary.main',
                 fontWeight: 700,
                 fontSize: 14,
@@ -227,7 +227,7 @@ export default function CartBody() {
         <Stack spacing={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden', bgcolor: 'background.paper' }}>
           {items.map((it, idx) => (
             <Stack key={it.key} direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ p: 2, borderTop: idx === 0 ? 'none' : '1px solid', borderColor: 'divider' }}>
-              <Box sx={{ width: { xs: '100%', sm: 96 }, height: 96, borderRadius: 2, bgcolor: 'grey.100', background: 'linear-gradient(135deg, rgba(134,46,156,0.12), rgba(174,62,201,0.12))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+              <Box sx={{ width: { xs: '100%', sm: 96 }, height: 96, borderRadius: 2, bgcolor: 'grey.100', background: 'linear-gradient(135deg, rgba(215,31,43,0.12), rgba(179,18,29,0.12))', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                 <ProductImg src={it.imageUrl} alt={it.name} sx={{ objectFit: 'cover', width: '100%', height: '100%' }} />
               </Box>
               <Stack sx={{ flex: 1, minWidth: 0 }}>

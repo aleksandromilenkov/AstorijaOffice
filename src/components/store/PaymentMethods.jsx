@@ -44,7 +44,7 @@ export default function PaymentMethods() {
             borderRadius: 2,
             border: '2px solid',
             borderColor: 'primary.main',
-            bgcolor: 'rgba(134,46,156,0.05)',
+            bgcolor: 'rgba(215,31,43,0.05)',
           }}
         >
           <LocalShippingOutlinedIcon color="primary" sx={{ mt: 0.25 }} />

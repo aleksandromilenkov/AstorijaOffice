@@ -68,9 +68,9 @@ export default async function PromotionsPage() {
           pt: { xs: 6, md: 9 },
           pb: { xs: 12, md: 16 },
           background:
-            'radial-gradient(ellipse 55% 75% at 90% 10%, rgba(232,54,93,0.28) 0%, transparent 60%),' +
-            'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(174,62,201,0.4) 0%, transparent 60%),' +
-            'linear-gradient(160deg, #1a0a24 0%, #2a0f3a 55%, #3a1050 100%)',
+            'radial-gradient(ellipse 55% 75% at 90% 10%, rgba(242,106,27,0.28) 0%, transparent 60%),' +
+            'radial-gradient(ellipse 60% 80% at 0% 100%, rgba(179,18,29,0.4) 0%, transparent 60%),' +
+            'linear-gradient(160deg, #141619 0%, #1d2024 55%, #272b30 100%)',
         }}
       >
         <Container maxWidth="lg">
@@ -93,9 +93,9 @@ export default async function PromotionsPage() {
                   px: 1.5,
                   py: 0.6,
                   borderRadius: 999,
-                  bgcolor: 'rgba(232,54,93,0.16)',
-                  border: '1px solid rgba(255,143,166,0.35)',
-                  color: '#ffb3c3',
+                  bgcolor: 'rgba(242,106,27,0.16)',
+                  border: '1px solid rgba(255,179,122,0.35)',
+                  color: '#ffd1ad',
                   fontWeight: 800,
                   fontSize: '0.78rem',
                   letterSpacing: '0.14em',
@@ -123,7 +123,7 @@ export default async function PromotionsPage() {
                     <Box
                       component="span"
                       sx={{
-                        background: 'linear-gradient(90deg, #ff8fa6, #c77dff)',
+                        background: 'linear-gradient(90deg, #ffb37a, #ff6b6b)',
                         WebkitBackgroundClip: 'text',
                         backgroundClip: 'text',
                         color: 'transparent',
@@ -170,7 +170,7 @@ export default async function PromotionsPage() {
               borderRadius: 4,
               border: '1px solid',
               borderColor: 'divider',
-              boxShadow: '0 18px 40px -24px rgba(60,10,80,0.35)',
+              boxShadow: '0 18px 40px -24px rgba(20,22,26,0.35)',
               px: 3,
               py: { xs: 6, md: 8 },
             }}
@@ -213,7 +213,7 @@ export default async function PromotionsPage() {
                 alignItems: 'flex-start',
                 p: 2.5,
                 borderRadius: 3,
-                bgcolor: 'rgba(134,46,156,0.05)',
+                bgcolor: 'rgba(215,31,43,0.05)',
               }}
             >
               <Box
@@ -224,7 +224,7 @@ export default async function PromotionsPage() {
                   borderRadius: 2.5,
                   display: 'grid',
                   placeItems: 'center',
-                  bgcolor: 'rgba(134,46,156,0.12)',
+                  bgcolor: 'rgba(215,31,43,0.12)',
                   color: 'primary.main',
                 }}
               >

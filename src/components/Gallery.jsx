@@ -142,7 +142,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
           height: '70vmax',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(134,46,156,0.15) 0%, transparent 70%)',
+            'radial-gradient(circle, rgba(215,31,43,0.15) 0%, transparent 70%)',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%,-50%)',
@@ -172,7 +172,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
             fontSize: '0.65rem',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#862e9c',
+            color: '#d71f2b',
             fontWeight: 700,
           }}
         >
@@ -271,8 +271,8 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
               background: 'rgba(255,255,255,0.03)',
               '&:hover': {
                 color: '#fff',
-                borderColor: '#862e9c',
-                background: 'rgba(134,46,156,0.15)',
+                borderColor: '#d71f2b',
+                background: 'rgba(215,31,43,0.15)',
               },
               transition: 'all 0.2s ease',
             }}
@@ -332,7 +332,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
               width: i === current ? 20 : 5,
               height: 5,
               borderRadius: 99,
-              background: i === current ? '#862e9c' : 'rgba(255,255,255,0.2)',
+              background: i === current ? '#d71f2b' : 'rgba(255,255,255,0.2)',
               cursor: 'pointer',
               transition: 'width 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.3s',
               position: 'relative',
@@ -386,7 +386,7 @@ export default function Gallery({ onClose, initialIndex = 0 }) {
           sx={{
             height: '100%',
             width: `${((current + 1) / IMAGES.length) * 100}%`,
-            background: 'linear-gradient(90deg, #862e9c, #c77dff)',
+            background: 'linear-gradient(90deg, #d71f2b, #9e0f19)',
             transition: 'width 0.38s cubic-bezier(0.77,0,0.175,1)',
           }}
         />

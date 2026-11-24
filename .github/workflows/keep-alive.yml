@@ -1,0 +1,39 @@
+# Keeps the free Supabase project from pausing (it pauses after ~7 days with
+# no activity) and doubles as a simple uptime check.
+#
+# Every 3 days it opens a product page on the live site. That page is
+# rendered on the server and reads the `products` table, so Supabase sees
+# real activity. No keys or secrets are needed.
+#
+# If the site answers with a server error (5xx) the run fails and GitHub
+# emails the repository owner. Run it by hand: Actions → Keep alive → Run.
+name: Keep alive
+
+on:
+  schedule:
+    - cron: '0 7 */3 * *' # 07:00 UTC every 3rd day
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SITE_URL: https://astorija.netlify.app
+    steps:
+      - name: Query the database through the live site
+        run: |
+          # A product page always looks the slug up in Supabase; an unknown
+          # slug simply answers 404, which is fine — the query still ran.
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 \
+              "$SITE_URL/prodavnica/keep-alive-check?t=$(date +%s)")
+            echo "Attempt $attempt: HTTP $code"
+            if [ "$code" -lt 500 ] && [ "$code" -ne 000 ]; then
+              echo "Supabase was queried successfully."
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::The site returned a server error — check Netlify and Supabase."
+          exit 1

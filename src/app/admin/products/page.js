@@ -23,6 +23,7 @@ import { sortedVariants } from '@/lib/pricing'
 import { createClient } from '@/lib/supabase/client'
 import { uploadImageToCloudinary } from '@/lib/cloudinary'
 import AdminNav from '@/components/admin/AdminNav'
+import SuccessToast from '@/components/admin/SuccessToast'
 import ProductPhotosEditor, { photosFromUrls } from '@/components/admin/ProductPhotosEditor'
 
 function slugify(value = '') {
@@ -592,7 +593,7 @@ export default function AdminProductsPage() {
           />
 
           {error ? <Alert severity="error">{error}</Alert> : null}
-          {message ? <Alert severity="success">{message}</Alert> : null}
+          <SuccessToast message={message} onClose={() => setMessage('')} />
 
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <Button

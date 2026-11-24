@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import { createClient } from '@/lib/supabase/client'
 import AdminNav from '@/components/admin/AdminNav'
+import SuccessToast from '@/components/admin/SuccessToast'
 
 function slugify(value = '') {
   return value
@@ -167,7 +168,7 @@ export default function AdminCategoriesPage() {
           />
 
           {error ? <Alert severity="error">{error}</Alert> : null}
-          {message ? <Alert severity="success">{message}</Alert> : null}
+          <SuccessToast message={message} onClose={() => setMessage('')} />
 
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <Button type="submit" variant="contained" disabled={loading}>

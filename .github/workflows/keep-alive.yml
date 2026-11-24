@@ -14,6 +14,11 @@ on:
     - cron: '0 7 */3 * *' # 07:00 UTC every 3rd day
   workflow_dispatch:
 
+# Allows the job to re-enable itself through the GitHub API (see last step).
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -37,3 +42,17 @@ jobs:
           done
           echo "::error::The site returned a server error — check Netlify and Supabase."
           exit 1
+
+      # GitHub switches off scheduled workflows in public repositories after
+      # 60 days without commits. Re-enabling this workflow through the API on
+      # every run resets that timer — no dummy commits, no extra deploys.
+      - name: Keep this schedule from being switched off
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -s -f -X PUT \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/keep-alive.yml/enable" \
+            && echo "Workflow kept enabled."

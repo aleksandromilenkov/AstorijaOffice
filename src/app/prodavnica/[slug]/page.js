@@ -68,10 +68,12 @@ export default async function ProductDetailPage({ params }) {
   try {
     product = await fetchProductBySlug(slug)
   } catch (error) {
-    loadError = error.message ?? 'Грешка при вчитување на производот.'
+    console.error('Product page: loading failed:', error)
+    loadError = 'Моментално не можеме да го вчитаме производот. Обидете се повторно за неколку минути.'
   }
 
-  if (!product) {
+  // A database error is not "product does not exist": show the error, not 404.
+  if (!product && !loadError) {
     notFound()
   }
 

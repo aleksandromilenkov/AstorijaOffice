@@ -318,5 +318,7 @@ function useStickyHeader(isHome) {
     return () => observer.disconnect()
   }, [isHome])
 
-  return sticky
+  // The state survives client navigation (the header lives in the layout),
+  // so off the home page always report "stuck".
+  return isHome ? sticky : true
 }

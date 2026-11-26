@@ -36,7 +36,8 @@ export default async function AdminOrderDetailPage({ params }) {
     loadError = error.message ?? 'Грешка при вчитување на нарачката.'
   }
 
-  if (!order) {
+  // A database error is not "order does not exist": show the error, not 404.
+  if (!order && !loadError) {
     notFound()
   }
 

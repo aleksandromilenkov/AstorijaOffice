@@ -133,6 +133,11 @@ const CartContext = createContext(null)
 // "getServerSnapshot should be cached" infinite-loop warning. A
 // module-level frozen array keeps the reference stable forever.
 const EMPTY = Object.freeze([])
+const subscribeNever = () => () => {}
+
+// Same limit as the `place_order` database function.
+export const MAX_QTY = 1000
+const clampQty = (qty) => Math.min(MAX_QTY, Math.max(1, Math.floor(Number(qty)) || 1))
 
 export function CartProvider({ children }) {
   // `useSyncExternalStore` is the React 19–native way to subscribe to
@@ -145,13 +150,13 @@ export function CartProvider({ children }) {
 
   const addItem = useCallback((product, qty = 1) => {
     if (!product || !product.id) return
-    const q = Math.max(1, Number(qty) || 1)
+    const q = clampQty(qty)
     const key = cartKey(product.id, product.variantId)
     const i = snapshot.findIndex((it) => it.key === key)
     flyToCart()
     if (i >= 0) {
       const next = snapshot.slice()
-      next[i] = { ...next[i], qty: next[i].qty + q }
+      next[i] = { ...next[i], qty: clampQty(next[i].qty + q) }
       setSnapshot(next)
       return
     }
@@ -174,7 +179,7 @@ export function CartProvider({ children }) {
 
   // Both take the line key (product id, or "productId:variantId").
   const updateQty = useCallback((key, qty) => {
-    const q = Math.max(1, Number(qty) || 1)
+    const q = clampQty(qty)
     setSnapshot(snapshot.map((it) => (it.key === key ? { ...it, qty: q } : it)))
   }, [])
 
@@ -185,26 +190,26 @@ export function CartProvider({ children }) {
   const clear = useCallback(() => setSnapshot([]), [])
 
   // Overwrite the whole cart (used to refresh prices from the database).
-  const replaceItems = useCallback(
-    (next) => setSnapshot(Array.isArray(next) ? next.map(withKey) : []),
-    [],
-  )
+  // Also takes `(currentItems) => nextItems`, so async callers build on the
+  // cart as it is now, not on a copy that may be out of date.
+  const replaceItems = useCallback((next) => {
+    const value = typeof next === 'function' ? next(snapshot) : next
+    setSnapshot(Array.isArray(value) ? value.map(withKey) : [])
+  }, [])
 
-  const { count, subtotal, hydrated } = useMemo(() => {
+  // `hydrated` is false on the server and during hydration (when `items` is
+  // still the empty server snapshot), true afterwards. The cart page uses it
+  // to avoid flashing "empty cart" before the saved items appear.
+  const hydrated = useSyncExternalStore(subscribeNever, () => true, () => false)
+
+  const { count, subtotal } = useMemo(() => {
     let c = 0
     let s = 0
     for (const it of items) {
       c += it.qty
       s += it.qty * it.price
     }
-    return {
-      count: c,
-      subtotal: s,
-      // `hydrated` is true once we've left the SSR snapshot behind.
-      // We use it in the UI to avoid flashing "empty cart" on the
-      // first paint of the cart page after a refresh.
-      hydrated: typeof window !== 'undefined',
-    }
+    return { count: c, subtotal: s }
   }, [items])
 
   // `useSyncExternalStore`'s third arg returns the snapshot during

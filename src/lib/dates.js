@@ -22,3 +22,26 @@ export function formatDayMk(iso) {
   const d = new Date(iso)
   return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`
 }
+
+/**
+ * "22 ноември 2026, 18:42" in Macedonian time (Europe/Skopje), whatever the
+ * time zone of the machine. Gives the same text on the server (UTC on
+ * Netlify) and in the browser, so server-rendered pages hydrate cleanly.
+ */
+export function formatDateTimeSkopje(iso) {
+  if (!iso) return ''
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Skopje',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    })
+      .formatToParts(new Date(iso))
+      .map((p) => [p.type, p.value]),
+  )
+  return `${Number(parts.day)} ${MONTHS[Number(parts.month) - 1]} ${parts.year}, ${parts.hour}:${parts.minute}`
+}

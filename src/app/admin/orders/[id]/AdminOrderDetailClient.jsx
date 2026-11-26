@@ -20,10 +20,11 @@ import { formatPrice } from '@/lib/formatPrice'
 import { updateOrderStatus } from '@/app/admin/orders/actions'
 import { useState } from 'react'
 import { getOrderLines } from '@/lib/orderLines'
+import { formatDateTimeSkopje } from '@/lib/dates'
 
 
 export default function AdminOrderDetailClient({ order, loadError }) {
-  const [status, setStatus] = useState(order.status)
+  const [status, setStatus] = useState(order?.status ?? 'received')
   const [note, setNote] = useState('')
   const [updating, setUpdating] = useState(false)
   const [updateError, setUpdateError] = useState(null)
@@ -32,7 +33,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
     return (
       <Box sx={{ maxWidth: 1080, mx: 'auto', px: 3, py: 4 }}>
         <AdminNav active="/admin/orders" />
-        <Alert severity="error">Нарачката не постои.</Alert>
+        <Alert severity="error">{loadError ?? 'Нарачката не постои.'}</Alert>
       </Box>
     )
   }
@@ -48,11 +49,15 @@ export default function AdminOrderDetailClient({ order, loadError }) {
     setUpdating(true)
     setUpdateError(null)
     try {
-      await updateOrderStatus(order.id, status, note)
+      const result = await updateOrderStatus(order.id, status, note)
+      if (!result?.success) {
+        setUpdateError(result?.error ?? 'Непозната грешка.')
+        return
+      }
       setNote('')
       // The page will revalidate via the server action
-    } catch (e) {
-      setUpdateError(e.message)
+    } catch {
+      setUpdateError('Не може да се поврзе со серверот. Обидете се повторно.')
     } finally {
       setUpdating(false)
     }
@@ -97,10 +102,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
             #{shortId}
           </Typography>
           <Typography color="text.secondary">
-            {new Date(order.created_at).toLocaleString('mk-MK', {
-              dateStyle: 'medium',
-              timeStyle: 'short',
-            })}
+            {formatDateTimeSkopje(order.created_at)}
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center', alignSelf: { xs: 'flex-start', md: 'center' } }}>
@@ -283,10 +285,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
                       size="small"
                     />
                     <Typography variant="caption" color="text.secondary">
-                      {new Date(entry.created_at).toLocaleString('mk-MK', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short',
-                      })}
+                      {formatDateTimeSkopje(entry.created_at)}
                     </Typography>
                   </Stack>
                   {entry.note ? (
@@ -298,10 +297,7 @@ export default function AdminOrderDetailClient({ order, loadError }) {
               ))}
               <Typography variant="caption" color="text.secondary">
                 Нарачката е креирана{' '}
-                {new Date(order.created_at).toLocaleString('mk-MK', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                })}
+                {formatDateTimeSkopje(order.created_at)}
               </Typography>
             </Stack>
           </Paper>

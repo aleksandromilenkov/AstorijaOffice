@@ -165,9 +165,15 @@ function OrderResult({ order }) {
   const cancelled = order.status === 'cancelled'
   const currentIndex = STATUS_STEPS.indexOf(order.status)
 
-  // Date each step was reached: latest history entry for it; "received" = order date.
+  // Date each step was reached: when the order last CHANGED to that status
+  // ("received" = order date). History also has note-only entries with the
+  // same status; they must not move the date (or the delivery estimate).
   const reachedAt = { received: order.created_at }
-  for (const h of order.history ?? []) reachedAt[h.status] = h.created_at
+  let previous = 'received'
+  for (const h of order.history ?? []) {
+    if (h.status !== previous) reachedAt[h.status] = h.created_at
+    previous = h.status
+  }
 
   const shippedAt = reachedAt.shipped
   const showEta = order.status === 'shipped' && shippedAt

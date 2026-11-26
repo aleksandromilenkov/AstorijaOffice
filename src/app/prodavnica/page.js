@@ -22,7 +22,9 @@ export default async function ProdavnicaPage({ searchParams }) {
 
   return (
     <Suspense fallback={null}>
-      <ProdavnicaClient initialQ={q} initialCat={cat} />
+      {/* key: a new ?q= / ?cat= (e.g. from the header search while already
+          on this page) remounts the view with the new filter. */}
+      <ProdavnicaClient key={`${q}|${cat}`} initialQ={q} initialCat={cat} />
     </Suspense>
   )
 }

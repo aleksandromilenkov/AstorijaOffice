@@ -17,7 +17,7 @@ import Divider from '@mui/material/Divider'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import { useCart } from '@/store/CartContext'
+import { useCart, MAX_QTY } from '@/store/CartContext'
 import { discountPercent } from '@/lib/pricing'
 import PriceTag from '@/components/promo/PriceTag'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -35,7 +35,7 @@ export default function ProductCard({ product }) {
   const [qty, setQty] = useState(1)
 
   const dec = () => setQty((q) => Math.max(1, q - 1))
-  const inc = () => setQty((q) => q + 1)
+  const inc = () => setQty((q) => Math.min(MAX_QTY, q + 1))
 
   const onAdd = () => addItem(product, qty)
 

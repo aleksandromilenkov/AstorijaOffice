@@ -16,7 +16,7 @@ import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { useCart } from '@/store/CartContext'
+import { useCart, MAX_QTY } from '@/store/CartContext'
 import {
   effectivePrice,
   isOnSale,
@@ -55,7 +55,7 @@ export default function ProductDetailClient({ product, loadError }) {
   if (loadError) {
     return (
       <Box sx={{ maxWidth: 1180, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 3, md: 6 } }}>
-        <Alert severity="error">Не може да се вчита производот: {loadError}</Alert>
+        <Alert severity="error">{loadError}</Alert>
       </Box>
     )
   }
@@ -84,7 +84,7 @@ export default function ProductDetailClient({ product, loadError }) {
   const imageUrl = product.image_url || null
 
   const dec = () => setQty((q) => Math.max(1, q - 1))
-  const inc = () => setQty((q) => q + 1)
+  const inc = () => setQty((q) => Math.min(MAX_QTY, q + 1))
 
   const onAdd = () => {
     if (!inStock) return

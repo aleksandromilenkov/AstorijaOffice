@@ -140,6 +140,8 @@ async function sendOrderEmail({ order }) {
     created_at: new Date().toLocaleString('mk-MK', {
       dateStyle: 'medium',
       timeStyle: 'short',
+      // The server runs in UTC; the shop is in Macedonia.
+      timeZone: 'Europe/Skopje',
     }),
     customer_name: order.shipping_name ?? '',
     customer_phone: order.shipping_phone ?? '',

@@ -18,7 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
-import { useCart } from '@/store/CartContext'
+import { useCart, MAX_QTY } from '@/store/CartContext'
 import { formatPrice } from '@/lib/formatPrice'
 import { placeOrder } from '@/app/checkout/actions'
 import { municipalities } from '@/data/municipalities'
@@ -31,7 +31,7 @@ import PriceTag from '@/components/promo/PriceTag'
 import { effectivePrice, variantPrice } from '@/lib/pricing'
 
 export default function CartBody() {
-  const { items, count, subtotal, updateQty, removeItem, clear, replaceItems } = useCart()
+  const { items, count, subtotal, hydrated, updateQty, removeItem, clear, replaceItems } = useCart()
   const cartNotices = useCartPriceSync(items, replaceItems)
 
   const [name, setName] = useState('')
@@ -184,6 +184,56 @@ export default function CartBody() {
     )
   }
 
+  // Before hydration the saved cart is not read yet: show a spinner, not
+  // "empty", so a full cart never flashes as empty after a refresh.
+  if (!hydrated) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+        <CircularProgress aria-label="Се вчитува кошничката" />
+      </Box>
+    )
+  }
+
+  if (items.length === 0) {
+    return (
+      <Box
+        sx={{
+          py: { xs: 6, md: 10 },
+          px: 2,
+          textAlign: 'center',
+          border: '1px dashed',
+          borderColor: 'divider',
+          borderRadius: 3,
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Typography variant="h5" component="h2" sx={{ fontWeight: 800, mb: 1 }}>
+          Вашата кошничка е празна
+        </Typography>
+        {cartNotices.length > 0 ? (
+          <Alert severity="info" sx={{ maxWidth: 520, mx: 'auto', mb: 2, textAlign: 'left' }}>
+            {cartNotices.map((notice) => (
+              <div key={notice}>{notice}</div>
+            ))}
+          </Alert>
+        ) : (
+          <Typography color="text.secondary" sx={{ mb: 3 }}>
+            Разгледајте ги производите и додадете нешто во кошничката.
+          </Typography>
+        )}
+        <Button
+          component={Link}
+          href="/prodavnica"
+          variant="contained"
+          size="large"
+          sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2 }}
+        >
+          Кон продавницата
+        </Button>
+      </Box>
+    )
+  }
+
   function handlePhoneChange(e) {
     let val = e.target.value
     // Only allow digits, and must start with '07'
@@ -229,15 +279,15 @@ export default function CartBody() {
                 ) : null}
                 <Box sx={{ mt: 0.25 }}><PriceTag price={it.price} regularPrice={it.regularPrice} size="sm" /></Box>
                 <Stack direction="row" spacing={1} sx={{ mt: 1.5, alignItems: 'center' }}>
-                  <IconButton size="small" onClick={() => updateQty(it.key, it.qty - 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+                  <IconButton size="small" aria-label="Намали количина" disabled={it.qty <= 1} onClick={() => updateQty(it.key, it.qty - 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
                     <RemoveIcon fontSize="small" />
                   </IconButton>
                   <Typography sx={{ minWidth: 28, textAlign: 'center', fontWeight: 700 }}>{it.qty}</Typography>
-                  <IconButton size="small" onClick={() => updateQty(it.key, it.qty + 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
+                  <IconButton size="small" aria-label="Зголеми количина" disabled={it.qty >= MAX_QTY} onClick={() => updateQty(it.key, it.qty + 1)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1.5 }}>
                     <AddIcon fontSize="small" />
                   </IconButton>
                   <Box sx={{ flex: 1 }} />
-                  <IconButton size="small" color="error" onClick={() => removeItem(it.key)}>
+                  <IconButton size="small" color="error" aria-label="Отстрани од кошничката" onClick={() => removeItem(it.key)}>
                     <DeleteOutlineIcon fontSize="small" />
                   </IconButton>
                 </Stack>
@@ -410,16 +460,19 @@ function useCartPriceSync(items, replaceItems) {
       }
       const byId = new Map(rows.map((row) => [row.id, row]))
 
-      const next = []
+      // Per cart line: fresh fields, or null = remove the line.
+      const updates = new Map()
       const messages = []
       for (const it of snapshot) {
         const row = byId.get(it.id)
         if (!row) {
           messages.push(`„${it.name}“ повеќе не е достапен и е отстранет од кошничката.`)
+          updates.set(it.key, null)
           continue
         }
         if (!row.in_stock) {
           messages.push(`„${row.title}“ моментално нема на залиха и е отстранет од кошничката.`)
+          updates.set(it.key, null)
           continue
         }
         const options = row.product_variants ?? []
@@ -430,6 +483,7 @@ function useCartPriceSync(items, replaceItems) {
           const option = options.find((v) => v.id === it.variantId)
           if (!option) {
             messages.push(`За „${row.title}“ изберете количина повторно — опцијата е изменета.`)
+            updates.set(it.key, null)
             continue
           }
           currentPrice = variantPrice(row, option.price)
@@ -444,23 +498,28 @@ function useCartPriceSync(items, replaceItems) {
             `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(currentPrice)}`,
           )
         }
-        next.push({
-          ...it,
+        const fresh = {
           name: row.title,
           slug: row.slug,
           price: currentPrice,
           regularPrice,
           variantLabel,
           imageUrl: row.image_url || null,
-        })
+        }
+        if (Object.keys(fresh).some((k) => fresh[k] !== it[k])) updates.set(it.key, fresh)
       }
 
-      const changed =
-        next.length !== snapshot.length ||
-        next.some((it, i) =>
-          ['name', 'slug', 'price', 'regularPrice', 'variantLabel', 'imageUrl'].some((k) => it[k] !== snapshot[i][k]),
+      // Apply to the cart as it is NOW: +/−/remove clicked while the
+      // request was running must not be undone.
+      if (updates.size > 0) {
+        replaceItems((current) =>
+          current.flatMap((it) => {
+            if (!updates.has(it.key)) return [it]
+            const fresh = updates.get(it.key)
+            return fresh ? [{ ...it, ...fresh }] : []
+          }),
         )
-      if (changed) replaceItems(next)
+      }
       setNotices(messages)
     }
 

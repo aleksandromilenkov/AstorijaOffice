@@ -25,16 +25,11 @@ import { uploadImageToCloudinary } from '@/lib/cloudinary'
 import AdminNav from '@/components/admin/AdminNav'
 import SuccessToast from '@/components/admin/SuccessToast'
 import ProductPhotosEditor, { photosFromUrls } from '@/components/admin/ProductPhotosEditor'
+import { latinSlug } from '@/lib/transliterate'
 
+// Latin slugs ("faktura-a5"): readable addresses when shared, unlike encoded Cyrillic.
 function slugify(value = '') {
-  return value
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[\s]+/g, '-')
-    .replace(/[^\p{L}\p{N}-]+/gu, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return latinSlug(value)
 }
 
 // Ask the server to delete a replaced/removed image from Cloudinary.

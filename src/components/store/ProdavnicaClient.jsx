@@ -36,7 +36,12 @@ import { effectivePrice, variantPrice } from '@/lib/pricing'
  * with the router. Header submissions replace the URL and re-mount the
  * inputs via the `key` derived from the search params.
  */
-export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) {
+export default function ProdavnicaClient({
+  initialQ = '',
+  initialCat = 'all',
+  initialProducts = null,
+  initialCategories = null,
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -50,11 +55,15 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
   const [category, setCategory] = useState(initialCat)
   const [sort, setSort] = useState('newest')
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const [dbProducts, setDbProducts] = useState([])
-  const [dbCategories, setDbCategories] = useState([])
+  // The server page passes the catalogue in (so it is in the HTML for Google);
+  // the browser only loads it itself when that failed.
+  const serverLoaded = Array.isArray(initialProducts) && Array.isArray(initialCategories)
+  const [dbProducts, setDbProducts] = useState(initialProducts ?? [])
+  const [dbCategories, setDbCategories] = useState(initialCategories ?? [])
   const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
+    if (serverLoaded) return undefined
     let cancelled = false
 
     async function loadStore() {
@@ -94,7 +103,7 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
     return () => {
       cancelled = true
     }
-  }, [supabase])
+  }, [supabase, serverLoaded])
 
   const categoryKeyById = useMemo(() => {
     const map = new Map()
@@ -193,7 +202,14 @@ export default function ProdavnicaClient({ initialQ = '', initialCat = 'all' }) 
           return (
             <Button
               key={c.key}
-              onClick={() => onPickCategory(c.key)}
+              // A real link, so search engines can follow it to the category page;
+              // clicks still filter in place without a page load.
+              component="a"
+              href={c.key === 'all' ? '/prodavnica' : `/prodavnica?cat=${encodeURIComponent(c.key)}`}
+              onClick={(e) => {
+                e.preventDefault()
+                onPickCategory(c.key)
+              }}
               fullWidth
               disableRipple
               sx={{

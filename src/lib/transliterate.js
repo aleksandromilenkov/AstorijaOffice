@@ -37,3 +37,27 @@ export function matchesSearch(text, query) {
   if (!q) return true
   return searchKey(String(text ?? '')).includes(q)
 }
+
+/**
+ * Latin spelling of a Cyrillic name, keeping capitals: "Фактура А5" → "Faktura A5".
+ * Latin letters, digits and punctuation are left as they are ("HP" stays "HP").
+ */
+export function latinName(text = '') {
+  return Array.from(String(text), (ch) => {
+    if (!/[Ѐ-ӿ]/.test(ch)) return ch
+    const t = CYRILLIC_TO_LATIN[ch] ?? ch
+    return ch !== ch.toLowerCase() ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : t
+  }).join('')
+}
+
+/**
+ * URL slug in Latin letters: "Фактура А5" → "faktura-a5", "Визитки 100 парчиња" → "vizitki-100-parchinja".
+ * Used for product and category addresses (readable when shared, unlike encoded Cyrillic).
+ */
+export function latinSlug(text = '') {
+  return transliterate(String(text).trim())
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // š → s
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}

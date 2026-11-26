@@ -11,6 +11,11 @@ import PromotionsSection from '@/components/promo/PromotionsSection'
 // promos show up without a redeploy while the page stays fast.
 export const revalidate = 60
 
+// Title and description come from the root layout; the home page only needs its canonical.
+export const metadata = {
+  alternates: { canonical: '/' },
+}
+
 export default function HomePage() {
   return (
     <>

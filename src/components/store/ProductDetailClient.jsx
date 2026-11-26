@@ -26,6 +26,7 @@ import {
   variantUnits,
 } from '@/lib/pricing'
 import { formatPrice } from '@/lib/formatPrice'
+import { latinName } from '@/lib/transliterate'
 import SpecList from './SpecList'
 import PriceTag from '@/components/promo/PriceTag'
 import Countdown from '@/components/promo/Countdown'
@@ -277,6 +278,11 @@ export default function ProductDetailClient({ product, loadError }) {
             >
               {product.title}
             </Typography>
+            {latinName(product.title) !== product.title ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }} lang="mk-Latn">
+                {latinName(product.title)}
+              </Typography>
+            ) : null}
           </Box>
 
           <Box>

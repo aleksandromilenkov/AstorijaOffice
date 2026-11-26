@@ -4,6 +4,7 @@ export const metadata = {
   title: 'Кошничка — Асторија',
   description:
     'Преглед на вашата кошничка. Плаќање при достава низ цела Македонија.',
+  robots: { index: false, follow: true },
 }
 
 /**

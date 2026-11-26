@@ -15,16 +15,11 @@ import EditIcon from '@mui/icons-material/Edit'
 import { createClient } from '@/lib/supabase/client'
 import AdminNav from '@/components/admin/AdminNav'
 import SuccessToast from '@/components/admin/SuccessToast'
+import { latinSlug } from '@/lib/transliterate'
 
+// Latin slugs ("faktura-a5"): readable addresses when shared, unlike encoded Cyrillic.
 function slugify(value = '') {
-  return value
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[\s]+/g, '-')
-    .replace(/[^\p{L}\p{N}-]+/gu, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return latinSlug(value)
 }
 
 export default function AdminCategoriesPage() {

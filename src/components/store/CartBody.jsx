@@ -436,7 +436,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
  * When the cart page opens, re-read every product from Supabase:
  *   - update price, name, image and slug to the current values
  *   - drop products that were deleted or are out of stock
- * Returns human-readable notices about what changed.
+ * Returns human-readable notices about what changed. A price notice is tied
+ * to its cart line and disappears once that line is removed; notices about
+ * lines the sync itself removed stay, since they explain the change.
  */
 function useCartPriceSync(items, replaceItems) {
   const [notices, setNotices] = useState([])
@@ -466,12 +468,12 @@ function useCartPriceSync(items, replaceItems) {
       for (const it of snapshot) {
         const row = byId.get(it.id)
         if (!row) {
-          messages.push(`„${it.name}“ повеќе не е достапен и е отстранет од кошничката.`)
+          messages.push({ text: `„${it.name}“ повеќе не е достапен и е отстранет од кошничката.` })
           updates.set(it.key, null)
           continue
         }
         if (!row.in_stock) {
-          messages.push(`„${row.title}“ моментално нема на залиха и е отстранет од кошничката.`)
+          messages.push({ text: `„${row.title}“ моментално нема на залиха и е отстранет од кошничката.` })
           updates.set(it.key, null)
           continue
         }
@@ -482,7 +484,7 @@ function useCartPriceSync(items, replaceItems) {
         if (options.length > 0) {
           const option = options.find((v) => v.id === it.variantId)
           if (!option) {
-            messages.push(`За „${row.title}“ изберете количина повторно — опцијата е изменета.`)
+            messages.push({ text: `За „${row.title}“ изберете количина повторно — опцијата е изменета.` })
             updates.set(it.key, null)
             continue
           }
@@ -494,9 +496,10 @@ function useCartPriceSync(items, replaceItems) {
           regularPrice = currentPrice < row.price ? row.price : null
         }
         if (currentPrice !== it.price) {
-          messages.push(
-            `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(currentPrice)}`,
-          )
+          messages.push({
+            key: it.key,
+            text: `Цената на „${row.title}“ е ажурирана: ${formatPrice(it.price)} → ${formatPrice(currentPrice)}`,
+          })
         }
         const fresh = {
           name: row.title,
@@ -527,4 +530,6 @@ function useCartPriceSync(items, replaceItems) {
   }, [items, replaceItems])
 
   return notices
+    .filter((n) => !n.key || items.some((it) => it.key === n.key))
+    .map((n) => n.text)
 }

@@ -169,6 +169,56 @@ a {
 }
 .logo-link:hover .astorija-star { transform: rotate(72deg); }
 
+/* Checkout: a hand taps the terms checkbox once it is the only step left
+   (components/store/TermsHint.jsx). Base styles are the resting pose, so with
+   "reduce motion" the hand simply points and the ripple stays hidden. */
+.terms-hint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: a-hint-in 0.5s var(--ease-out) 0.7s backwards; /* wait: typing */
+}
+.terms-hint__ripple {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-radius: 50%;
+  border: 2px solid var(--hint-color, #d71f2b);
+  background: rgba(215, 31, 43, 0.12);
+  opacity: 0;
+  animation: a-hint-ripple 1.7s var(--ease-out) 0.7s infinite;
+}
+.terms-hint__hand {
+  position: absolute;
+  left: 17px;
+  top: 26.5px;
+  width: 34px;
+  height: 40px;
+  transform-origin: 9.9px 1.4px; /* the fingertip */
+  transform: rotate(-18deg);
+  filter: drop-shadow(0 6px 8px rgba(20, 22, 26, 0.28));
+  animation: a-hint-tap 1.7s cubic-bezier(0.45, 0, 0.2, 1) 0.7s infinite backwards;
+}
+@keyframes a-hint-in {
+  from { opacity: 0; transform: translate(14px, 18px); }
+}
+@keyframes a-hint-tap {
+  0%   { transform: translate(10px, 14px) rotate(-18deg); }
+  42%  { transform: translate(0, 0) rotate(-18deg) scale(1); }
+  50%  { transform: translate(0, 0) rotate(-18deg) scale(0.9); }
+  60%  { transform: translate(0, 0) rotate(-18deg) scale(1); }
+  100% { transform: translate(10px, 14px) rotate(-18deg); }
+}
+@keyframes a-hint-ripple {
+  0%, 46% { opacity: 0; transform: scale(0.35); }
+  52%     { opacity: 0.9; transform: scale(0.55); }
+  100%    { opacity: 0; transform: scale(1.6); }
+}
+
 /* Respect "reduce motion" */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

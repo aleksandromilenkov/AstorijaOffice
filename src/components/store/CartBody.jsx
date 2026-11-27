@@ -27,6 +27,7 @@ import { createClient } from '@/lib/supabase/client'
 import ProductImg from './ProductImg'
 import { Confetti, SuccessCheck } from './Celebration'
 import PaymentMethods from './PaymentMethods'
+import TermsHint from './TermsHint'
 import PriceTag from '@/components/promo/PriceTag'
 import { effectivePrice, variantPrice } from '@/lib/pricing'
 
@@ -234,6 +235,14 @@ export default function CartBody() {
     )
   }
 
+  // Everything required is filled in — only the terms checkbox is left.
+  const onlyTermsLeft =
+    !acceptTerms &&
+    !submitting &&
+    name.trim() !== '' &&
+    /^07\d{7}$/.test(phone.replace(/\D/g, '')) &&
+    municipalities.includes(city)
+
   function handlePhoneChange(e) {
     let val = e.target.value
     // Only allow digits, and must start with '07'
@@ -373,6 +382,7 @@ export default function CartBody() {
 
           <PaymentMethods />
 
+          <Box sx={{ position: 'relative' }}>
           <FormControlLabel
             sx={{
               alignItems: 'flex-start',
@@ -380,8 +390,9 @@ export default function CartBody() {
               p: 1,
               borderRadius: 2,
               border: '1px solid',
-              borderColor: termsError && !acceptTerms ? 'error.main' : 'transparent',
-              bgcolor: termsError && !acceptTerms ? 'rgba(211,47,47,0.04)' : 'transparent',
+              borderColor: termsError && !acceptTerms ? 'error.main' : onlyTermsLeft ? 'rgba(215,31,43,0.35)' : 'transparent',
+              bgcolor: termsError && !acceptTerms ? 'rgba(211,47,47,0.04)' : onlyTermsLeft ? 'rgba(215,31,43,0.03)' : 'transparent',
+              transition: 'border-color 0.4s ease, background-color 0.4s ease',
             }}
             control={
               <Checkbox
@@ -410,6 +421,8 @@ export default function CartBody() {
               </Typography>
             }
           />
+          <TermsHint active={onlyTermsLeft} />
+          </Box>
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 
